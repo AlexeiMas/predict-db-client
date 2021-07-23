@@ -1,0 +1,79 @@
+@import './variables';
+
+.auth-container {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  position: relative;
+
+  h1 {
+    font-size: 38px;
+    font-weight: normal;
+  }
+
+  &__title {
+    margin: 25px 0 60px;
+    font-size: 16px;
+  }
+
+  & .sign-up {
+    h1, .auth-container__title {
+      text-align: center;
+    }
+  }
+
+  &__asside {
+    background-image: url("/assets/images/bg.png");
+    background-repeat: no-repeat;
+    height: 100vh;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+
+    & .form-wrapper {
+      padding: 20vh 0;
+
+      &.sign-up {
+        padding: 15vh 0;
+      }
+
+      &.forgot-password, &.reset-password {
+        padding: 27vh 0;
+
+        &-message {
+          display: flex;
+          flex-direction: column;
+          padding: 37vh 0;
+
+          & .auth-container__title {
+            margin-left: 25px;
+            margin-right: 25px;
+          }
+        }
+      }
+    }
+
+    & .form__grid {
+      display: grid;
+      grid-template-columns: 50% 50%;
+      grid-column-gap: 15px;
+    }
+  }
+
+  &__logo {
+    position: absolute;
+    top: 30px;
+    left: 50px;
+
+    width: 94px;
+    height: 34px;
+  }
+
+  &__license {
+    color: $dark-3;
+    font-size: 12px;
+    text-align: center;
+  }
+}

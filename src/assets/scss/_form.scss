@@ -1,0 +1,75 @@
+@import './variables';
+
+.form-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  &__row {
+    margin-bottom: 20px;
+
+    &.center {
+      text-align: center !important;
+    }
+  }
+
+  &__link {
+    font-size: 12px;
+
+    a {
+      text-decoration: none;
+      color: #0941AC;
+    }
+
+    &_text-right {
+      text-align: right;
+    }
+
+    &_text-center {
+      text-align: center;
+    }
+
+    &_switcher {
+      margin-top: 30px;
+    }
+  }
+
+  &__input {
+    color: #656790 !important;
+  }
+}
+
+p.Mui-error {
+  color: red !important;
+  font-family: $primary-font;
+  margin-left: 0;
+}
+
+.accept_terms {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 55px;
+
+  & .MuiFormControlLabel-label {
+    color: $dark-1;
+    font-size: 12px;
+    font-family: $primary-font;
+  }
+}
+
+.acceptTermsError, .userExistsError {
+  display: none;
+  color: red;
+  font-size: 13px;
+
+  &.error {
+    display: block;
+  }
+}

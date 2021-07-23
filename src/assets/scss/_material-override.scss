@@ -1,0 +1,66 @@
+@import './variables';
+
+// TODO: The design is very different from Material, so it seems it's impossible to avoid this way of styling.
+
+.MuiTableRow-root {
+  &:not(.MuiTableRow-head) {
+    &:hover {
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.05);
+    }
+  }
+}
+
+.MuiAppBar-colorPrimary {
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+.MuiTab-root {
+  color: $dark-3 !important;
+  font-weight: 500 !important;
+  font-size: 16px !important;
+  text-transform: none !important;
+  max-width: 364px !important;
+
+  &.Mui-selected {
+    color: $blue !important;
+  }
+}
+
+.MuiTabs-indicator {
+  background-color: $blue !important;
+}
+
+.MuiTabs-flexContainer {
+  border-bottom: 1px solid #EEEEF2;
+}
+
+.MuiButtonBase-root {
+  padding: 9px 20px !important;
+  font-size: 16px !important;
+  border-radius: 8px !important;
+  text-transform: none !important;
+}
+
+.MuiTableCell-root,
+.MuiInputBase-input,
+.MuiFormLabel-root {
+  font-family: $primary-font !important;
+}
+
+th.MuiTableCell-root:nth-child(6) {
+  width: 300px;
+
+  & > .table__cell {
+    justify-content: flex-end;
+  }
+}
+
+.MuiTooltip-arrow {
+  color: #00003E !important;
+}
+
+.MuiButton-contained.Mui-disabled {
+  color: white !important;
+}

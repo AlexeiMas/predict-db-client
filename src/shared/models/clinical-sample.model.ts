@@ -1,0 +1,32 @@
+export interface ClinicalSampleModel {
+  id: string;
+  age: number;
+  caseId: string;
+  clinicalBiomarkersOfInterestImmune: string[];
+  clinicalBiomarkersOfInterestNonImmune: string[];
+  dataCreated: string;
+  diagnosis: string;
+  differentiation: string;
+  ethnicity: string;
+  growthKinetics: string;
+  histology: string[];
+  breastCancerReceptorStatus: string[];
+  origin: string;
+  pdcModel: string;
+  primaryTumourType: string;
+  procedureType: string;
+  snomedId: string;
+  sampleCollectionSite: string;
+  sampleType: string;
+  sex: string;
+  smokingHistory: string;
+  stage: string;
+  treatmentStatus: string;
+  tumourSubType: string;
+  hasNgsData: boolean;
+  hasPatientTreatmentHistory: boolean;
+  hasGrowthCharacteristics: boolean;
+  hasResponseData: boolean;
+  hasPlasma: boolean;
+  hasPBMC: boolean;
+}
