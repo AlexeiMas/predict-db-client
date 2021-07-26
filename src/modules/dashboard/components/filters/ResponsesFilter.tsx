@@ -265,7 +265,7 @@ const ResponsesFilter = ({ filters, setFilters, index, isClearFilter, setIsClear
         <div className="filter__label">
           <span className="filter__label-text">
             PDC Model Treatment Response
-            <InfoIcon title="PDC Model Treatment Response Filter"/>
+            <InfoIcon title="Selects models based on performance against a broad panel of treatments. Performance categories are based on percentile scores. See model info for detail. Only responses indicated for the selected tumour type are shown. Please contact us for the full panel of responses."/>
           </span>
           { index === 0 && <span className="filter__label-clear" onClick={ () => clearFilters() }>Clear</span> }
         </div>

@@ -294,7 +294,7 @@ const TumourTypeFilter = ({
       <div className="filter">
         <div className="filter__label">
           <span className="filter__label-text">
-            Tumour Type <InfoIcon title="Tumour Type Filter" />
+            Tumour Type <InfoIcon title="Selects a tumour type for models. You must select a valid tumour type to get treatment response data (only treatments with existing indications for the type of cancer chosen shown, please contact us for full panel of response data)." />
           </span>
           {index === 0 && (
             <span

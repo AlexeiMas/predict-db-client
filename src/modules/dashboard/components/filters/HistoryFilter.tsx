@@ -265,7 +265,7 @@ const HistoryFilter = ({ filters, setFilters, index, isClearFilter, setIsClearFi
         <div className="filter__label">
           <span className="filter__label-text">
             Patient Treatment History
-            <InfoIcon title="Patient Treatment History Filter"/>
+            <InfoIcon title="Finds models that have patient treatment history for the selected therapies, prior to in-vitro testing. Treatment effectiveness is ranked according to RECIST (CR = Complete Response; PR = Partial Response; SD = Stable Disease; PD = Progressive Disease)."/>
           </span>
           { index === 0 && <span className="filter__label-clear" onClick={ () => clearFilters() }>Clear</span> }
         </div>

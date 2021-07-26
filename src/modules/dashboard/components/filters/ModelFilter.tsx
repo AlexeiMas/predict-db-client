@@ -156,7 +156,7 @@ const ModelFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter }: M
         <div className="filter__label">
           <span className="filter__label-text">
             Model ID
-            <InfoIcon title="Model Filter"/>
+            <InfoIcon title="Selects models by their PTX id."/>
           </span>
           <span className="filter__label-clear" onClick={ () => clearFilters() }>Clear</span>
         </div>
