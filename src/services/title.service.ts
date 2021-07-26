@@ -1,6 +1,6 @@
 class TitleService {
   public setTitle(title: string): void {
-    document.title = title + " | PredictDb";
+    document.title = "PredictDb | Imagen Therapeutics";
   }
 }
 
