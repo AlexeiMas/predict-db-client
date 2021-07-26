@@ -2,11 +2,9 @@ export interface ApiClinicalGeneralInformationModel {
   "3D Model Status": string;
   "Confirmed Protein Expression": string;
   "Growth Characteristics": string;
-  "Has Growth Characteristics": string;
-  "Has NGS Data": string;
-  "Has Patient Treatment History": string;
-  "Has Plasma": string;
-  "Has PBMC": string;
+  "Has Growth Characteristics": boolean;
+  "Has NGS Data": boolean;
+  "Has Patient Treatment History": boolean;
   "Microsatelite Status": string;
   "Model ID": string;
   NGS: string;

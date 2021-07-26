@@ -7,8 +7,6 @@ export interface ClinicalGeneralInformationModel {
   hasNGSData: string;
   hasPatientTreatmentHistory: string;
   hasResponseData: string;
-  hasPlasma: string;
-  hasPBMC: string;
   microsateliteStatus: string;
   modelId: string;
   ngs: string;

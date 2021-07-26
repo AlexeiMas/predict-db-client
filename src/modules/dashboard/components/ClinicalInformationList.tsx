@@ -69,31 +69,15 @@ const ClinicalInformationList = ({
           <div className="drawer-tabs-row">
             <div className="drawer-tabs-row__label">Histology</div>
             <div className="drawer-tabs-row__value">
-              <div className="drawer-tabs-row__set">
-                {clinicalInfo.histology && clinicalInfo.histology.map(
-                  (element: string, index: number) => (
-                    <div className="drawer-tabs-row__square" key={index}>
-                      {element}
-                    </div>
-                  )
-                )}
-              </div>
+                {clinicalInfo.histology}
             </div>
           </div>
           <div className="drawer-tabs-row">
             <div className="drawer-tabs-row__label">
-              Breast Cancer Receptor Status
+              Receptor Status
             </div>
             <div className="drawer-tabs-row__value">
-              <div className="drawer-tabs-row__set">
-                {clinicalInfo.breastCancerReceptorStatus && clinicalInfo.breastCancerReceptorStatus.map(
-                  (element: string, index: number) => (
-                    <div className="drawer-tabs-row__square" key={index}>
-                      {element}
-                    </div>
-                  )
-                )}
-              </div>
+                {clinicalInfo.ReceptorStatus}
             </div>
           </div>
           <div className="drawer-tabs-row">
@@ -131,7 +115,7 @@ const ClinicalInformationList = ({
             </div>
           </div>
           <div className="drawer-tabs-row">
-            <div className="drawer-tabs-row__label">Smocking history</div>
+            <div className="drawer-tabs-row__label">Smoking history</div>
             <div className="drawer-tabs-row__value">
               {clinicalInfo.smokingHistory}
             </div>

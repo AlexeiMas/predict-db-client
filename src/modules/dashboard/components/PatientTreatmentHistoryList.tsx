@@ -106,11 +106,11 @@ const PatientTreatmentHistoryList = ({
 
                   <div className="history-item-col-info">
                     <div className="history-item__label">
-                      Treatment duration
+                      Treatment duration (months)
                       <InfoIcon title="Treatment duration"/>
                     </div>
                     <div className="history-item__value">
-                      {history.treatmentDurationMonths} month/s
+                      {history.treatmentDurationMonths}
                     </div>
                   </div>
                 </div>

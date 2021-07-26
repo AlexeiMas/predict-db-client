@@ -57,10 +57,10 @@ const DashboardDrawer = (props: DashboardDrawerProps): JSX.Element => {
                 <GrowthCharacteristicsIcon isActive={ selectedElement.hasGrowthCharacteristics } />
               </div>
               <div className="drawer__icon">
-                <PlasmaIcon isActive={ selectedElement.hasPlasma } />
+                <PlasmaIcon isActive={ selectedElement.Plasma } />
               </div>
               <div className="drawer__icon">
-                <PBMCIcon isActive={ selectedElement.hasPBMC } />
+                <PBMCIcon isActive={ selectedElement.PBMC } />
               </div>
             </div>
 

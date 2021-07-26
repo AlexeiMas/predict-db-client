@@ -78,7 +78,7 @@ const PDCModelTreatmentResponsesList = ({
         <div className="empty">
           <h2 className="empty__title">No results found</h2>
           <div className="empty_text">
-            No PDC model treatment responses available.
+            No PDC model treatment responses available. This means there are no treatments with an indication for the selected tumour type. Contact us for full panel of treatment responses.
           </div>
         </div>
       )}

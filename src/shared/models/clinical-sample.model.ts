@@ -2,20 +2,19 @@ export interface ClinicalSampleModel {
   id: string;
   age: number;
   caseId: string;
-  clinicalBiomarkersOfInterestImmune: string[];
-  clinicalBiomarkersOfInterestNonImmune: string[];
+  clinicalBiomarkersOfInterestImmune: string;
+  clinicalBiomarkersOfInterestNonImmune: string;
   dataCreated: string;
   diagnosis: string;
   differentiation: string;
   ethnicity: string;
   growthKinetics: string;
-  histology: string[];
-  breastCancerReceptorStatus: string[];
-  origin: string;
+  histology: string;
+  ReceptorStatus: string;
   pdcModel: string;
   primaryTumourType: string;
   procedureType: string;
-  snomedId: string;
+  meshId: string;
   sampleCollectionSite: string;
   sampleType: string;
   sex: string;
@@ -27,6 +26,6 @@ export interface ClinicalSampleModel {
   hasPatientTreatmentHistory: boolean;
   hasGrowthCharacteristics: boolean;
   hasResponseData: boolean;
-  hasPlasma: boolean;
-  hasPBMC: boolean;
+  Plasma: boolean;
+  PBMC: boolean;
 }

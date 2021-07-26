@@ -136,12 +136,12 @@ const DashboardTable = (props: DashboardTableProps): JSX.Element => {
                             </div>
                             <div className="table__icon">
                               <PlasmaIcon
-                                isActive={row.hasPlasma}
+                                isActive={row.Plasma}
                               />
                             </div>
                             <div className="table__icon">
                               <PBMCIcon
-                                isActive={row.hasPBMC}
+                                isActive={row.PBMC}
                               />
                             </div>
                           </div>

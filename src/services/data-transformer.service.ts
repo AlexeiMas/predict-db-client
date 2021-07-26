@@ -27,18 +27,17 @@ class DataTransformerService {
         sample["Clinical Biomarkers of Interest (Immune)"],
       clinicalBiomarkersOfInterestNonImmune:
         sample["Clinical Biomarkers of Interest (non-immune)"],
-      dataCreated: sample["Date Created"],
+      dataCreated: sample["date_created"],
       diagnosis: sample["Diagnosis"],
       differentiation: sample["Differentiation"],
       ethnicity: sample["Ethnicity"],
       growthKinetics: sample["Growth Kinetics"],
       histology: sample["Histology"],
-      breastCancerReceptorStatus: sample["Breast Cancer Receptor Status"],
-      origin: sample["Origin"],
+      ReceptorStatus: sample["Receptor Status"],
       pdcModel: sample["PDC Model"],
       primaryTumourType: sample["Primary Tumour Type"],
       procedureType: sample["Procedure Type"],
-      snomedId: sample["SNOMED ID"],
+      meshId: sample["NIH MeSH Tree Number"],
       sampleCollectionSite: sample["Sample Collection Site"],
       sampleType: sample["Sample Type"],
       sex: sample["Sex"],
@@ -53,8 +52,8 @@ class DataTransformerService {
         sample["Model"] && sample["Model"]["Has Growth Characteristics"],
       hasResponseData:
         sample["Model"] && sample["Model"].TreatmentResponsesCount > 0,
-      hasPlasma: sample["Model"] && sample["Model"]["Has Plasma"],
-      hasPBMC: sample["Model"] && sample["Model"]["Has PBMC"],
+      Plasma: sample["Plasma"],
+      PBMC: sample["PBMC"],
     };
   }
 
@@ -81,8 +80,6 @@ class DataTransformerService {
       modelStatus: info["Model Status"],
       hla: info.hla.alleles,
       hasResponseData: info["Has PredictRx Response Data"] ? "Yes" : "No",
-      hasPlasma: info["Has Plasma"] ? "Yes" : "No",
-      hasPBMC: info["Has PBMC"] ? "Yes" : "No",
     };
   }
 
