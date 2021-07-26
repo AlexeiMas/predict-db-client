@@ -52,8 +52,6 @@ jobs:
     - name: 'Untar artifact'
       run: |
         tar -xvf pdb-client.tar
-        tar -xf node_modules.tar.gz
-      
 
     - name: 'Deploy to Azure Web App'
       id: deploy-to-webapp
