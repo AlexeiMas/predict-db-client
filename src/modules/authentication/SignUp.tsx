@@ -118,7 +118,10 @@ const SignUp = (props: BasePageProps): JSX.Element => {
       jobTitle,
     );
 
-    if (status === 403) setShowUserExistsError(true);
+    if (status === 403) {
+      setShowUserExistsError(true)
+      return;
+    };
 
     if (data) {
       contextMethods.setUserName(`${data.user.firstName} ${data.user.lastName}`);
@@ -127,7 +130,6 @@ const SignUp = (props: BasePageProps): JSX.Element => {
       contextMethods.setRefreshToken(data.credentials.refreshToken);
       contextMethods.setAccessExpMS(data.credentials.accessExpMS);
       contextMethods.setRefreshExpMS(data.credentials.refreshExpMS);
-      contextMethods.setIsAuthorized(true);
       history.push('/dashboard');
     }
   };
