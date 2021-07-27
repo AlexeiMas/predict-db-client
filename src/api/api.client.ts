@@ -3,7 +3,7 @@ import storage from "../services/storage.service";
 import { routes } from "../routes";
 
 const baseURL = process.env.REACT_APP_API_URI || "http://localhost:3001/v1/";
-const api = axios.create({ baseURL, timeout: 10000 });
+const api = axios.create({ baseURL, timeout: 90000 });
 
 api.interceptors.request.use(
   async (config: AxiosRequestConfig) => {

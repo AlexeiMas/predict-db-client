@@ -90,5 +90,5 @@ export const getNgsDetails = (
       : `?includeExpressions=${includeExpressions}`;
   }
 
-  return api.get(`/details/ngs/${modelId}${query}`, { timeout: 30000 });
+  return api.get(`/details/ngs/${modelId}${query}`, { timeout: 90000 });
 };
