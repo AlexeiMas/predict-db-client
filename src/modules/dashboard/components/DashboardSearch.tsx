@@ -102,7 +102,7 @@ const DashboardSearch = ({
       </div>
       <CustomTooltip
         title={
-          'You must select a valid "Tumour Type" to get Treatment Response data.'
+          'NGS data available via export. You must select a valid "Tumour Type" to get Treatment Response data.'
         }
       >
         <div className="search__button">

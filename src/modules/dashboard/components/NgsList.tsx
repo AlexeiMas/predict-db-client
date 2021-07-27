@@ -44,7 +44,7 @@ const MutationsList = ({
         <div className="ngs-mutations">
           <div className="ngs-mutations__title">
             <span>Gene symbols</span>
-            <InfoIcon title="Indicates the genes found for this model inside any of the 4 NGS data sets - DNA, RNA, CNV, Fusions" />
+            <InfoIcon title="Indicates the genes found for this model inside any of the 4 NGS data sets - DNA, RNA, CNV, Fusions. More NGS data available via export." />
           </div>
           <div className="ngs-mutations__tags">
             {ngs.genes.length > 0 && ngs.genes.map((value, index) => (
