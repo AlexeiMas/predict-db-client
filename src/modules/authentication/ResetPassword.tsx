@@ -194,7 +194,7 @@ const ResetPassword = (props: BasePageProps): JSX.Element => {
             </div>
             <div className="form__row">
               <div className="form__link form__link_text-center form__link_switcher">
-                Want to return?&nbsp;
+                Sign in again?&nbsp;
                 <Link to={ routes.signIn }>Sign In</Link>
               </div>
             </div>

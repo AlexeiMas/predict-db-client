@@ -131,11 +131,11 @@ const ForgotPassword = (props: BasePageProps): JSX.Element => {
           <div className="form-wrapper forgot-password-message">
             <h1>Success!</h1>
             <div className="auth-container__title">
-              We have sended a recovery link. Please check your inbox
+              We've sent a recovery link. Please check your inbox.
             </div>
             <div className="form__row">
               <div className="form__link form__link_text-center form__link_switcher">
-                Want to return?&nbsp;
+                Sign in again?&nbsp;
                 <Link to={ routes.signIn }>Sign In</Link>
               </div>
             </div>
@@ -146,12 +146,12 @@ const ForgotPassword = (props: BasePageProps): JSX.Element => {
           <div className="form-wrapper forgot-password-message">
             <h1>Something is going wrong!</h1>
             <div className="auth-container__title">
-              We have a problem to send a recovery link<br />
+              We weren't able to send a recovery link<br />
               Reason: { reason }
             </div>
             <div className="form__row">
               <div className="form__link form__link_text-center form__link_switcher">
-                Want to return?&nbsp;
+                Sign in again?&nbsp;
                 <Link to={ routes.signIn }>Sign In</Link>
               </div>
             </div>
