@@ -98,15 +98,18 @@ const SignUp = (props: BasePageProps): JSX.Element => {
   };
 
   const onSubmit = async (inputData: any) => {
-    const { email, firstName, lastName, companyName, jobTitle, password, confirmPassword } = inputData;
+    const email = inputData.email.trim()
+    const firstName = inputData.firstName.trim()
+    const lastName = inputData.lastName.trim()
+    const companyName = inputData.companyName.trim()
+    const jobTitle = inputData.jobTitle.trim()
+    const password = inputData.password.trim()
+    const confirmPassword = inputData.confirmPassword.trim()
 
     setShowAcceptTermsError(false);
     setShowUserExistsError(false);
 
-    if (!acceptTerms) {
-      setShowAcceptTermsError(true);
-      return;
-    }
+    if (!acceptTerms) return setShowAcceptTermsError(true);
 
     const { data, status } = await signUp(
       email,
@@ -118,20 +121,9 @@ const SignUp = (props: BasePageProps): JSX.Element => {
       jobTitle,
     );
 
-    if (status === 403) {
-      setShowUserExistsError(true)
-      return;
-    };
+    if (status === 403 || !data) return setShowUserExistsError(true);
 
-    if (data) {
-      contextMethods.setUserName(`${data.user.firstName} ${data.user.lastName}`);
-      contextMethods.setUserEmail(data.user.email);
-      contextMethods.setAccessToken(data.credentials.accessToken);
-      contextMethods.setRefreshToken(data.credentials.refreshToken);
-      contextMethods.setAccessExpMS(data.credentials.accessExpMS);
-      contextMethods.setRefreshExpMS(data.credentials.refreshExpMS);
-      history.push('/dashboard');
-    }
+    return history.push('/sign-in');
   };
 
   return (
