@@ -34,7 +34,7 @@ const DashboardPage = (props: BasePageProps): JSX.Element => {
   const [filters, setFilters] = useState({
     tumourType: [
       {
-        primary: null,
+        primary: [],
         sub: [],
       },
     ],
