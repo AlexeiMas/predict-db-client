@@ -421,7 +421,7 @@ const GeneFilter = ({
                       Gene limit is exceeded
                     </span>
                     <span className="filter-no-data__label">
-                      You can't use greater {MAX_GENE_LIMIT} genes for searching
+                      You can't search for greater than {MAX_GENE_LIMIT} genes.
                     </span>
                   </div>
                 )}
