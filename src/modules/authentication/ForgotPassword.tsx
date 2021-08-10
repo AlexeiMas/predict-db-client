@@ -77,7 +77,7 @@ const ForgotPassword = (props: BasePageProps): JSX.Element => {
 
   return (
     <div className="auth-container">
-      <div className="auth-container__asside">
+      <div className="auth-container__aside">
         <img src={logo} className="auth-container__logo" alt="aside" />
       </div>
 
@@ -120,7 +120,7 @@ const ForgotPassword = (props: BasePageProps): JSX.Element => {
               <div className="form__row">
                 <div className="form__link form__link_text-center form__link_switcher">
                   Remember your password?&nbsp;
-                  <Link to={ routes.signIn }>Sign In</Link>
+                  <Link to={routes.signIn}>Sign In</Link>
                 </div>
               </div>
             </form>
@@ -136,7 +136,7 @@ const ForgotPassword = (props: BasePageProps): JSX.Element => {
             <div className="form__row">
               <div className="form__link form__link_text-center form__link_switcher">
                 Sign in again?&nbsp;
-                <Link to={ routes.signIn }>Sign In</Link>
+                <Link to={routes.signIn}>Sign In</Link>
               </div>
             </div>
           </div>
@@ -147,12 +147,12 @@ const ForgotPassword = (props: BasePageProps): JSX.Element => {
             <h1>Something is going wrong!</h1>
             <div className="auth-container__title">
               We weren't able to send a recovery link<br />
-              Reason: { reason }
+              Reason: {reason}
             </div>
             <div className="form__row">
               <div className="form__link form__link_text-center form__link_switcher">
                 Sign in again?&nbsp;
-                <Link to={ routes.signIn }>Sign In</Link>
+                <Link to={routes.signIn}>Sign In</Link>
               </div>
             </div>
           </div>

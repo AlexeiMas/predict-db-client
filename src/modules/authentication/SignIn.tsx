@@ -83,7 +83,7 @@ const SignIn = (props: BasePageProps): JSX.Element => {
       contextMethods.setAccessExpMS(data.credentials.accessExpMS);
       contextMethods.setRefreshExpMS(data.credentials.refreshExpMS);
       contextMethods.setIsAuthorized(true);
-      history.push('/dashboard');
+      return history.push('/dashboard');
     }
 
     setError(true);
@@ -92,7 +92,7 @@ const SignIn = (props: BasePageProps): JSX.Element => {
 
   return (
     <div className="auth-container">
-      <div className="auth-container__asside">
+      <div className="auth-container__aside">
         <img src={logo} className="auth-container__logo" alt="aside" />
       </div>
 

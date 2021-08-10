@@ -115,7 +115,7 @@ const ResetPassword = (props: BasePageProps): JSX.Element => {
 
   return (
     <div className="auth-container">
-      <div className="auth-container__asside">
+      <div className="auth-container__aside">
         <img src={logo} className="auth-container__logo" alt="aside" />
       </div>
 
@@ -132,17 +132,17 @@ const ResetPassword = (props: BasePageProps): JSX.Element => {
                   type="password"
                   label="Password"
                   variant="outlined"
-                  error={ Boolean(errors?.password) }
-                  { ...form.password }
-                  InputProps={ {
+                  error={Boolean(errors?.password)}
+                  {...form.password}
+                  InputProps={{
                     classes: {
                       notchedOutline: classes.notchedOutline,
                     },
-                  } }
-                  InputLabelProps={ {
+                  }}
+                  InputLabelProps={{
                     className: "form__input",
-                  } }
-                  helperText={ Boolean(errors?.password) && "Password is required" }
+                  }}
+                  helperText={Boolean(errors?.password) && "Password is required"}
                 />
               </div>
               <div className="form__row">
@@ -150,16 +150,16 @@ const ResetPassword = (props: BasePageProps): JSX.Element => {
                   type="password"
                   label="Confirm password"
                   variant="outlined"
-                  error={ Boolean(errors?.confirmPassword) }
-                  { ...form.confirmPassword }
-                  InputProps={ {
+                  error={Boolean(errors?.confirmPassword)}
+                  {...form.confirmPassword}
+                  InputProps={{
                     classes: {
                       notchedOutline: classes.notchedOutline,
                     },
-                  } }
-                  InputLabelProps={ {
+                  }}
+                  InputLabelProps={{
                     className: "form__input",
-                  } }
+                  }}
                   helperText={
                     Boolean(errors?.confirmPassword) && "Passwords mismatch"
                   }
@@ -178,7 +178,7 @@ const ResetPassword = (props: BasePageProps): JSX.Element => {
               <div className="form__row">
                 <div className="form__link form__link_text-center form__link_switcher">
                   Remember your password?&nbsp;
-                  <Link to={ routes.signIn }>Sign In</Link>
+                  <Link to={routes.signIn}>Sign In</Link>
                 </div>
               </div>
             </form>
@@ -190,12 +190,12 @@ const ResetPassword = (props: BasePageProps): JSX.Element => {
             <h1>Something is going wrong!</h1>
             <div className="auth-container__title">
               We cannot finish the reset password procedure.<br />
-              Reason: { reason }
+              Reason: {reason}
             </div>
             <div className="form__row">
               <div className="form__link form__link_text-center form__link_switcher">
                 Sign in again?&nbsp;
-                <Link to={ routes.signIn }>Sign In</Link>
+                <Link to={routes.signIn}>Sign In</Link>
               </div>
             </div>
           </div>

@@ -47,7 +47,7 @@ const DashboardFilters = ({
     setFilters({
       tumourType: [
         {
-          primary: null,
+          primary: [],
           sub: [],
         },
       ],

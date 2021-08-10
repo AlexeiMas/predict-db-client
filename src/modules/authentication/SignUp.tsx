@@ -16,7 +16,6 @@ import { BasePageProps } from "../../shared/models";
 import CustomCheckbox from "shared/components/CustomCheckbox";
 
 import { signUp } from "../../api/auth.api";
-import { useAppContext } from 'context';
 import { routes } from "../../routes";
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
@@ -48,7 +47,6 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 const SignUp = (props: BasePageProps): JSX.Element => {
   titleService.setTitle(props.title);
 
-  const { contextMethods } = useAppContext();
   const classes = useStyles();
   const history = useHistory();
 
@@ -128,7 +126,7 @@ const SignUp = (props: BasePageProps): JSX.Element => {
 
   return (
     <div className="auth-container">
-      <div className="auth-container__asside">
+      <div className="auth-container__aside">
         <img src={ logo } className="auth-container__logo" alt="aside"/>
       </div>
 
