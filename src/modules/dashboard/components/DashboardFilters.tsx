@@ -11,6 +11,7 @@ import ModelFilter from "./filters/ModelFilter";
 import HistoryTypeFilter from "./filters/HistoryFilter";
 import { Button, createStyles, makeStyles } from "@material-ui/core";
 import CloseIcon from "shared/components/Icons/CloseIcon";
+import DataAvailableFilter from './filters/DataAvailableFilter'
 
 interface DashboardFiltersProps {
   filters: FilterModel;
@@ -70,6 +71,7 @@ const DashboardFilters = ({
         proteins: [],
         includeExpressions: false,
       },
+      dataAvailable: []
     });
     setAreFiltersCleared(true);
   };
@@ -85,7 +87,7 @@ const DashboardFilters = ({
             color="primary"
             startIcon={<CloseIcon close={() => { }} />}
             className={classes.button}
-            onClick={ () => clearAllFilters() }
+            onClick={() => clearAllFilters()}
           >
             Clear all filters
           </Button>
@@ -93,6 +95,18 @@ const DashboardFilters = ({
       </div>
 
       <div className="dashboard-filters-content">
+
+        <div className="dashboard-filters__item">
+          <div className="dashboard-filters__filter">
+            <DataAvailableFilter
+              setFilters={setFilters}
+              filters={filters}
+              isClearFilter={areFiltersCleared}
+              setIsClearFilter={setAreFiltersCleared}
+            ></DataAvailableFilter>
+          </div>
+        </div>
+
         <div className="dashboard-filters__item">
           {filters.tumourType.map(
             (element: TumourFilterModel, index: number) => (

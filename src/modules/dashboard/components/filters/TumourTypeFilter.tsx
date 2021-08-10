@@ -78,8 +78,8 @@ const TumourTypeFilter = ({
   const loadDefaultOptions = () => requestFilteredTumours();
 
   const search = MCore.debounce((e: React.ChangeEvent<HTMLInputElement>) => {
-    const search = searchRef.current ? searchRef.current.value : e.target.value;
-    requestFilteredTumours(search.trim());
+    const searchValue = searchRef.current ? searchRef.current.value : e.target.value;
+    requestFilteredTumours(searchValue.trim());
   }, SEARCH_DEBOUNCE);
 
   const prepareTumourOptions = (success: any) => {

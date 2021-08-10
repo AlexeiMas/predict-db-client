@@ -81,6 +81,12 @@ const getApiQuery = (
         }
       });
     }
+
+    if (filters.dataAvailable) {
+      filters.dataAvailable.forEach((value) => {
+        searchQuery += `&dataAvailable=${value}`;
+      })
+    }
   }
 
   if (sort) searchQuery += `&sort=${sort}`;

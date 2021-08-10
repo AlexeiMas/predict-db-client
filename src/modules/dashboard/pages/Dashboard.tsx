@@ -57,6 +57,7 @@ const DashboardPage = (props: BasePageProps): JSX.Element => {
       proteins: [],
       includeExpressions: false,
     },
+    dataAvailable: []
   } as FilterModel);
 
   const [selectedPageIndex, setSelectedPage] = useState(0);

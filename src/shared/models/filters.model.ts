@@ -4,6 +4,8 @@ export interface FilterModel {
   responsesType: ResponsesFilterModel[];
   modelType: string[];
   geneType: GenesFilterModel;
+
+  dataAvailable: string[] | [];
 }
 
 export interface TumourFilterModel {
