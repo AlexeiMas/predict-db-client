@@ -14,8 +14,7 @@ interface DataAvailableFilterProps {
   setIsClearFilter: (state: boolean) => void;
 }
 
-// 'PDC Model Treatment Response'
-const VALUES = ['NGS', 'Patient Treatment History', 'Growth Characteristics', 'Plasma', 'PBMC']
+const VALUES = ['NGS', 'Patient Treatment History', 'Growth Characteristics', 'Plasma', 'PBMC', 'PDC Model Treatment Response']
 
 const SEARCH_DEBOUNCE = 300;
 const CLEAR_AND_FOCUS_DEBOUNCE = 100;
