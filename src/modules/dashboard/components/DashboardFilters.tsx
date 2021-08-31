@@ -97,17 +97,6 @@ const DashboardFilters = ({
       <div className="dashboard-filters-content">
 
         <div className="dashboard-filters__item">
-          <div className="dashboard-filters__filter">
-            <DataAvailableFilter
-              setFilters={setFilters}
-              filters={filters}
-              isClearFilter={areFiltersCleared}
-              setIsClearFilter={setAreFiltersCleared}
-            ></DataAvailableFilter>
-          </div>
-        </div>
-
-        <div className="dashboard-filters__item">
           {filters.tumourType.map(
             (element: TumourFilterModel, index: number) => (
               <div className="dashboard-filters__filter" key={index}>
@@ -165,6 +154,18 @@ const DashboardFilters = ({
             />
           </div>
         </div>
+
+        <div className="dashboard-filters__item">
+          <div className="dashboard-filters__filter">
+            <DataAvailableFilter
+              setFilters={setFilters}
+              filters={filters}
+              isClearFilter={areFiltersCleared}
+              setIsClearFilter={setAreFiltersCleared}
+            ></DataAvailableFilter>
+          </div>
+        </div>
+
       </div>
     </div>
   );

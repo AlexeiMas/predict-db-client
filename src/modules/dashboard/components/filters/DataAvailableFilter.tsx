@@ -169,7 +169,7 @@ const DataAvailableFilter = (({ ...rest }: DataAvailableFilterProps) => {
         <div className="filter__label">
           <span className="filter__label-text">
             Data Available
-            <Icons.InfoIcon title="Selects models by Data available filters." />
+            <Icons.InfoIcon title="Selects models by the type of data available." />
           </span>
           <span className="filter__label-clear" onClick={() => clearFilters()}>Clear</span>
         </div>
@@ -180,7 +180,7 @@ const DataAvailableFilter = (({ ...rest }: DataAvailableFilterProps) => {
               {dataAvailableFilter.length === 0 && <Icons.PlusIcon />}
 
               <span className={`filter-button__label ${dataAvailableFilter.length === 0 || 'selected-gray'}`}>
-                {dataAvailableFilter.length === 0 ? 'Add Model ID' : selectedFilterOptions()}
+                {dataAvailableFilter.length === 0 ? 'Add Data Type' : selectedFilterOptions()}
               </span>
               <div className='filter-button__chevron'>
                 {dpdIsOpened ? <Icons.ArrowDownIcon /> : <Icons.ArrowUpIcon />}

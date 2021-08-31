@@ -34,7 +34,7 @@
     "@typescript-eslint/eslint-plugin": "^4.23.0",
     "@typescript-eslint/parser": "^4.23.0",
     "axios": "^0.21.1",
-    "webpack": "^4.44.2",
+    "webpack": "4.44.2",
     "eslint": "^7.26.0",
     "eslint-plugin-react": "^7.23.2",
     "sass": "^1.32.13"

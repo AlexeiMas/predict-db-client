@@ -35,12 +35,17 @@ const DashboardHeader = (props: DashboardHeaderProps): JSX.Element => {
       <div className="dash-board__logo">
         <a href="https://imagentherapeutics.com/predicttx"><img src={ logo } alt="PredictDb"/></a>
       </div>
-      { profile && <div className="dash-board__profile">
-          <ProfilePopover
-              userName={ profile.name }
-          />
+      <div className="dash-board__right">
+        <div className="dash-board__docs">
+          <a href="https://docs.imagentherapeutics.com">Documentation</a>
+        </div>
+        { profile && <div className="dash-board__profile">
+            <ProfilePopover
+                userName={ profile.name }
+            />
+        </div>
+        }
       </div>
-      }
     </div>
   )
 }
