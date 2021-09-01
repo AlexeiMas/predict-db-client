@@ -1,4 +1,4 @@
-@import 'variables';
+@import "variables";
 
 .drawer {
   &-content {
@@ -65,7 +65,7 @@
         font-size: 12px;
         line-height: 16px;
         padding: 5px 10px;
-        border: 1px solid #EEEEF2;
+        border: 1px solid #eeeef2;
         border-radius: 8px;
         margin: 3px;
         width: 100%;
@@ -116,7 +116,7 @@
     align-items: center;
     width: 45px;
     height: 45px;
-    border: 1px solid #EEEEF2;
+    border: 1px solid #eeeef2;
     border-radius: 4px;
 
     & + & {
@@ -148,6 +148,15 @@
     padding: 30px 50px;
 
     border-bottom: 1px solid #eeeef2;
+  }
+
+  &__right {
+    display: flex;
+  }
+
+  &__docs {
+    margin-right: 50px;
+    margin-top: 10px;
   }
 
   &__content {
@@ -332,7 +341,7 @@
   flex-direction: column;
   width: 100%;
   padding: 25px;
-  border: 1px solid #EEEEF2;
+  border: 1px solid #eeeef2;
   border-radius: 8px;
 
   & + & {
@@ -398,7 +407,7 @@
   display: flex;
   flex-direction: column;
   padding: 25px;
-  border: 1px solid #EEEEF2;
+  border: 1px solid #eeeef2;
   border-radius: 8px;
 
   & + & {
@@ -418,7 +427,6 @@
 
     margin-bottom: 15px;
   }
-
 }
 
 .box {
@@ -435,7 +443,7 @@
 
 .intermediate-box {
   background: rgba(255, 166, 63, 0.1) !important;
-  color: #FFA73F !important;
+  color: #ffa73f !important;
 }
 
 .neutral-box {
@@ -445,7 +453,7 @@
 
 .negative-box {
   background: rgba(249, 98, 98, 0.1) !important;
-  color: #F96262 !important;
+  color: #f96262 !important;
 }
 
 .dashboard-filters {
@@ -460,7 +468,7 @@
     height: auto;
     overflow: visible;
     padding-bottom: 20px;
-    border-bottom: 1px solid #D7D7E2;
+    border-bottom: 1px solid #d7d7e2;
   }
 
   &-title {
@@ -501,7 +509,7 @@
     display: flex;
     flex-direction: column;
     width: 425px;
-    border: 1px solid #D7D7E2;
+    border: 1px solid #d7d7e2;
     border-radius: 8px;
 
     &.genes-filter {
@@ -530,12 +538,12 @@
       & + & {
         &:before {
           position: absolute;
-          content: '';
+          content: "";
           top: 0;
           width: 90%;
           left: 50%;
           height: 1px;
-          background: #D7D7E2;
+          background: #d7d7e2;
           transform: translateX(-50%);
         }
       }
@@ -629,7 +637,7 @@
       }
 
       &.genes-filter:not(:first-child) {
-        border-top: 1px solid #EEEEF2;
+        border-top: 1px solid #eeeef2;
         padding-top: 10px;
       }
     }
@@ -641,12 +649,12 @@
       padding: 12px 15px;
 
       &:hover {
-        background: #F9F9FB;
+        background: #f9f9fb;
         cursor: pointer;
       }
 
       &.selected {
-        background: #F9F9FB;
+        background: #f9f9fb;
       }
     }
 
@@ -667,7 +675,7 @@
       margin-top: 15px;
 
       padding: 12px 15px;
-      border: 1px solid #EEEEF2;
+      border: 1px solid #eeeef2;
       border-radius: 8px;
       font-size: 16px;
       line-height: 120%;
@@ -748,7 +756,7 @@
     display: flex;
     align-items: center;
 
-    background: #EEEEF2;
+    background: #eeeef2;
     border-radius: 8px;
     padding: 8px 10px;
     font-size: 12px;
@@ -839,7 +847,7 @@
     display: flex;
     align-items: center;
 
-    background: #EEEEF2;
+    background: #eeeef2;
     border-radius: 8px;
     padding: 8px 10px;
     font-size: 12px;

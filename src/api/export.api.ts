@@ -36,7 +36,7 @@ const getApiQuery = (filters?: FilterModel): string => {
       filters.tumourType.forEach((item) => {
         if (item.primary) {
           if (searchQuery !== "?") searchQuery += "&";
-          searchQuery += `tumourType=${item.primary}`;
+          item.primary.map(i => searchQuery += `tumourType=${i}`)
         }
         if (item.sub) {
           item.sub.forEach((value) => {
@@ -87,7 +87,7 @@ const getApiQuery = (filters?: FilterModel): string => {
 
 export const exportData = (filters?: FilterModel) => {
   return api
-    .get("/export" + getApiQuery(filters), { responseType: "blob" })
+    .get("/export" + getApiQuery(filters), { responseType: "blob", timeout: 90000 })
     .then((response) => {
       fileDownload(
         response.data,

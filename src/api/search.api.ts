@@ -42,7 +42,7 @@ const getApiQuery = (
     if (filters.tumourType) {
       filters.tumourType.forEach((item) => {
         if (item.primary) {
-          searchQuery += `&tumourType=${item.primary}`;
+          item.primary.map(p => searchQuery += `&tumourType=${p}`);
         }
         if (item.sub) {
           item.sub.forEach((value) => {
@@ -80,6 +80,12 @@ const getApiQuery = (
           });
         }
       });
+    }
+
+    if (filters.dataAvailable) {
+      filters.dataAvailable.forEach((value) => {
+        searchQuery += `&dataAvailable=${value}`;
+      })
     }
   }
 

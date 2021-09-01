@@ -29,6 +29,21 @@ export const getFilteredData = (
   );
 };
 
+interface GetFilteredTumoursPSMixedParams {
+  search: string;
+  limit?: number;
+  offset?: number;
+}
+
+export const getFilteredTumoursPSMixed = (params: GetFilteredTumoursPSMixedParams) => {
+  const search = new URLSearchParams();
+  const searchString = params.search.trim();
+  if (searchString) search.append('search', searchString)
+  if (params.limit && Number.isFinite(params.limit)) search.append('limit', params.limit.toString())
+  if (params.offset && Number.isFinite(params.offset)) search.append('offset', params.offset.toString())
+  return api.get(`/filters/tumours/mixed-primary-sub?${search.toString()}`)
+}
+
 export const getModelFilteredData = (search?: string) => {
   const requestQuery = search ? `?search=${search}` : "";
   return api.get(`/filters/models/${requestQuery}`);

@@ -19,7 +19,7 @@ interface ModelFilterProps {
 }
 
 /* TODO: Need to refactor this component to use universal functions instead of one-to-one binding each filter mechanic.
-*        Design makes this difficult to implement at the beginning according to not consistent logic of filters behaviour.
+*        Design makes this difficult to implement at the beginning according to not consistent logic of filters behavior.
 * */
 const ModelFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter }: ModelFilterProps): JSX.Element => {
   const [showModelDropdown, setShowModelDropdown] = useState(false);
@@ -82,18 +82,18 @@ const ModelFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter }: M
 
   const selectedFilterOptions = (): JSX.Element => {
     return (<div className="filter-tags">
-      { modelFilter.map((item: string, index: number) => (
-        <div className="filter__tag" key={ index }>
-          <span>{ item }</span>
+      {modelFilter.map((item: string, index: number) => (
+        <div className="filter__tag" key={index}>
+          <span>{item}</span>
           <div className="close-icon">
-            <CloseIcon close={ () => removeOption(index) }/>
+            <CloseIcon close={() => removeOption(index)} />
           </div>
         </div>
       ))
       }
 
-      <div className="filter-tags__new-btn" onClick={ () => setShowModelDropdown(true) }>
-        <GreenPlusIcon/>
+      <div className="filter-tags__new-btn" onClick={() => setShowModelDropdown(true)}>
+        <GreenPlusIcon />
       </div>
     </div>)
   }
@@ -149,56 +149,56 @@ const ModelFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter }: M
   return (
     <>
       <div
-        className={ "filter__backdrop " + ((showModelDropdown) ? 'active' : '') }
-        onClick={ () => dropdownBgClick() }/>
+        className={"filter__backdrop " + ((showModelDropdown) ? 'active' : '')}
+        onClick={() => dropdownBgClick()} />
 
       <div className="filter">
         <div className="filter__label">
           <span className="filter__label-text">
             Model ID
-            <InfoIcon title="Selects models by their PTX id."/>
+            <InfoIcon title="Selects models by their PTX id." />
           </span>
-          <span className="filter__label-clear" onClick={ () => clearFilters() }>Clear</span>
+          <span className="filter__label-clear" onClick={() => clearFilters()}>Clear</span>
         </div>
 
         <div className="filter-button">
-          {<div className={ `filter-button-row ${ modelFilter.length ? 'no-hover' : '' }` }>
-            <div className="filter-button-toggle filter-button-model" onClick={ () => onFilterButtonClick() }>
-              { !canShowModelFilter() && <PlusIcon/> }
+          {<div className={`filter-button-row ${modelFilter.length ? 'no-hover' : ''}`}>
+            <div className="filter-button-toggle filter-button-model" onClick={() => onFilterButtonClick()}>
+              {!canShowModelFilter() && <PlusIcon />}
 
-              <span className={ `filter-button__label ${ !modelFilter ? 'selected-gray' : '' }` }>
-                    { canShowModelFilter() ? selectedFilterOptions() : 'Add Model ID' }
+              <span className={`filter-button__label ${!modelFilter ? 'selected-gray' : ''}`}>
+                {canShowModelFilter() ? selectedFilterOptions() : 'Add Model ID'}
               </span>
               <div className='filter-button__chevron'>
-                { showModelDropdown ? <ArrowDownIcon/> : <ArrowUpIcon/> }
+                {showModelDropdown ? <ArrowDownIcon /> : <ArrowUpIcon />}
               </div>
             </div>
 
-            <div className={ "filter-menu filter-menu-model " + (showModelDropdown ? 'opened' : '') }>
-              { preloader && <Preloader/> }
+            <div className={"filter-menu filter-menu-model " + (showModelDropdown ? 'opened' : '')}>
+              {preloader && <Preloader />}
 
               <div className="filter-menu-header">
                 <div className="filter-menu__label">Model ID</div>
                 <input type="text"
-                       className="filter-menu__search"
-                       placeholder="Search by Model ID"
-                       onChange={ (event: ChangeEvent<HTMLInputElement>) => searchHandler(event.target.value) }
+                  className="filter-menu__search"
+                  placeholder="Search by Model ID"
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => searchHandler(event.target.value)}
                 />
               </div>
 
-              { !preloader && filterOptions && <DropdownMenu items={ filterOptions }
-                                                             selectOption={ selectOption }
-                                                             multiSelect={ true }
-              /> }
+              {!preloader && filterOptions && <DropdownMenu items={filterOptions}
+                selectOption={selectOption}
+                multiSelect={true}
+              />}
 
-              { !preloader && !filterOptions.length && <div className="filter-no-data">
-                  <span className="filter-no-data__title">No results found</span>
-                  <span className="filter-no-data__label">
-                      No results were found for your search, so try changing the search or filtering parameters and try again.
-                  </span>
-              </div> }
+              {!preloader && !filterOptions.length && <div className="filter-no-data">
+                <span className="filter-no-data__title">No results found</span>
+                <span className="filter-no-data__label">
+                  No results were found for your search, so try changing the search or filtering parameters and try again.
+                </span>
+              </div>}
             </div>
-          </div> }
+          </div>}
         </div>
 
       </div>

@@ -4,11 +4,14 @@ export interface FilterModel {
   responsesType: ResponsesFilterModel[];
   modelType: string[];
   geneType: GenesFilterModel;
+
+  dataAvailable: string[] | [];
 }
 
 export interface TumourFilterModel {
-  primary: string | null;
+  primary: string[];
   sub: string[];
+  [key: string]: any;
 }
 
 export interface ResponsesFilterModel {

@@ -421,7 +421,7 @@ const GeneFilter = ({
                       Gene limit is exceeded
                     </span>
                     <span className="filter-no-data__label">
-                      You can't use greater {MAX_GENE_LIMIT} genes for searching
+                      You can't search for greater than {MAX_GENE_LIMIT} genes.
                     </span>
                   </div>
                 )}
@@ -441,7 +441,7 @@ const GeneFilter = ({
               label={
                 <div className="include-expressions__label">
                   Enable RNA expression in search
-                  <InfoIcon title="Include expressions (RNA) data in your search, off by default. Exporting data can take some time." />
+                  <InfoIcon title="Include expressions (RNA) data in your search, off by default. Exporting data can take some time. Whilst we have broad coverage of most protein-coding genes, some genes may be absent in results due to low expression levels." />
                 </div>
               }
             />

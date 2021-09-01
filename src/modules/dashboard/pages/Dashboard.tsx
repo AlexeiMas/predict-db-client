@@ -34,7 +34,7 @@ const DashboardPage = (props: BasePageProps): JSX.Element => {
   const [filters, setFilters] = useState({
     tumourType: [
       {
-        primary: null,
+        primary: [],
         sub: [],
       },
     ],
@@ -57,6 +57,7 @@ const DashboardPage = (props: BasePageProps): JSX.Element => {
       proteins: [],
       includeExpressions: false,
     },
+    dataAvailable: []
   } as FilterModel);
 
   const [selectedPageIndex, setSelectedPage] = useState(0);

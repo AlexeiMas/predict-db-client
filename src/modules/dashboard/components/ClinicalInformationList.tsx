@@ -115,7 +115,7 @@ const ClinicalInformationList = ({
             </div>
           </div>
           <div className="drawer-tabs-row">
-            <div className="drawer-tabs-row__label">Smoking history</div>
+            <div className="drawer-tabs-row__label">Smocking history</div>
             <div className="drawer-tabs-row__value">
               {clinicalInfo.smokingHistory}
             </div>

@@ -38,8 +38,12 @@ export const getResponsesDetails = (
 
   if (primaries.length) {
     primaries.forEach((item) => {
-      if (item)
-        query += query.length ? `&tumourType=${item}` : `?tumourType=${item}`;
+      if (item) {
+        const tumours = Array.isArray(item)
+          ? item.map(i => `tumourType=${i}`)
+          : `tumourType=${item}`
+        query += query.length ? `&${tumours}` : `?${tumours}`;
+      }
     });
   }
 
@@ -90,5 +94,5 @@ export const getNgsDetails = (
       : `?includeExpressions=${includeExpressions}`;
   }
 
-  return api.get(`/details/ngs/${modelId}${query}`, { timeout: 90000 });
+  return api.get(`/details/ngs/${modelId}${query}`, { timeout: 30000 });
 };
