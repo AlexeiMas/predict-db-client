@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import DashboardHeader from "../components/DashboardHeader";
 import DashboardSearch from "../components/DashboardSearch";
@@ -65,8 +65,18 @@ const DashboardPage = (props: BasePageProps): JSX.Element => {
     {} as ClinicalSampleModel
   );
 
+  const filtersRef = useRef<FilterModel>();
+
   useEffect(() => {
-    if (!preloader) getRecords(selectedPageIndex, defaultPageSize, filters, sort, order);
+    filtersRef.current = filters;
+  });
+
+  const prevFilters = filtersRef.current;
+
+  useEffect(() => {
+    const selectedPage = filters === prevFilters ? selectedPageIndex : 0;
+    setSelectedPage(selectedPage);
+    if (!preloader) getRecords(selectedPage, defaultPageSize, filters, sort, order);
   }, [filters, selectedPageIndex, sort, order]); // eslint-disable-line
 
   const getRecords = async (
