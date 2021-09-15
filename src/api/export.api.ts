@@ -28,20 +28,29 @@ const getApiQuery = (filters?: FilterModel): string => {
       });
 
       if (filters.geneType.includeExpressions !== null) {
-        searchQuery += `&includeExpressions=${filters.geneType.includeExpressions}`;
+        if (searchQuery !== "?") searchQuery += "&";
+        searchQuery += `includeExpressions=${filters.geneType.includeExpressions}`;
       }
     }
 
     if (filters.tumourType) {
       filters.tumourType.forEach((item) => {
         if (item.primary) {
-          if (searchQuery !== "?") searchQuery += "&";
-          item.primary.map(i => searchQuery += `tumourType=${i}`)
+          if (searchQuery !== "?") {
+            item.primary.map(p => searchQuery += `&tumourType=${p}`);
+          } else {
+            for (let i = 0; i < item.length; i++) {
+              if (i === 0) {
+                searchQuery += `tumourType=${item.primary[i]}`;
+              } else {
+                searchQuery += `&tumourType=${item.primary[i]}`;
+              }
+            }
+          }
         }
         if (item.sub) {
           item.sub.forEach((value) => {
-            if (searchQuery !== "?") searchQuery += "&";
-            searchQuery += `tumourSubType=${value}`;
+            searchQuery += `&tumourSubType=${value}`;
           });
         }
       });
