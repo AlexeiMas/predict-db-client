@@ -110,9 +110,14 @@ const DashboardPage = (props: BasePageProps): JSX.Element => {
     toggleFilter(value);
   };
 
+  const CenteredPreloader = () => {
+    const style: React.CSSProperties = { position: 'fixed', top: 0, left: 0, width: '100%', bottom: 0, zIndex: 999 };
+    return <div style={style} ><Preloader /></div>
+  }
+
   return (
     <div className="dash-board">
-      {preloader && <Preloader />}
+      {preloader && <CenteredPreloader />}
 
       <DashboardHeader />
 

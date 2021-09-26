@@ -93,6 +93,7 @@ const ForgotPassword = (props: BasePageProps): JSX.Element => {
                 <TextField
                   label="Email address"
                   type="email"
+                  autoComplete="email"
                   variant="outlined"
                   error={Boolean(errors?.email)}
                   {...form.email}

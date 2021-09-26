@@ -1,13 +1,13 @@
 import React from 'react';
 import Tooltip from "@material-ui/core/Tooltip";
-import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
 
 interface CustomTooltipProps {
   children: React.ReactElement<any, any>;
   title: string | NonNullable<React.ReactNode>;
 }
 
-const theme = createMuiTheme({
+const theme = createTheme({
   overrides: {
     MuiTooltip: {
       tooltip: {

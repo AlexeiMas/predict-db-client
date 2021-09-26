@@ -107,6 +107,7 @@ const SignIn = (props: BasePageProps): JSX.Element => {
               <TextField
                 label="Email address"
                 type="email"
+                autoComplete="email"
                 variant="outlined"
                 error={Boolean(errors?.email)}
                 {...form.email}
@@ -126,6 +127,7 @@ const SignIn = (props: BasePageProps): JSX.Element => {
                 label="Password"
                 variant="outlined"
                 type="password"
+                autoComplete="current-password"
                 error={Boolean(errors?.password)}
                 {...form.password}
                 InputProps={{
