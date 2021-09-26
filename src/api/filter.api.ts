@@ -7,51 +7,43 @@ export const getFilteredData = (
   search?: string,
   primaryFilter?: string
 ) => {
-  const requestQuery = search ? `?search=${search}` : "";
-  const primaryQueryValue = primaryFilter ? primaryFilter : "";
-  let primaryQuery = "";
+  const urlSearchParams = new URLSearchParams();
+  if (search?.length) urlSearchParams.append('search', `${search}`)
 
   /* We need to apply primary filter only to the sub filters.
    * Because only these type of filters are related to each other.  */
+  if (filterSubtype === "sub" && primaryFilter?.length) urlSearchParams.append('primary', `${primaryFilter}`)
 
-  if (filterSubtype === "sub") {
-    if (search) {
-      primaryQuery += `&primary=${primaryQueryValue}`;
-    } else {
-      primaryQuery = `?primary=${primaryQueryValue}`;
-    }
-
-    primaryQuery = primaryQuery.trim();
-  }
-
-  return api.get(
-    `/filters/${filterType}/${filterSubtype}${requestQuery}${primaryQuery}`.trim()
-  );
+  const searchString = urlSearchParams.toString()
+  const meQuery = searchString.length ? `?${searchString}` : ""
+  return api.get(`/filters/${filterType}/${filterSubtype}${meQuery}`);
 };
 
-interface GetFilteredTumoursPSMixedParams {
-  search: string;
-  limit?: number;
-  offset?: number;
-}
-
+interface GetFilteredTumoursPSMixedParams { search: string; limit?: number; offset?: number; }
 export const getFilteredTumoursPSMixed = (params: GetFilteredTumoursPSMixedParams) => {
-  const search = new URLSearchParams();
-  const searchString = params.search.trim();
-  if (searchString) search.append('search', searchString)
-  if (params.limit && Number.isFinite(params.limit)) search.append('limit', params.limit.toString())
-  if (params.offset && Number.isFinite(params.offset)) search.append('offset', params.offset.toString())
-  return api.get(`/filters/tumours/mixed-primary-sub?${search.toString()}`)
+  const urlSearchParams = new URLSearchParams();
+  if (params.search.trim()) urlSearchParams.append('search', `${params.search.trim()}`)
+  if (params.limit && Number.isFinite(params.limit)) urlSearchParams.append('limit', `${params.limit}`)
+  if (params.offset && Number.isFinite(params.offset)) urlSearchParams.append('offset', `${params.offset}`)
+  return api.get(`/filters/tumours/mixed-primary-sub?${urlSearchParams.toString()}`)
 }
 
 export const getModelFilteredData = (search?: string) => {
-  const requestQuery = search ? `?search=${search}` : "";
+  const urlSearchParams = new URLSearchParams();
+  if (search?.length) urlSearchParams.append('search', `${search}`);
+  const searchString = urlSearchParams.toString()
+  const requestQuery = searchString.length ? `?${searchString}` : ""
   return api.get(`/filters/models/${requestQuery}`);
 };
 
-export const getGeneFilteredData = (search?: string, offset: number = 0) => {
-  const requestQuery = search
-    ? `?search=${search}&limit=${process.env.REACT_APP_GENE_PAGE_LIMIT}&offset=${offset}`
-    : "";
+export const getGeneFilteredData = (search?: string[], offset: number = 0) => {
+  const urlSearchParams = new URLSearchParams();
+  if (search?.length) {
+    search.forEach(value => urlSearchParams.append('search', `${value}`))
+    urlSearchParams.append('limit', `${process.env.REACT_APP_GENE_PAGE_LIMIT}`)
+    urlSearchParams.append('offset', `${offset}`)
+  }
+  const searchString = urlSearchParams.toString();
+  const requestQuery = searchString.length ? `?${searchString}` : "";
   return api.get(`/filters/genes/${requestQuery}`);
 };
