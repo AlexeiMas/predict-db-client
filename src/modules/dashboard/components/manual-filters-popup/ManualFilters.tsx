@@ -5,9 +5,8 @@ import style from './ManualFilters.module.scss'
 import * as Icons from '../../../../assets/images';
 import InfoIcon from "../../../../shared/components/Icons/InfoIcon";
 import * as filtersApi from "../../../../api/filter.api";
-import CustomCheckbox from "shared/components/CustomCheckbox";
 
-export type Name = "Tumour Type" | "Patient Treatment History" | "PDS Model Treatment Response" | "Model ID" | "Data Available" | "Genes"
+export type Name = "Tumour Type" | "Patient Treatment History" | "PDS Model Treatment Response" | "Model ID" | "Data Available"
 export const VALUES = ['NGS', 'Patient Treatment History', 'Growth Characteristics', 'Plasma', 'PBMC', 'PDC Model Treatment Response']
 
 export const TEST_DATA = {
@@ -22,7 +21,6 @@ console.log(JSON.stringify({ TEST_DATA }, null, 2));
 
 const DISPLAY_NAME = 'MANUAL_FILTERS'
 const INITIAL_STATE = {
-  "Genes": [],
   "Model ID": [],
   "Tumour Type": [],
   "Data Available": [],
@@ -32,24 +30,6 @@ const INITIAL_STATE = {
 
 const CloseBtn = (({ ...rest }) => (<Icons.CloseIcon height={24} width={24} onClick={rest.onClose} className={style.closeIcon} />))
 
-const RNAExpressionForFilters = (({ ...rest }) => {
-  return (
-    <label className={style.checkboxLabel}>
-      <div className="include-expressions__label">
-        Enable RNA expression for filters
-        <InfoIcon
-          title="Include expressions (RNA) data in your filters, off by default.
-            Exporting data can take some time. Whilst we have broad coverage of most protein-coding genes,
-            some genes may be absent in results due to low expression levels."
-        />
-      </div>
-      <CustomCheckbox
-        checked={rest.includeExpressions}
-        onChange={rest.toggleIncludeExpressions}
-      />
-    </label>
-  )
-})
 
 const TextAreaLikeInput = (({ ...rest }) => {
   const name = rest.name.trim();
@@ -61,7 +41,6 @@ const TextAreaLikeInput = (({ ...rest }) => {
   )
 })
 
-interface GeneInterface { proteins: string[]; aliases: string[]; genes: string[]; }
 interface TumourInterface { primary: string[]; sub: string[]; }
 interface ResponsesInterface { treatment: string[]; response: string[]; }
 interface HistoryInterface { treatment: string[]; response: string[]; }
@@ -82,10 +61,8 @@ const ManuallyFiltersForm = (({ ...rest }) => {
   const [tumourType, setTumourType] = React.useState({ primary: [], sub: [] } as TumourInterface)
   const [responsesType, setResponsesType] = React.useState({ treatment: [], response: [] } as ResponsesInterface)
   const [historyType, setHistoryType] = React.useState({ treatment: [], response: [] } as HistoryInterface)
-  const [geneType, setGeneType] = React.useState({ genes: [], aliases: [], proteins: [], } as GeneInterface);
   const [modelType, setModelType] = React.useState([] as ModelType);
   const [dataAvailable, setDataAvailable] = React.useState([] as DataAvailableType);
-  const [includeExpressions, setIncludeExpressions] = React.useState(false)
 
 
   const closeModal = () => {
@@ -119,34 +96,7 @@ const ManuallyFiltersForm = (({ ...rest }) => {
     return cancel;
   }
 
-  const processGenes = (value: string[]) => {
-    let canceled = false;
-    const cancel = ((reason: any) => { canceled = true; console.log('[ reason ]', reason); })
-    const processGenesResponseData = (data: GeneInterface) => {
-      const processed = Object.entries(data).reduce(
-        (acc, [key, value]) => {
-          const type = key as 'genes' | 'proteins' | 'aliases'
-          const res = value as string[]
-          if (['genes', 'proteins', 'aliases'].includes(type) && res.length) {
-            acc[type] = [...res, ...acc[type]].reduce(uniq, []) as string[];
-          }
-          return acc;
-        },
-        { genes: [], proteins: [], aliases: [] } as GeneInterface
-      )
 
-      console.log(JSON.stringify({ geneType: processed }, null, 2));
-      setGeneType(processed)
-    }
-    if (!canceled) {
-      filtersApi.getGeneFilteredDataByArray(value)
-        .then(success => canceled || success.data || rejectNoDataResponse())
-        .then(processGenesResponseData)
-        .catch(cancel)
-        .finally(() => canceled || console.log('[ finished ] ::' + processGenes.name))
-    }
-    return cancel;
-  }
 
   const rejectNoDataResponse = (() => Promise.reject(new Error("No data in search response")));
 
@@ -264,7 +214,6 @@ const ManuallyFiltersForm = (({ ...rest }) => {
   }
 
   const processors = {
-    "Genes": MCore.debounce(processGenes, 350),
     "Model ID": MCore.debounce(processModelID, 350),
     "Tumour Type": MCore.debounce(processTumourType, 350),
     "Data Available": MCore.debounce(processDataAvailable, 350),
@@ -296,10 +245,8 @@ const ManuallyFiltersForm = (({ ...rest }) => {
         tumourType: [tumourType],
         responsesType: [responsesType],
         historyType: [historyType],
-        geneType: { ...geneType, includeExpressions },
         modelType: [...modelType],
         dataAvailable: [...dataAvailable],
-        includeExpressions
       }
       rest.setFilters(updatedFilters)
     }
@@ -320,8 +267,6 @@ const ManuallyFiltersForm = (({ ...rest }) => {
         <TextAreaLikeInput value={state["PDS Model Treatment Response"]} onChange={updateState} name="PDS Model Treatment Response" labelText="PDS Model Treatment Response" />
         <TextAreaLikeInput value={state["Model ID"]} onChange={updateState} name="Model ID" labelText="Model ID" />
         <TextAreaLikeInput value={state["Data Available"]} onChange={updateState} name="Data Available" labelText="Data Available" />
-        <TextAreaLikeInput value={state["Genes"]} onChange={updateState} name="Genes" labelText="Genes" />
-        <RNAExpressionForFilters includeExpressions={includeExpressions} toggleIncludeExpressions={() => setIncludeExpressions(!includeExpressions)} />
         <div className={style.formControls}>
           <button type="button" onClick={handleClick}>Apply</button>
           <button type="button" onClick={closeModal}>Cancel</button>
