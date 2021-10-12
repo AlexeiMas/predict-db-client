@@ -1,0 +1,1 @@
+export { ManualFilters as default } from './ManualFilters'

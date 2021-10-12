@@ -85,21 +85,20 @@ const GeneFilter = ({
     setShowGeneDropdown(false);
     clearSearchInput();
   };
-  const search = async (value: string[]): Promise<void> => {
+  const search = async (value: string): Promise<void> => {
     setHideShowMore(false);
     try {
       setPreloader(true);
       const { data } = await getGeneFilteredData(value);
       if (!data) throw new Error("No data in search response");
-      const stub = { genes: [], aliases: [], proteins: [], includeExpressions: false }
-      setFilterOptions({ stub, ...data });
+      setFilterOptions(data);
       const showMoreIsHidden =
         (data.genesCount >= GENE_PAGE_LIMIT ||
           data.aliasesCount >= GENE_PAGE_LIMIT ||
           data.proteinsCount >= GENE_PAGE_LIMIT) === false;
       setHideShowMore(showMoreIsHidden);
-    } catch (error) {
-      console.log('[' + search.name + '][ERROR]', error);
+    } catch (e) {
+      console.log(e);
     } finally {
       setPreloader(false);
       setOffset(offset + GENE_PAGE_LIMIT);
@@ -108,7 +107,7 @@ const GeneFilter = ({
   const showMore = async (): Promise<void> => {
     const value = document.querySelector<HTMLInputElement>(
       ".genes-filter input"
-    )!.value.split(',').map((s?: string) => (s || '').trim()).filter(Boolean);
+    )!.value;
     try {
       setPreloader(true);
       const { data } = await getGeneFilteredData(value, offset);
@@ -146,8 +145,7 @@ const GeneFilter = ({
     if (event.target.value) setShowGeneDropdown(true);
   };
   const onChangeFilterQuery = (event: any): void => {
-    const value = event.target.value.split(',').map((s?: string) => (s || '').trim()).filter(Boolean)
-    searchHandler(value);
+    searchHandler(event.target.value);
     if (!event.target.value) setShowGeneDropdown(false);
     if (event.target.value) setShowGeneDropdown(true);
   };
@@ -378,9 +376,9 @@ const GeneFilter = ({
                     filterOptions.aliases.length > 0 ||
                     filterOptions.proteins.length > 0) &&
                   filters.geneType.genes.length +
-                  filters.geneType.aliases.length +
-                  filters.geneType.proteins.length <
-                  MAX_GENE_LIMIT && (
+                    filters.geneType.aliases.length +
+                    filters.geneType.proteins.length <
+                    MAX_GENE_LIMIT && (
                     <>
                       <DropdownGenesMenu
                         items={filterOptions}
@@ -418,15 +416,15 @@ const GeneFilter = ({
                   filters.geneType.aliases.length +
                   filters.geneType.proteins.length >=
                   MAX_GENE_LIMIT && (
-                    <div className="filter-no-data">
-                      <span className="filter-no-data__title">
-                        Gene limit is exceeded
-                      </span>
-                      <span className="filter-no-data__label">
-                        You can't search for greater than {MAX_GENE_LIMIT} genes.
-                      </span>
-                    </div>
-                  )}
+                  <div className="filter-no-data">
+                    <span className="filter-no-data__title">
+                      Gene limit is exceeded
+                    </span>
+                    <span className="filter-no-data__label">
+                      You can't search for greater than {MAX_GENE_LIMIT} genes.
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           }

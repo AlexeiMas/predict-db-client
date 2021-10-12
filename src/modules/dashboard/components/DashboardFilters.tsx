@@ -12,6 +12,7 @@ import HistoryTypeFilter from "./filters/HistoryFilter";
 import { Button, createStyles, makeStyles } from "@material-ui/core";
 import CloseIcon from "shared/components/Icons/CloseIcon";
 import DataAvailableFilter from './filters/DataAvailableFilter'
+import ManualFilters from './manual-filters-popup'
 
 interface DashboardFiltersProps {
   filters: FilterModel;
@@ -76,6 +77,8 @@ const DashboardFilters = ({
     setAreFiltersCleared(true);
   };
 
+  const callbackToUpdateFilters = (callbackFilters: any) => setFilters(callbackFilters)
+
   return (
     <div className={"dashboard-filters " + (opened ? "opened" : "")}>
       <div className="dashboard-filters-title">
@@ -91,6 +94,15 @@ const DashboardFilters = ({
           >
             Clear all filters
           </Button>
+          <ManualFilters
+            setFilters={setFilters}
+            filters={filters}
+            isClearFilter={areFiltersCleared}
+            setIsClearFilter={setAreFiltersCleared}
+
+            callbackToUpdateFilters={callbackToUpdateFilters}
+            target={document.getElementById('MANUAL_FILTERS_TARGET_ELEMENT')}
+          />
         </div>
       </div>
 
