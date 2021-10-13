@@ -62,11 +62,7 @@ const useStyles = makeStyles(() =>
 const GENES_FILTER_INPUT_CLASS_NAME = ".genes-filter input"
 
 /* cSpell: disable */
-export const TEST_GENES_STRING = [
-  'TAZ', 'LTA', 'WIZ', 'DPT', 'DST', 'EMD', 'MAK', 'NIN', 'NNT',
-  'NP', 'LF', 'XR', 'LW', 'VP', 'PP', 'Y2', 'H6', 'TR', 'DB',
-  'Q5JTD0', 'Q01664', 'Q8WW62', 'Q96B21', 'Q9Y2Y6', 'Q5T0D9',
-].join(','); /* eslint-disable-line */
+export const TEST_GENES_STRING = ['Y2', 'H6', 'TR', 'DB', 'Q5JTD0', 'Q01664', 'Q8WW62', 'Q96B21', 'Q9Y2Y6', 'Q5T0D9',].join(','); /* eslint-disable-line */
 
 console.log('[ TEST_GENES_STRING ]', TEST_GENES_STRING);
 
@@ -85,36 +81,50 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
 
   const dropdownBgClick = (): void => { setShowGeneDropdown(false); clearSearchInput(); };
 
-  const searchInputState = React.useRef([])
+  const prepare = (value: string[]) => value.flat(Infinity).map(i => i.trim()).filter(Boolean)
 
   const search = async (value: string[]): Promise<void> => {
     setHideShowMore(false);
     try {
-      setPreloader(true);
-      const { data } = await getGeneFilteredDataByArray(value);
-      if (!data) throw new Error("No data in search response");
       const stub = { genes: [], aliases: [], proteins: [], includeExpressions: false }
-      const updatedFilterOptions = { ...stub, ...data }
-      const processed = Object.entries(updatedFilterOptions).reduce(
-        (acc, [key, value]) => {
-          const type = key as 'genes' | 'proteins' | 'aliases'
-          const res = value as string[]
-          if (['genes', 'proteins', 'aliases'].includes(type) && res.length) {
-            const joined = [...res, ...acc.geneType[type]] as string[];
-            const uniq = joined.reduce((acc: string[], i: string) => [...acc, ...(acc.includes(i) ? [] : [i])], [])
-            acc.geneType[type] = uniq as string[];
-          }
-          return acc;
-        },
-        { ...filters }
-      )
-      setFilters({ ...filters, ...processed })
-      setFilterOptions(updatedFilterOptions);
+      const prepared = prepare(value)
+
+      if (prepared.length > 0) {
+        setPreloader(true);
+        const { data } = await getGeneFilteredDataByArray(prepared);
+        if (!data) throw new Error("No data in search response");
+        const updatedFilterOptions = { ...stub, ...data }
+        const processed = Object.entries(updatedFilterOptions).reduce(
+          (acc, [key, item]) => {
+            const type = key as 'genes' | 'proteins' | 'aliases'
+            const res = item as string[]
+            if (['genes', 'proteins', 'aliases'].includes(type) && res.length) {
+              const joined = [...res, ...acc.geneType[type]] as string[];
+              const uniq = joined.reduce((acc: string[], i: string) => [...acc, ...(acc.includes(i) ? [] : [i])], [])
+              acc.geneType[type] = uniq as string[];
+            }
+            return acc;
+          },
+          { ...filters }
+        )
+
+        setFilterOptions(updatedFilterOptions);
+        const showMoreIsHidden =
+          (data.genesCount >= GENE_PAGE_LIMIT ||
+            data.aliasesCount >= GENE_PAGE_LIMIT ||
+            data.proteinsCount >= GENE_PAGE_LIMIT) === false;
+        setHideShowMore(showMoreIsHidden);
+        debounceSetFilters({ ...filters, ...processed })
+        return
+      }
+      setFilterOptions(stub);
       const showMoreIsHidden =
-        (data.genesCount >= GENE_PAGE_LIMIT ||
-          data.aliasesCount >= GENE_PAGE_LIMIT ||
-          data.proteinsCount >= GENE_PAGE_LIMIT) === false;
+        (stub.genes.length >= GENE_PAGE_LIMIT ||
+          stub.aliases.length >= GENE_PAGE_LIMIT ||
+          stub.proteins.length >= GENE_PAGE_LIMIT) === false;
       setHideShowMore(showMoreIsHidden);
+      debounceSetFilters({ ...filters, geneType: { ...stub } })
+      return
     } catch (error) {
       console.log('[' + search.name + '][ERROR]', error);
     } finally {
@@ -123,6 +133,7 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
     }
   };
 
+  const uniq = (acc: string[], item: string) => [...acc, ...(acc.includes(item) ? [] : [item])]
 
   const showMore = async (): Promise<void> => {
     const value = document.querySelector<HTMLInputElement>(GENES_FILTER_INPUT_CLASS_NAME)!.value.split(',').map((s?: string) => (s || '').trim()).filter(Boolean);
@@ -134,15 +145,15 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
       const updated = {
         genes:
           data.genes.length > 0
-            ? [...filterOptions.genes, ...data.genes]
+            ? [...filterOptions.genes, ...data.genes].reduce(uniq, [])
             : filterOptions.genes,
         aliases:
           data.aliases.length > 0
-            ? [...filterOptions.aliases, ...data.aliases]
+            ? [...filterOptions.aliases, ...data.aliases].reduce(uniq, [])
             : filterOptions.aliases,
         proteins:
           data.proteins.length > 0
-            ? [...filterOptions.proteins, ...data.proteins]
+            ? [...filterOptions.proteins, ...data.proteins].reduce(uniq, [])
             : filterOptions.proteins,
         includeExpressions: filterOptions.includeExpressions,
       } as GenesFilterModel;
@@ -160,15 +171,17 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
     }
   };
 
-  const searchHandler = useMemo(() => debounce(search, 500), []); // eslint-disable-line
 
+  const searchInputState = React.useRef([])
+  const debounceSetFilters = useMemo(() => debounce(setFilters, 200), []); // eslint-disable-line
+  const debounceSearch = useMemo(() => debounce(search, 200), []);  // eslint-disable-line
   const openFilter = (event: any): void => { if (event.target.value) setShowGeneDropdown(true); };
 
   const onChangeFilterQuery = (event: any): void => {
     const value = event.target.value.split(',').map((s?: string) => (s || '').trim()).filter(Boolean)
     searchInputState.current = value;
 
-    searchHandler(value);
+    debounceSearch(value);
     const shouldShowDPD = Boolean(event.target.value && event.target.value.includes(',') === false)
     setShowGeneDropdown(shouldShowDPD);
   };
@@ -226,7 +239,7 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
     if (newFilters.geneType.genes.includes(value)) return;
     newFilters.geneType.genes.push(value)
     setFilterOptions(newFilters.geneType);
-    setFilters({ ...newFilters });
+    debounceSetFilters({ ...newFilters });
   };
 
 
@@ -235,7 +248,7 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
     if (newFilters.geneType.aliases.includes(value)) return;
     newFilters.geneType.aliases.push(value)
     setFilterOptions(newFilters.geneType);
-    setFilters({ ...newFilters });
+    debounceSetFilters({ ...newFilters });
   };
 
 
@@ -244,7 +257,7 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
     if (newFilters.geneType.proteins.includes(value)) return;
     newFilters.geneType.proteins.push(value)
     setFilterOptions(newFilters.geneType);
-    setFilters({ ...newFilters });
+    debounceSetFilters({ ...newFilters });
   };
 
 
@@ -269,7 +282,7 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
       newFilters.geneType.genes.splice(index, 1);
     }
     setFilterOptions(newFilters.geneType);
-    setFilters({ ...newFilters });
+    debounceSetFilters({ ...newFilters });
   };
 
 
@@ -279,7 +292,7 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
       newFilters.geneType.aliases.splice(index, 1);
     }
     setFilterOptions(newFilters.geneType);
-    setFilters({ ...newFilters });
+    debounceSetFilters({ ...newFilters });
   };
 
 
@@ -289,7 +302,7 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
       newFilters.geneType.proteins.splice(index, 1);
     }
     setFilterOptions(newFilters.geneType);
-    setFilters({ ...newFilters });
+    debounceSetFilters({ ...newFilters });
   };
 
 
@@ -309,12 +322,13 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
 
 
   const clearFilters = (): void => {
+    clearSearchInput();
     const newFilters = { ...filters };
     newFilters.geneType.genes = [];
     newFilters.geneType.aliases = [];
     newFilters.geneType.proteins = [];
     setFilterOptions(newFilters.geneType)
-    clearSearchInput();
+    debounceSetFilters({ ...newFilters });
   };
 
 
@@ -322,7 +336,7 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
     setIncludeExpressionsChecked(!includeExpressionsChecked);
     const newFilters = { ...filters };
     newFilters.geneType.includeExpressions = !includeExpressionsChecked;
-    setFilters({ ...newFilters });
+    debounceSetFilters({ ...newFilters });
   };
 
 

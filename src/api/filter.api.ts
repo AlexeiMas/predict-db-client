@@ -1,6 +1,8 @@
 import api from "./api.client";
 import { TumourFilterSubTypes } from "../shared/types/filter-types";
 
+const GENE_PAGE_LIMIT = 20
+
 export const getFilteredData = (
   filterType: TumourFilterSubTypes,
   filterSubtype: string,
@@ -39,7 +41,7 @@ export const getModelFilteredData = (search?: string) => {
 export const getGeneFilteredData = (search?: string, offset: number = 0) => {
   const urlSearchParams = new URLSearchParams();
   if (search?.length) urlSearchParams.append('search', `${search}`)
-  urlSearchParams.append('limit', `${process.env.REACT_APP_GENE_PAGE_LIMIT}`)
+  urlSearchParams.append('limit', `${GENE_PAGE_LIMIT}`)
   urlSearchParams.append('offset', `${offset}`)
 
   const searchString = urlSearchParams.toString();
@@ -53,7 +55,7 @@ interface GetFilteredTumoursPSMixedByArrayParams { search: string[]; limit?: num
 export const getFilteredTumoursPSMixedByArray = (params: GetFilteredTumoursPSMixedByArrayParams) => {
   const urlSearchParams = new URLSearchParams();
   if (params.search.length) params.search.forEach(value => urlSearchParams.append('search', `${value}`))
-  urlSearchParams.append('limit', `${process.env.REACT_APP_GENE_PAGE_LIMIT}`)
+  urlSearchParams.append('limit', `${GENE_PAGE_LIMIT}`)
   urlSearchParams.append('offset', `${params.offset}`)
   return api.get(`/filters/tumours/mixed-primary-sub?${urlSearchParams.toString()}`)
 }
@@ -69,7 +71,7 @@ export const getModelFilteredDataByArray = (search?: string[]) => {
 export const getGeneFilteredDataByArray = (search?: string[], offset: number = 0) => {
   const urlSearchParams = new URLSearchParams();
   if (search?.length) search.forEach(value => urlSearchParams.append('search', `${value}`))
-  urlSearchParams.append('limit', `${process.env.REACT_APP_GENE_PAGE_LIMIT}`)
+  urlSearchParams.append('limit', `${GENE_PAGE_LIMIT}`)
   urlSearchParams.append('offset', `${offset}`)
 
   const searchString = urlSearchParams.toString();
