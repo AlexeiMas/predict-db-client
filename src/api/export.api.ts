@@ -89,6 +89,8 @@ const getApiQuery = (filters?: FilterModel): string => {
         }
       });
     }
+
+    if (filters.dataAvailable) filters.dataAvailable.forEach((value) => urlSearchParams.append('dataAvailable', `${value}`));
   }
 
   return searchQuery;
