@@ -91,7 +91,7 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
 
       if (prepared.length > 0) {
         setPreloader(true);
-        const { data } = await getGeneFilteredDataByArray(prepared);
+        const { data } = await getGeneFilteredDataByArray({ search: prepared, strictEqual: true });
         if (!data) throw new Error("No data in search response");
         const updatedFilterOptions = { ...stub, ...data }
         const processed = Object.entries(updatedFilterOptions).reduce(
@@ -139,7 +139,7 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
     const value = document.querySelector<HTMLInputElement>(GENES_FILTER_INPUT_CLASS_NAME)!.value.split(',').map((s?: string) => (s || '').trim()).filter(Boolean);
     try {
       setPreloader(true);
-      const { data } = await getGeneFilteredDataByArray(value, offset);
+      const { data } = await getGeneFilteredDataByArray({ search: value, strictEqual: true, offset });
       if (!data) throw new Error("No data in loadMore response");
       const stub = { genes: [], aliases: [], proteins: [], includeExpressions: false }
       const updated = {

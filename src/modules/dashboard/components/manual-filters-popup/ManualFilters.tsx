@@ -5,8 +5,9 @@ import style from './ManualFilters.module.scss'
 import * as Icons from '../../../../assets/images';
 import InfoIcon from "../../../../shared/components/Icons/InfoIcon";
 import * as filtersApi from "../../../../api/filter.api";
+import CustomCheckbox from "shared/components/CustomCheckbox";
 
-export type Name = "Tumour Type" | "Patient Treatment History" | "PDS Model Treatment Response" | "Model ID" | "Data Available"
+export type Name = "Tumour Type" | "Patient Treatment History" | "PDC Model Treatment Response" | "Model ID" | "Data Available" | "Genes"
 export const VALUES = ['NGS', 'Patient Treatment History', 'Growth Characteristics', 'Plasma', 'PBMC', 'PDC Model Treatment Response']
 
 export const TEST_DATA = {
@@ -19,17 +20,42 @@ export const TEST_DATA = {
 }
 console.log(JSON.stringify({ TEST_DATA }, null, 2));
 
+const CLOSE_MODAL = {
+  name: 'CLOSE_MODAL',
+  event: new Event('CLOSE_MODAL')
+}
+
 const DISPLAY_NAME = 'MANUAL_FILTERS'
 const INITIAL_STATE = {
+  "Genes": [],
   "Model ID": [],
   "Tumour Type": [],
   "Data Available": [],
   "Patient Treatment History": [],
-  "PDS Model Treatment Response": [],
+  "PDC Model Treatment Response": [],
 }
 
 const CloseBtn = (({ ...rest }) => (<Icons.CloseIcon height={24} width={24} onClick={rest.onClose} className={style.closeIcon} />))
 
+const RNAExpressionForFilters = (({ ...rest }) => {
+  return (
+    <label className={style.checkboxLabel}>
+      <div className="include-expressions__label">
+        Enable RNA expression for filters
+        <InfoIcon
+          height={28} width={28}
+          title="Include expressions (RNA) data in your filters, off by default.
+            Exporting data can take some time. Whilst we have broad coverage of most protein-coding genes,
+            some genes may be absent in results due to low expression levels."
+        />
+      </div>
+      <CustomCheckbox
+        checked={rest.includeExpressions}
+        onChange={rest.toggleIncludeExpressions}
+      />
+    </label>
+  )
+})
 
 const TextAreaLikeInput = (({ ...rest }) => {
   const name = rest.name.trim();
@@ -41,6 +67,7 @@ const TextAreaLikeInput = (({ ...rest }) => {
   )
 })
 
+interface GeneInterface { proteins: string[]; aliases: string[]; genes: string[]; }
 interface TumourInterface { primary: string[]; sub: string[]; }
 interface ResponsesInterface { treatment: string[]; response: string[]; }
 interface HistoryInterface { treatment: string[]; response: string[]; }
@@ -61,8 +88,10 @@ const ManuallyFiltersForm = (({ ...rest }) => {
   const [tumourType, setTumourType] = React.useState({ primary: [], sub: [] } as TumourInterface)
   const [responsesType, setResponsesType] = React.useState({ treatment: [], response: [] } as ResponsesInterface)
   const [historyType, setHistoryType] = React.useState({ treatment: [], response: [] } as HistoryInterface)
+  const [geneType, setGeneType] = React.useState({ genes: [], aliases: [], proteins: [], } as GeneInterface);
   const [modelType, setModelType] = React.useState([] as ModelType);
   const [dataAvailable, setDataAvailable] = React.useState([] as DataAvailableType);
+  const [includeExpressions, setIncludeExpressions] = React.useState(false)
 
 
   const closeModal = () => {
@@ -96,6 +125,33 @@ const ManuallyFiltersForm = (({ ...rest }) => {
     return cancel;
   }
 
+  const processGenes = (value: string[]) => {
+    let canceled = false;
+    const cancel = ((reason: any) => { canceled = true; console.log('[ reason ]', reason); })
+    const processGenesResponseData = (data: GeneInterface) => {
+      const processed = Object.entries(data).reduce(
+        (acc, [key, value]) => {
+          const type = key as 'genes' | 'proteins' | 'aliases'
+          const res = value as string[]
+          if (['genes', 'proteins', 'aliases'].includes(type) && res.length) {
+            acc[type] = [...res, ...acc[type]].reduce(uniq, []) as string[];
+          }
+          return acc;
+        },
+        { genes: [], proteins: [], aliases: [] } as GeneInterface
+      )
+
+      setGeneType(processed)
+    }
+    if (!canceled) {
+      filtersApi.getGeneFilteredDataByArray({ search: value, strictEqual: true })
+        .then(success => canceled || success.data || rejectNoDataResponse())
+        .then(processGenesResponseData)
+        .catch(cancel)
+        .finally(() => canceled || console.log('[ finished ] ::' + processGenes.name))
+    }
+    return cancel;
+  }
 
 
   const rejectNoDataResponse = (() => Promise.reject(new Error("No data in search response")));
@@ -122,7 +178,7 @@ const ManuallyFiltersForm = (({ ...rest }) => {
 
 
 
-  const processPDSModelTreatmentResponse = (search: string[]) => {
+  const processPDCModelTreatmentResponse = (search: string[]) => {
     let canceled = false;
     const cancel = ((reason: any) => { canceled = true; console.log('[ reason ]', reason); })
     const preparedToCompare = search.map(i => i.trim().toLowerCase())
@@ -148,7 +204,7 @@ const ManuallyFiltersForm = (({ ...rest }) => {
         .then((success: any) => ({ response: success[0], treatment: success[1] }))
         .then(processFiltersResponseTypeData)
         .catch(cancel)
-        .finally(() => canceled || console.log('[ finished ] ::' + processPDSModelTreatmentResponse.name))
+        .finally(() => canceled || console.log('[ finished ] ::' + processPDCModelTreatmentResponse.name))
     }
 
     return cancel;
@@ -180,7 +236,7 @@ const ManuallyFiltersForm = (({ ...rest }) => {
         .then((success: any) => ({ response: success[0], treatment: success[1] }))
         .then(processFiltersHistoryTypeData)
         .catch(cancel)
-        .finally(() => canceled || console.log('[ finished ] ::' + processPDSModelTreatmentResponse.name))
+        .finally(() => canceled || console.log('[ finished ] ::' + processPDCModelTreatmentResponse.name))
     }
     return cancel
   }
@@ -214,11 +270,12 @@ const ManuallyFiltersForm = (({ ...rest }) => {
   }
 
   const processors = {
+    "Genes": MCore.debounce(processGenes, 350),
     "Model ID": MCore.debounce(processModelID, 350),
     "Tumour Type": MCore.debounce(processTumourType, 350),
     "Data Available": MCore.debounce(processDataAvailable, 350),
     "Patient Treatment History": MCore.debounce(processPatientTreatmentHistory, 350),
-    "PDS Model Treatment Response": MCore.debounce(processPDSModelTreatmentResponse, 350),
+    "PDC Model Treatment Response": MCore.debounce(processPDCModelTreatmentResponse, 350),
   }
 
   const updateState = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -236,20 +293,24 @@ const ManuallyFiltersForm = (({ ...rest }) => {
     e.preventDefault()
   }
 
+  const updateFilters = () => {
+    const updatedFilters = {
+      ...rest.filters,
+      tumourType: [tumourType],
+      responsesType: [responsesType],
+      historyType: [historyType],
+      geneType: { ...geneType, includeExpressions },
+      modelType: [...modelType],
+      dataAvailable: [...dataAvailable],
+      includeExpressions
+    }
+    rest.setFilters(updatedFilters)
+  }
+
   const handleClick = () => {
     let canceled = false;
     const cancel = ((error: any) => { canceled = true; console.log('[ error ]', error); })
-    const updateFilters = () => {
-      const updatedFilters = {
-        ...rest.filters,
-        tumourType: [tumourType],
-        responsesType: [responsesType],
-        historyType: [historyType],
-        modelType: [...modelType],
-        dataAvailable: [...dataAvailable],
-      }
-      rest.setFilters(updatedFilters)
-    }
+
     if (!canceled) {
       Promise.resolve()
         .then(() => canceled || updateFilters())
@@ -259,14 +320,21 @@ const ManuallyFiltersForm = (({ ...rest }) => {
     return cancel;
   }
 
+  React.useEffect(() => {
+    document.body.addEventListener(CLOSE_MODAL.name, handleClick);
+    return () => { document.body.removeEventListener(CLOSE_MODAL.name, handleClick); };
+  });
+
   return (
     <div className={style.formContainer}>
       <form ref={formRef} name={ManuallyFiltersForm.name} id={ManuallyFiltersForm.name} onSubmit={handlePreventDefault}>
         <TextAreaLikeInput value={state["Tumour Type"]} onChange={updateState} name="Tumour Type" labelText="Tumour Type" />
         <TextAreaLikeInput value={state["Patient Treatment History"]} onChange={updateState} name="Patient Treatment History" labelText="Patient Treatment History" />
-        <TextAreaLikeInput value={state["PDS Model Treatment Response"]} onChange={updateState} name="PDS Model Treatment Response" labelText="PDS Model Treatment Response" />
+        <TextAreaLikeInput value={state["PDC Model Treatment Response"]} onChange={updateState} name="PDC Model Treatment Response" labelText="PDC Model Treatment Response" />
         <TextAreaLikeInput value={state["Model ID"]} onChange={updateState} name="Model ID" labelText="Model ID" />
         <TextAreaLikeInput value={state["Data Available"]} onChange={updateState} name="Data Available" labelText="Data Available" />
+        <TextAreaLikeInput value={state["Genes"]} onChange={updateState} name="Genes" labelText="Genes" />
+        <RNAExpressionForFilters includeExpressions={includeExpressions} toggleIncludeExpressions={() => setIncludeExpressions(!includeExpressions)} />
         <div className={style.formControls}>
           <button type="button" onClick={handleClick}>Apply</button>
           <button type="button" onClick={closeModal}>Cancel</button>
@@ -285,12 +353,17 @@ export const ManualFilters = (({ ...rest }): JSX.Element => {
   const hide = () => setVisible(false)
   const toggle = () => setVisible(!visible)
 
+  const debouncedShow = MCore.debounce(() => setVisible(true), 300) /* eslint-disable-line */
+  const debouncedHide = MCore.debounce(() => setVisible(false), 300) /* eslint-disable-line */
+  const debouncedToggle = MCore.debounce(() => setVisible(!visible), 300) /* eslint-disable-line */
+
 
   React.useEffect(() => {
     const handleClickOutside = (e: any) => {
       if (!contentRef.current) return;
       if (!e.target.contains(contentRef.current)) return
-      hide()
+      document.body.dispatchEvent(CLOSE_MODAL.event);
+      debouncedHide()
     }
 
     targetElement.addEventListener('click', handleClickOutside)
@@ -308,7 +381,7 @@ export const ManualFilters = (({ ...rest }): JSX.Element => {
           onClick={toggle}
         >
           <Icons.FilterIcon height={24} width={24} />
-          <span>Filter&nbsp;manually</span>
+          <span>Advanced&nbsp;Filters</span>
         </button>
       </div>
       {
@@ -317,14 +390,14 @@ export const ManualFilters = (({ ...rest }): JSX.Element => {
             <div id="ME" ref={contentRef} className={style.container} >
               <div className={style.content}>
                 <div className={style.top}>
-                  <div>
-                    Filter manually
-                    <InfoIcon title='You can enter a list of entries, separated by a newline into each filter input' />
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    Advanced&nbsp;Filters&nbsp;
+                    <InfoIcon height={28} width={28} title='You can enter a list of entries, separated by a newline into each filter input' />
                   </div>
                   <CloseBtn onClose={hide} />
                 </div>
                 <div className={style.center}>
-                  <ManuallyFiltersForm {...rest} controls={{ show, hide, toggle }} />
+                  <ManuallyFiltersForm {...rest} controls={{ show, hide, toggle, debouncedShow, debouncedToggle, debouncedHide }} />
                 </div>
               </div>
             </div>

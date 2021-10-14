@@ -68,11 +68,19 @@ export const getModelFilteredDataByArray = (search?: string[]) => {
   return api.get(`/filters/models/${requestQuery}`);
 };
 
-export const getGeneFilteredDataByArray = (search?: string[], offset: number = 0) => {
+interface Params {
+  search?: string[];
+  offset?: string | number;
+  limit?:  string | number;
+  strictEqual?: boolean;
+}
+export const getGeneFilteredDataByArray = (params: Params) => {
+  const {search, limit = GENE_PAGE_LIMIT, offset = 0, strictEqual = false} = params
   const urlSearchParams = new URLSearchParams();
   if (search?.length) search.forEach(value => urlSearchParams.append('search', `${value}`))
-  urlSearchParams.append('limit', `${GENE_PAGE_LIMIT}`)
+  urlSearchParams.append('limit', `${limit}`)
   urlSearchParams.append('offset', `${offset}`)
+  urlSearchParams.append('strictEqual', `${strictEqual}`)
 
   const searchString = urlSearchParams.toString();
   const requestQuery = searchString.length ? `?${searchString}` : "";

@@ -102,7 +102,7 @@ textarea {
   margin-bottom: 10px;
   flex-direction: column;
   padding: 15px 10px;
-
+  margin-top: 20px;
 
   font-family: "Exo", sans-serif !important;
   box-sizing: border-box !important;
@@ -112,7 +112,7 @@ textarea {
 .checkboxLabel {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: flex-end;
 
   div:first-child {
     order: 2;
