@@ -1,7 +1,6 @@
 import api from "./api.client";
 import { TumourFilterSubTypes } from "../shared/types/filter-types";
 
-const GENE_PAGE_LIMIT = 20
 
 export const getFilteredData = (
   filterType: TumourFilterSubTypes,
@@ -38,10 +37,11 @@ export const getModelFilteredData = (search?: string) => {
   return api.get(`/filters/models/${requestQuery}`);
 };
 
+const GENE_PAGE_LIMIT_SINGLE_SEARCH = 3
 export const getGeneFilteredData = (search?: string, offset: number = 0) => {
   const urlSearchParams = new URLSearchParams();
   if (search?.length) urlSearchParams.append('search', `${search}`)
-  urlSearchParams.append('limit', `${GENE_PAGE_LIMIT}`)
+  urlSearchParams.append('limit', `${GENE_PAGE_LIMIT_SINGLE_SEARCH}`)
   urlSearchParams.append('offset', `${offset}`)
 
   const searchString = urlSearchParams.toString();
@@ -51,6 +51,7 @@ export const getGeneFilteredData = (search?: string, offset: number = 0) => {
 
 
 /* ONLY FOR MANUAL FILTERS API */
+const GENE_PAGE_LIMIT = 20
 interface GetFilteredTumoursPSMixedByArrayParams { search: string[]; limit?: number; offset?: number; }
 export const getFilteredTumoursPSMixedByArray = (params: GetFilteredTumoursPSMixedByArrayParams) => {
   const urlSearchParams = new URLSearchParams();

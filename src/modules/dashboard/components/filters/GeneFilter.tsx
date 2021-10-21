@@ -11,7 +11,7 @@ import {
   FilterModel,
   GenesFilterModel,
 } from "../../../../shared/models/filters.model";
-import { getGeneFilteredDataByArray } from "../../../../api/filter.api";
+import { getGeneFilteredData } from "../../../../api/filter.api";
 import {
   FormGroup,
   FormControlLabel,
@@ -26,8 +26,6 @@ import InfoIcon from "../../../../shared/components/Icons/InfoIcon";
 import { createStyles, InputBase, makeStyles } from "@material-ui/core";
 import { GeneAliasIcon, GeneIcon, ProteinIcon } from "shared/components/Icons";
 import CustomCheckbox from "shared/components/CustomCheckbox";
-import * as  Common from './common';
-
 
 interface GeneFilterProps {
   setFilters: Dispatch<SetStateAction<FilterModel>>;
@@ -58,106 +56,78 @@ const useStyles = makeStyles(() =>
   })
 );
 
-
-const GENES_FILTER_INPUT_CLASS_NAME = ".genes-filter input"
-
-/* cSpell: disable */
-export const TEST_GENES_STRING = ['Y2', 'H6', 'TR', 'DB', 'Q5JTD0', 'Q01664', 'Q8WW62', 'Q96B21', 'Q9Y2Y6', 'Q5T0D9',].join(','); /* eslint-disable-line */
-
-console.log('[ TEST_GENES_STRING ]', TEST_GENES_STRING);
-
 /* TODO: Need to refactor this component to use universal functions instead of one-to-one binding each filter mechanic.
  *        Design makes this difficult to implement at the beginning according to not consistent logic of filters behaviour.
  * */
-const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: GeneFilterProps): JSX.Element => {
-
+const GeneFilter = ({
+  filters,
+  setFilters,
+  isClearFilter,
+  setIsClearFilter,
+}: GeneFilterProps): JSX.Element => {
   const [showGeneDropdown, setShowGeneDropdown] = useState(false);
   const [preloader, setPreloader] = useState(false);
-  const [filterOptions, setFilterOptions] = useState({ genes: [], aliases: [], proteins: [], includeExpressions: false, } as GenesFilterModel);
+  const [filterOptions, setFilterOptions] = useState({
+    genes: [],
+    aliases: [],
+    proteins: [],
+    includeExpressions: false,
+  } as GenesFilterModel);
   const [offset, setOffset] = useState(0);
-  const [includeExpressionsChecked, setIncludeExpressionsChecked] = useState(false);
+  const [geneFilter, setGeneFilter] = useState([] as string[]);
+  const [aliasFilter, setAliasFilter] = useState([] as string[]);
+  const [proteinFilter, setProteinFilter] = useState([] as string[]);
+  const [includeExpressionsChecked, setIncludeExpressionsChecked] =
+    useState(false);
   const [hideShowMore, setHideShowMore] = useState(false);
   const classes = useStyles();
-
-  const dropdownBgClick = (): void => { setShowGeneDropdown(false); clearSearchInput(); };
-
-  const prepare = (value: string[]) => value.flat(Infinity).map(i => i.trim()).filter(Boolean)
-
-  const search = async (value: string[]): Promise<void> => {
+  const dropdownBgClick = (): void => {
+    setShowGeneDropdown(false);
+    clearSearchInput();
+  };
+  const search = async (value: string): Promise<void> => {
     setHideShowMore(false);
     try {
-      const stub = { genes: [], aliases: [], proteins: [], includeExpressions: false }
-      const prepared = prepare(value)
-
-      if (prepared.length > 0) {
-        setPreloader(true);
-        const { data } = await getGeneFilteredDataByArray({ search: prepared, strictEqual: true });
-        if (!data) throw new Error("No data in search response");
-        const updatedFilterOptions = { ...stub, ...data }
-        const processed = Object.entries(updatedFilterOptions).reduce(
-          (acc, [key, item]) => {
-            const type = key as 'genes' | 'proteins' | 'aliases'
-            const res = item as string[]
-            if (['genes', 'proteins', 'aliases'].includes(type) && res.length) {
-              const joined = [...res, ...acc.geneType[type]] as string[];
-              const uniq = joined.reduce((acc: string[], i: string) => [...acc, ...(acc.includes(i) ? [] : [i])], [])
-              acc.geneType[type] = uniq as string[];
-            }
-            return acc;
-          },
-          { ...filters }
-        )
-
-        setFilterOptions(updatedFilterOptions);
-        const showMoreIsHidden =
-          (data.genesCount >= GENE_PAGE_LIMIT ||
-            data.aliasesCount >= GENE_PAGE_LIMIT ||
-            data.proteinsCount >= GENE_PAGE_LIMIT) === false;
-        setHideShowMore(showMoreIsHidden);
-        debounceSetFilters({ ...filters, ...processed })
-        return
-      }
-      setFilterOptions(stub);
+      setPreloader(true);
+      const { data } = await getGeneFilteredData(value);
+      if (!data) throw new Error("No data in search response");
+      setFilterOptions(data);
       const showMoreIsHidden =
-        (stub.genes.length >= GENE_PAGE_LIMIT ||
-          stub.aliases.length >= GENE_PAGE_LIMIT ||
-          stub.proteins.length >= GENE_PAGE_LIMIT) === false;
+        (data.genesCount >= GENE_PAGE_LIMIT ||
+          data.aliasesCount >= GENE_PAGE_LIMIT ||
+          data.proteinsCount >= GENE_PAGE_LIMIT) === false;
       setHideShowMore(showMoreIsHidden);
-      debounceSetFilters({ ...filters, geneType: { ...stub } })
-      return
-    } catch (error) {
-      console.log('[' + search.name + '][ERROR]', error);
+    } catch (e) {
+      console.log(e);
     } finally {
       setPreloader(false);
       setOffset(offset + GENE_PAGE_LIMIT);
     }
   };
-
-  const uniq = (acc: string[], item: string) => [...acc, ...(acc.includes(item) ? [] : [item])]
-
   const showMore = async (): Promise<void> => {
-    const value = document.querySelector<HTMLInputElement>(GENES_FILTER_INPUT_CLASS_NAME)!.value.split(',').map((s?: string) => (s || '').trim()).filter(Boolean);
+    const value = document.querySelector<HTMLInputElement>(
+      ".genes-filter input"
+    )!.value;
     try {
       setPreloader(true);
-      const { data } = await getGeneFilteredDataByArray({ search: value, strictEqual: true, offset });
+      const { data } = await getGeneFilteredData(value, offset);
       if (!data) throw new Error("No data in loadMore response");
-      const stub = { genes: [], aliases: [], proteins: [], includeExpressions: false }
       const updated = {
         genes:
           data.genes.length > 0
-            ? [...filterOptions.genes, ...data.genes].reduce(uniq, [])
+            ? [...filterOptions.genes, ...data.genes]
             : filterOptions.genes,
         aliases:
           data.aliases.length > 0
-            ? [...filterOptions.aliases, ...data.aliases].reduce(uniq, [])
+            ? [...filterOptions.aliases, ...data.aliases]
             : filterOptions.aliases,
         proteins:
           data.proteins.length > 0
-            ? [...filterOptions.proteins, ...data.proteins].reduce(uniq, [])
+            ? [...filterOptions.proteins, ...data.proteins]
             : filterOptions.proteins,
         includeExpressions: filterOptions.includeExpressions,
       } as GenesFilterModel;
-      setFilterOptions({ ...stub, ...updated });
+      setFilterOptions(updated);
       const hiddenCondition =
         updated.genes.length === data.genesCount &&
         updated.aliases.length === data.aliasesCount &&
@@ -170,26 +140,20 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
       setOffset(offset + GENE_PAGE_LIMIT);
     }
   };
-
-
-  const searchInputState = React.useRef([])
-  const debounceSetFilters = useMemo(() => debounce(setFilters, 200), []); // eslint-disable-line
-  const debounceSearch = useMemo(() => debounce(search, 200), []);  // eslint-disable-line
-  const openFilter = (event: any): void => { if (event.target.value) setShowGeneDropdown(true); };
-
+  const searchHandler = useMemo(() => debounce(search, 500), []); // eslint-disable-line
+  const openFilter = (event: any): void => {
+    if (event.target.value) setShowGeneDropdown(true);
+  };
   const onChangeFilterQuery = (event: any): void => {
-    const value = event.target.value.split(',').map((s?: string) => (s || '').trim()).filter(Boolean)
-    searchInputState.current = value;
-
-    debounceSearch(value);
-    const shouldShowDPD = Boolean(event.target.value && event.target.value.includes(',') === false)
-    setShowGeneDropdown(shouldShowDPD);
+    searchHandler(event.target.value);
+    if (!event.target.value) setShowGeneDropdown(false);
+    if (event.target.value) setShowGeneDropdown(true);
   };
 
   const selectedFilterOptions = (): JSX.Element => {
     return (
       <div className="filter-tags">
-        {filterOptions.genes.map((item: string, index: number) => (
+        {geneFilter.map((item: string, index: number) => (
           <div className="filter__tag" key={index}>
             <GeneIcon />
             <span>{item}</span>
@@ -198,7 +162,7 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
             </div>
           </div>
         ))}
-        {filterOptions.aliases.map((item: string, index: number) => (
+        {aliasFilter.map((item: string, index: number) => (
           <div className="filter__tag" key={index}>
             <GeneAliasIcon />
             <span>{item}</span>
@@ -207,7 +171,7 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
             </div>
           </div>
         ))}
-        {filterOptions.proteins.map((item: string, index: number) => (
+        {proteinFilter.map((item: string, index: number) => (
           <div className="filter__tag" key={index}>
             <ProteinIcon />
             <span>{item}</span>
@@ -222,45 +186,46 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
 
   const canShowFilter = (): boolean => {
     return !!(
-      (filterOptions.genes && filterOptions.genes.length) ||
-      (filterOptions.aliases && filterOptions.aliases.length) ||
-      (filterOptions.proteins && filterOptions.proteins.length)
+      (geneFilter && geneFilter.length) ||
+      (aliasFilter && aliasFilter.length) ||
+      (proteinFilter && proteinFilter.length)
     );
   };
 
   const clearSearchInput = (): void => {
-    const searchInput = document.querySelector<HTMLInputElement>(GENES_FILTER_INPUT_CLASS_NAME);
+    const searchInput = document.querySelector<HTMLInputElement>(
+      ".genes-filter input"
+    );
     searchInput!.value = "";
   };
-
   // Methods of working with filters
   const selectGeneOption = (value: string): void => {
+    const newOptions = [...geneFilter];
+    if (newOptions.includes(value)) return;
+    newOptions.push(value);
+    setGeneFilter(newOptions);
     const newFilters = { ...filters };
-    if (newFilters.geneType.genes.includes(value)) return;
-    newFilters.geneType.genes.push(value)
-    setFilterOptions(newFilters.geneType);
-    debounceSetFilters({ ...newFilters });
+    newFilters.geneType.genes = newOptions;
+    setFilters({ ...newFilters });
   };
-
-
   const selectAliasOption = (value: string): void => {
+    const newOptions = [...aliasFilter];
+    if (newOptions.includes(value)) return;
+    newOptions.push(value);
+    setAliasFilter(newOptions);
     const newFilters = { ...filters };
-    if (newFilters.geneType.aliases.includes(value)) return;
-    newFilters.geneType.aliases.push(value)
-    setFilterOptions(newFilters.geneType);
-    debounceSetFilters({ ...newFilters });
+    newFilters.geneType.aliases = newOptions;
+    setFilters({ ...newFilters });
   };
-
-
   const selectProteinOption = (value: string): void => {
+    const newOptions = [...proteinFilter];
+    if (newOptions.includes(value)) return;
+    newOptions.push(value);
+    setProteinFilter(newOptions);
     const newFilters = { ...filters };
-    if (newFilters.geneType.proteins.includes(value)) return;
-    newFilters.geneType.proteins.push(value)
-    setFilterOptions(newFilters.geneType);
-    debounceSetFilters({ ...newFilters });
+    newFilters.geneType.proteins = newOptions;
+    setFilters({ ...newFilters });
   };
-
-
   const selectOption = (value: string, type: string): void => {
     switch (type) {
       case "gene":
@@ -274,38 +239,30 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
         break;
     }
   };
-
-
   const removeGeneOption = (index: number): void => {
+    const newOptions = [...geneFilter];
+    newOptions.splice(index, 1);
+    setGeneFilter(newOptions);
     const newFilters = { ...filters };
-    if (newFilters.geneType.genes.length > 0) {
-      newFilters.geneType.genes.splice(index, 1);
-    }
-    setFilterOptions(newFilters.geneType);
-    debounceSetFilters({ ...newFilters });
+    newFilters.geneType.genes = newOptions;
+    setFilters({ ...newFilters });
   };
-
-
   const removeAliasOption = (index: number): void => {
+    const newOptions = [...aliasFilter];
+    newOptions.splice(index, 1);
+    setAliasFilter(newOptions);
     const newFilters = { ...filters };
-    if (newFilters.geneType.aliases.length > 0) {
-      newFilters.geneType.aliases.splice(index, 1);
-    }
-    setFilterOptions(newFilters.geneType);
-    debounceSetFilters({ ...newFilters });
+    newFilters.geneType.aliases = newOptions;
+    setFilters({ ...newFilters });
   };
-
-
   const removeProteinOption = (index: number): void => {
+    const newOptions = [...proteinFilter];
+    newOptions.splice(index, 1);
+    setProteinFilter(newOptions);
     const newFilters = { ...filters };
-    if (newFilters.geneType.proteins.length > 0) {
-      newFilters.geneType.proteins.splice(index, 1);
-    }
-    setFilterOptions(newFilters.geneType);
-    debounceSetFilters({ ...newFilters });
+    newFilters.geneType.proteins = newOptions;
+    setFilters({ ...newFilters });
   };
-
-
   const removeOption = (index: number, type: string): void => {
     switch (type) {
       case "gene":
@@ -319,27 +276,23 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
         break;
     }
   };
-
-
   const clearFilters = (): void => {
-    clearSearchInput();
     const newFilters = { ...filters };
     newFilters.geneType.genes = [];
     newFilters.geneType.aliases = [];
     newFilters.geneType.proteins = [];
-    setFilterOptions(newFilters.geneType)
-    debounceSetFilters({ ...newFilters });
+    setGeneFilter([]);
+    setAliasFilter([]);
+    setProteinFilter([]);
+    setFilters({ ...newFilters });
+    clearSearchInput();
   };
-
-
   const onChangeIncludeExpressions = () => {
     setIncludeExpressionsChecked(!includeExpressionsChecked);
     const newFilters = { ...filters };
     newFilters.geneType.includeExpressions = !includeExpressionsChecked;
-    debounceSetFilters({ ...newFilters });
+    setFilters({ ...newFilters });
   };
-
-
   useEffect(() => {
     if (isClearFilter) {
       clearFilters();
@@ -347,8 +300,6 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
       setIncludeExpressionsChecked(false);
     }
   }, [isClearFilter]); // eslint-disable-line
-
-
   return (
     <>
       <div
@@ -370,28 +321,72 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
                 className={`${classes.input} genes-search-query`}
                 placeholder="Search by gene or protein name"
                 inputProps={{ "aria-label": "gene name" }}
-                onFocus={(event: FocusEvent<HTMLTextAreaElement | HTMLInputElement>) => openFilter(event)}
-                onChange={(event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => onChangeFilterQuery(event)}
+                onFocus={(
+                  event: FocusEvent<HTMLTextAreaElement | HTMLInputElement>
+                ) => openFilter(event)}
+                onChange={(
+                  event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+                ) => onChangeFilterQuery(event)}
               />
-
-              <Common.GenesSearchTooltip />
-
-              <div className={"filter-menu genes-filter " + (showGeneDropdown ? "opened" : "")} >
+              <div className="genes-search-tooltip">
+                <InfoIcon
+                  color="#0941AC"
+                  title={
+                    <>
+                      You can enter up to 20 valid HUGO gene names or UniProt
+                      IDs, e.g.{" "}
+                      <a
+                        className="tooltip-link"
+                        target="_blank"
+                        rel="noreferrer"
+                        href="https://www.genecards.org/cgi-bin/carddisp.pl?gene=BRCA1"
+                      >
+                        see aliases
+                      </a>{" "}
+                      for BRCA1.
+                      <br />
+                      <br />
+                      Search carried out across mutations, expressions, copy
+                      number variations and fusions. Only mutations with a COSMIC entry are shown. Contact us for full NGS dataset. Documentation{" "}
+                      <a
+                        className="tooltip-link"
+                        target="_blank"
+                        rel="noreferrer"
+                        href="https://docs.imagentherapeutics.com/docs/rnaseq"
+                      >
+                        here
+                      </a>
+                      .
+                      <br />
+                      <br />
+                      NGS data available via the export function.
+                    </>
+                  }
+                />
+              </div>
+              <div
+                className={
+                  "filter-menu genes-filter " +
+                  (showGeneDropdown ? "opened" : "")
+                }
+              >
                 {preloader && <Preloader />}
                 {!preloader &&
                   (filterOptions.genes.length > 0 ||
                     filterOptions.aliases.length > 0 ||
                     filterOptions.proteins.length > 0) &&
                   filters.geneType.genes.length +
-                  filters.geneType.aliases.length +
-                  filters.geneType.proteins.length <
-                  MAX_GENE_LIMIT && (
+                    filters.geneType.aliases.length +
+                    filters.geneType.proteins.length <
+                    MAX_GENE_LIMIT && (
                     <>
                       <DropdownGenesMenu
                         items={filterOptions}
                         selectOption={selectOption}
                       />
-                      <div className={`load-more ${hideShowMore ? " hidden" : ""}`} >
+                      <div
+                        className={`load-more ${hideShowMore ? " hidden" : ""}`}
+                      >
                         <Button
                           variant="text"
                           color="primary"
@@ -403,7 +398,6 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
                       </div>
                     </>
                   )}
-
                 {!preloader &&
                   !filterOptions.genes.length &&
                   !filterOptions.aliases.length &&
@@ -422,15 +416,15 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
                   filters.geneType.aliases.length +
                   filters.geneType.proteins.length >=
                   MAX_GENE_LIMIT && (
-                    <div className="filter-no-data">
-                      <span className="filter-no-data__title">
-                        Gene limit is exceeded
-                      </span>
-                      <span className="filter-no-data__label">
-                        You can't search for greater than {MAX_GENE_LIMIT} genes.
-                      </span>
-                    </div>
-                  )}
+                  <div className="filter-no-data">
+                    <span className="filter-no-data__title">
+                      Gene limit is exceeded
+                    </span>
+                    <span className="filter-no-data__label">
+                      You can't search for greater than {MAX_GENE_LIMIT} genes.
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           }
@@ -438,7 +432,12 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
         <div className="include-expressions">
           <FormGroup row>
             <FormControlLabel
-              control={<CustomCheckbox checked={includeExpressionsChecked} onChange={() => onChangeIncludeExpressions()} />}
+              control={
+                <CustomCheckbox
+                  checked={includeExpressionsChecked}
+                  onChange={() => onChangeIncludeExpressions()}
+                />
+              }
               label={
                 <div className="include-expressions__label">
                   Enable RNA expression in search
@@ -448,7 +447,9 @@ const GeneFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter, }: G
             />
           </FormGroup>
         </div>
-        <div className="genes-filter-selected"> {canShowFilter() ? selectedFilterOptions() : ""} </div>
+        <div className="genes-filter-selected">
+          {canShowFilter() ? selectedFilterOptions() : ""}
+        </div>
       </div>
     </>
   );
