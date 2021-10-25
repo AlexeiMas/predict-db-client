@@ -8,10 +8,13 @@ import { AdvancedFiltersForm } from './AdvancedFiltersForm';
 import { CloseBtn } from './CloseBtn';
 import './test-data';
 import { useAdvancedFiltersContext } from '../../../../context/advanced-filters.context';
+import { CSSProperties } from '@material-ui/styles';
 
 export const VALUES = ['NGS', 'Patient Treatment History', 'Growth Characteristics', 'Plasma', 'PBMC', 'PDC Model Treatment Response']
 export const CLOSE_MODAL = { name: 'CLOSE_MODAL', event: new Event('CLOSE_MODAL') }
 const DISPLAY_NAME = 'ADVANCED_FILTERS';
+
+interface ButtonStatesMapInterface { HAS_ADVANCED: CSSProperties; NO_ADVANCED: CSSProperties; }
 
 export const AdvancedFilters = (({ ...rest }): JSX.Element => {
   const [visible, setVisible] = React.useState(false);
@@ -43,17 +46,17 @@ export const AdvancedFilters = (({ ...rest }): JSX.Element => {
   })
 
 
-  const BUTTON_STATES_MAP = {
-    true: { backgroundColor: '#0941AC', color: "white", borderColor: 'transparent', marginLeft: 10 },
-    false: { backgroundColor: '#EEEEF2', color: "#656790", borderColor: 'transparent', marginLeft: 10 }
+  const BUTTON_STATES_MAP: ButtonStatesMapInterface = {
+    HAS_ADVANCED: { backgroundColor: '#0941AC', color: "white", borderColor: 'transparent', marginLeft: 10 },
+    NO_ADVANCED: { backgroundColor: '#EEEEF2', color: "#656790", borderColor: 'transparent', marginLeft: 10 }
   }
-
+  const MAP_KEY = context.hasAdvanced ? 'HAS_ADVANCED' : 'NO_ADVANCED'
   const controls = { show, hide, toggle, debouncedShow, debouncedToggle, debouncedHide }
   return (
     <div id={DISPLAY_NAME}>
       <div >
         <button
-          style={BUTTON_STATES_MAP[`${Boolean(context.hasAdvanced)}`]}
+          style={BUTTON_STATES_MAP[MAP_KEY]}
           className="btn btn-outlined search__filter-btn"
           onClick={toggle}
         >
