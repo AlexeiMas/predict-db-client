@@ -88,39 +88,58 @@ const INITIAL_STATE: State = {
 }
 
 const useProviderHook = (): AdvancedFiltersContextInterface => {
+  const EMPTY = '';
   const [advancedFilters, setAdvancedFilters] = React.useState(INITIAL_STATE)
   const [hasAdvanced, setHasAdvanced] = React.useState(false)
 
-  const [geneType, setGeneType] = React.useState("")
-  const [modelType, setModelType] = React.useState("")
-  const [tumourType, setTumourType] = React.useState("")
-  const [historyType, setHistoryType] = React.useState("")
-  const [responsesType, setResponsesType] = React.useState("")
-  const [dataAvailable, setDataAvailable] = React.useState("")
+  const [geneType, setGeneType] = React.useState(EMPTY.trim())
+  const [modelType, setModelType] = React.useState(EMPTY.trim())
+  const [tumourType, setTumourType] = React.useState(EMPTY.trim())
+  const [historyType, setHistoryType] = React.useState(EMPTY.trim())
+  const [responsesType, setResponsesType] = React.useState(EMPTY.trim())
+  const [dataAvailable, setDataAvailable] = React.useState(EMPTY.trim())
 
-  const setGeneTypeAsString = (value: ValueType) => { setGeneType(value || '') }
-  const setModelTypeAsString = (value: ValueType) => { setModelType(value || '') }
-  const setTumourTypeAsString = (value: ValueType) => { setTumourType(value || '') }
-  const setHistoryTypeAsString = (value: ValueType) => { setHistoryType(value || '') }
-  const setResponsesTypeAsString = (value: ValueType) => { setResponsesType(value || '') }
-  const setDataAvailableAsString = (value: ValueType) => { setDataAvailable(value || '') }
+  const setGeneTypeAsString = (value: ValueType) => { setGeneType(value || EMPTY.trim()) }
+  const setModelTypeAsString = (value: ValueType) => { setModelType(value || EMPTY.trim()) }
+  const setTumourTypeAsString = (value: ValueType) => { setTumourType(value || EMPTY.trim()) }
+  const setHistoryTypeAsString = (value: ValueType) => { setHistoryType(value || EMPTY.trim()) }
+  const setResponsesTypeAsString = (value: ValueType) => { setResponsesType(value || EMPTY.trim()) }
+  const setDataAvailableAsString = (value: ValueType) => { setDataAvailable(value || EMPTY.trim()) }
 
-  const updateAdvancedFilters = (updated: State) => {
-    setHasAdvanced(true)
-    setAdvancedFilters(updated)
-  }
+  const updateAdvancedFilters = (updated: State) => { setAdvancedFilters(updated) }
 
   const clearAdvancedFilters = () => {
-    setHasAdvanced(false)
-    setGeneType('')
-    setModelType('')
-    setTumourType('')
-    setHistoryType('')
-    setResponsesType('')
-    setDataAvailable('')
+    setGeneType(EMPTY.trim())
+    setModelType(EMPTY.trim())
+    setTumourType(EMPTY.trim())
+    setHistoryType(EMPTY.trim())
+    setResponsesType(EMPTY.trim())
+    setDataAvailable(EMPTY.trim())
     setAdvancedFilters(INITIAL_STATE)
   }
 
+  const watchHasAdvanced = () => {
+    let canceled = false;
+    const cancel = (() => { canceled = true; })
+
+    Promise.resolve()
+      .then(() => {
+        const initialStateClone = JSON.stringify(INITIAL_STATE);
+        const advancedFiltersClone = JSON.stringify(advancedFilters);
+        const filtersStateNotEqualToInitial = advancedFiltersClone.length !== initialStateClone.length;
+
+        const all = [geneType, modelType, tumourType, historyType, responsesType, dataAvailable].join(EMPTY.trim());
+        const allSizeGreaterThanZero = all.trim().length !== EMPTY.trim().length;
+        const isHasAdvanced = allSizeGreaterThanZero || filtersStateNotEqualToInitial;
+        return isHasAdvanced;
+      })
+      .then((isHasAdvanced) => canceled || setHasAdvanced(isHasAdvanced))
+      .catch(cancel)
+
+    return cancel;
+  }
+
+  React.useEffect(() => { const cancel = watchHasAdvanced(); return () => { cancel(); }; });
 
   return {
     geneType,

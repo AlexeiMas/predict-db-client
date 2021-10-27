@@ -261,7 +261,12 @@ export const AdvancedFiltersForm = (({ ...rest }) => {
     const isNotEquals = JSON.stringify(context.advancedFilters) !== JSON.stringify(rest.filters)
     if (isNotEquals) rest.setFilters({ ...context.advancedFilters })
   }
-  const closeModal = () => rest.controls.hide()
+
+  const cancel = () => {
+    context.clearAdvancedFilters();
+    rest.controls.hide();
+  }
+
   const handleClick = () => {
     let canceled = false;
     const cancel = ((error: any) => { canceled = true; console.log('[ error ]', error); })
@@ -270,7 +275,7 @@ export const AdvancedFiltersForm = (({ ...rest }) => {
       Promise.resolve()
         .then(() => canceled || updateFilters())
         .catch(cancel)
-        .finally(closeModal)
+        .finally(() => rest.controls.hide())
     }
     return cancel;
   }
@@ -300,7 +305,7 @@ export const AdvancedFiltersForm = (({ ...rest }) => {
         <RNAExpressionForFilters includeExpressions={context.advancedFilters.includeExpressions} toggleIncludeExpressions={toggleIncludeExpressions} />
         <div className={style.formControls}>
           <button type="button" onClick={handleClick}>Apply</button>
-          <button type="button" onClick={closeModal}>Cancel</button>
+          <button type="button" onClick={cancel}>Cancel</button>
         </div>
       </form>
     </div>
