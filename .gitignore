@@ -28,3 +28,8 @@ yarn-error.log*
 .history
 
 package-lock.json
+
+/**/me-**
+/**/z-me-**
+/**/**/me-**
+/**/**/z-me-**
