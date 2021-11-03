@@ -21,10 +21,7 @@ const PatientTreatmentHistoryList = ({
   const query = useQuery()
 
   const UNMOUNTED = 'unmounted'
-  const logReason = (reason: any) => {
-    if (reason === UNMOUNTED) return;
-    console.log('[ reason ]', reason);
-  }
+  const logReason = (reason: any) => reason === UNMOUNTED || console.log('[ reason ]', reason);
 
   const loadPatientTreatmentHistoryInfo = () => {
     let canceled = false;

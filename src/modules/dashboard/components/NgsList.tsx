@@ -24,10 +24,7 @@ const MutationsList = ({
   const query = useQuery()
 
   const UNMOUNTED = 'unmounted'
-  const logReason = (reason: any) => {
-    if (reason === UNMOUNTED) return;
-    console.log('[ reason ]', reason);
-  }
+  const logReason = (reason: any) => reason === UNMOUNTED || console.log('[ reason ]', reason);
 
   const loadNgsData = () => {
     let canceled = false;

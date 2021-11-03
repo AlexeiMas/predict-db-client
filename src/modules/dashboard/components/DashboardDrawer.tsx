@@ -32,10 +32,7 @@ const DashboardDrawer = (props: DashboardDrawerProps): JSX.Element => {
   const [selfOpened, setOpened] = React.useState(false);
 
   const UNMOUNTED = 'unmounted'
-  const logReason = (reason: any) => {
-    if (reason === UNMOUNTED) return;
-    console.log('[ reason ]', reason);
-  }
+  const logReason = (reason: any) => reason === UNMOUNTED || console.log('[ reason ]', reason);
 
   const loadSelectedItem = () => {
     let canceled = !isEmpty(drawlerCTX.state.selectedElement);

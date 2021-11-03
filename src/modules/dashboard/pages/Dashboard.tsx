@@ -82,7 +82,6 @@ const DashboardPage = ({ ...rest }): JSX.Element => {
 
   const prevFilters = filtersRef.current;
 
-  const UNMOUNTED = 'unmounted'
   React.useEffect(() => {
     const selectedPage = filters === prevFilters ? selectedPageIndex : 0;
     setSelectedPage(selectedPage);
@@ -91,10 +90,8 @@ const DashboardPage = ({ ...rest }): JSX.Element => {
   }, [filters, selectedPageIndex, sort, order]); // eslint-disable-line
 
 
-  const logReason = (reason: any) => {
-    if (reason === UNMOUNTED) return;
-    console.log('[ reason ]', reason);
-  }
+  const UNMOUNTED = 'unmounted'
+  const logReason = (reason: any) => reason === UNMOUNTED || console.log('[ reason ]', reason);
 
   const getRecords = (
     pageIndex: number,
