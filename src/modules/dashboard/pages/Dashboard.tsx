@@ -155,7 +155,7 @@ const DashboardPage = ({ ...rest }): JSX.Element => {
         rest.location.state?.isDrawerOpened && (
           <DashboardDrawer
             opened={rest.location.state.isDrawerOpened}
-            toggle={toggle as Dispatch<SetStateAction<boolean>>}
+            toggle={toggle as React.Dispatch<React.SetStateAction<boolean>>}
             selectedElement={rest.location.state.selectedElement}
             filters={filters}
           />
