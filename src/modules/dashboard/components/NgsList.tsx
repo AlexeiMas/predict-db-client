@@ -6,6 +6,7 @@ import { ApiNgsModel } from '../../../shared/models/api/api-ngs.model';
 import { GenesFilterModel } from "shared/models/filters.model";
 import { GeneAliasIcon, GeneIcon, ProteinIcon } from "shared/components/Icons";
 import InfoIcon from "shared/components/Icons/InfoIcon";
+import { useQuery } from '../pages/Dashboard';
 
 interface MutationsListProps {
   selectedElement: ClinicalSampleModel;
@@ -20,6 +21,7 @@ const MutationsList = ({
   const [ngs, setNgs] = useState(
     null as unknown as ApiNgsModel
   );
+  const query = useQuery()
 
   const UNMOUNTED = 'unmounted'
   const logReason = (reason: any) => {
@@ -31,13 +33,16 @@ const MutationsList = ({
     let canceled = false;
     const cancel = ((reason: any) => { canceled = true; logReason(reason) });
 
-    const updateState = (success: any) => {
-      return canceled || setNgs(success.data);
+    const setState = (data: any) => {
+      return canceled || setNgs(data);
     }
 
     if (!canceled) {
-      getNgsDetails(selectedElement.pdcModel, filters)
-        .then((success) => canceled || updateState(success))
+      const ModelID = selectedElement.pdcModel || query.get("Model_ID") as string;
+
+      getNgsDetails(ModelID, filters)
+        .then(success => canceled || success.data)
+        .then(success => canceled || !success || setState(success))
         .catch(cancel)
         .finally(() => canceled || togglePreloader(false))
     }
@@ -63,19 +68,19 @@ const MutationsList = ({
           <div className="ngs-mutations__tags">
             {ngs.genes.length > 0 && ngs.genes.map((value, index) => (
               <div className="ngs-mutations__tag" key={index}>
-                <GeneIcon/>
+                <GeneIcon />
                 <span>{value}</span>
               </div>
             ))}
             {ngs.aliases.length > 0 && ngs.aliases.map((value, index) => (
               <div className="ngs-mutations__tag" key={index}>
-                <GeneAliasIcon/>
+                <GeneAliasIcon />
                 <span>{value}</span>
               </div>
             ))}
             {ngs.proteins.length > 0 && ngs.proteins.map((value, index) => (
               <div className="ngs-mutations__tag" key={index}>
-                <ProteinIcon/>
+                <ProteinIcon />
                 <span>{value}</span>
               </div>
             ))}

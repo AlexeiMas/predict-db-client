@@ -5,6 +5,7 @@ import dataTransformer from "../../../services/data-transformer.service";
 import Preloader from "../../../shared/components/Preloader";
 import { PatientTreatmentHistoryModel } from "../../../shared/models/patient-treatment-history.model";
 import InfoIcon from "shared/components/Icons/InfoIcon";
+import { useQuery } from '../pages/Dashboard';
 
 interface PatientTreatmentHistoryListProps {
   selectedElement: ClinicalSampleModel;
@@ -17,6 +18,7 @@ const PatientTreatmentHistoryList = ({
   const [treatmentHistory, setTreatmentHistory] = useState(
     [] as PatientTreatmentHistoryModel[]
   );
+  const query = useQuery()
 
   const UNMOUNTED = 'unmounted'
   const logReason = (reason: any) => {
@@ -28,14 +30,16 @@ const PatientTreatmentHistoryList = ({
     let canceled = false;
     const cancel = ((reason: any) => { canceled = true; logReason(reason) });
 
-    const updateState = (success: any) => {
-      const transformedData = dataTransformer.transformPatientTreatmentHistoryToFrontEndFormat(success.data.rows);
+    const setState = (data: any) => {
+      const transformedData = dataTransformer.transformPatientTreatmentHistoryToFrontEndFormat(data.rows);
       return canceled || setTreatmentHistory(transformedData);
     }
 
     if (!canceled) {
-      getHistoryDetails(selectedElement.pdcModel)
-        .then((success) => canceled || updateState(success))
+      const ModelID = selectedElement.pdcModel || query.get("Model_ID") as string;
+      getHistoryDetails(ModelID)
+        .then(success => canceled || success.data)
+        .then(success => canceled || !success || setState(success))
         .catch(cancel)
         .finally(() => canceled || togglePreloader(false))
     }

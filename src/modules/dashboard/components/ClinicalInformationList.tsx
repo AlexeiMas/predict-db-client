@@ -3,6 +3,7 @@ import { ClinicalSampleModel } from "../../../shared/models/clinical-sample.mode
 import { getClinicalDetails } from "../../../api/detail.api";
 import dataTransformer from "../../../services/data-transformer.service";
 import Preloader from "../../../shared/components/Preloader";
+import { useQuery } from '../pages/Dashboard';
 
 interface ClinicalInformationListProps {
   selectedElement: ClinicalSampleModel;
@@ -15,6 +16,7 @@ const ClinicalInformationList = ({
   const [clinicalInfo, setClinicalInfo] = useState(
     null as unknown as ClinicalSampleModel
   );
+  const query = useQuery()
 
   const UNMOUNTED = 'unmounted'
   const logReason = (reason: any) => {
@@ -26,15 +28,17 @@ const ClinicalInformationList = ({
     let canceled = false;
     const cancel = ((reason: any) => { canceled = true; logReason(reason) });
 
-    const updateState = (success: any) => {
+    const setState = (data: any) => {
       const transformedData =
-        dataTransformer.transformSampleToFrontEndFormat(success.data);
+        dataTransformer.transformSampleToFrontEndFormat(data);
       return canceled || setClinicalInfo(transformedData);
     }
 
     if (!canceled) {
-      getClinicalDetails(selectedElement.pdcModel)
-        .then((success) => canceled || updateState(success))
+      const ModelID = selectedElement.pdcModel || query.get("Model_ID") as string;
+      getClinicalDetails(ModelID)
+        .then(success => canceled || success.data)
+        .then(success => canceled || !success || setState(success))
         .catch(cancel)
         .finally(() => canceled || togglePreloader(false))
     }

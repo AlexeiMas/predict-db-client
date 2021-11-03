@@ -12,6 +12,8 @@ import PDCModelTreatmentResponsesList from "./PDCModelTreatmentResponsesList";
 import { FilterModel } from 'shared/models/filters.model';
 import NgsList from "./NgsList";
 import { useHistory } from 'react-router-dom';
+import { useQuery } from '../pages/Dashboard';
+import { useDrawlerCtx } from "context/drawler.context";
 
 function DashboardDrawerTab(props: any) {
   const { children, value, index, ...other } = props;
@@ -40,17 +42,18 @@ interface DashboardDrawerTabProps {
 
 const DashboardDrawerTabs = (props: DashboardDrawerTabProps) => {
   const history = useHistory()
-  const { selectedElement, filters } = props;
+  const query = useQuery()
   const [tabIndex, setTabIndex] = React.useState(0);
+  const drawlerCTX =  useDrawlerCtx();
 
 
   const handleChange = (event: any, newValue: any) => {
     setTabIndex(newValue);
   };
 
-  const isGeneFilterUsed = filters.geneType.genes.length > 0
-    || filters.geneType.aliases.length > 0
-    || filters.geneType.proteins.length > 0;
+  const isGeneFilterUsed = drawlerCTX.state.filters.geneType.genes.length > 0
+    || drawlerCTX.state.filters.geneType.aliases.length > 0
+    || drawlerCTX.state.filters.geneType.proteins.length > 0;
 
   const wait = (timeout: number): Promise<any> => new Promise(r => setTimeout(r, timeout))
 
@@ -67,12 +70,13 @@ const DashboardDrawerTabs = (props: DashboardDrawerTabProps) => {
         4: 'NGS'.split(/\s+/).join("_"),
       }
 
-      if (props.selectedElement?.pdcModel.trim()) {
+      if ((query.get("Model_ID") || '').trim()) {
         const search = new URLSearchParams()
         const TAB_NAME = TABS_INDEXES_MAP[Number(index)]
-        const Model_ID = props.selectedElement.pdcModel.trim()
+        const Model_ID = (query.get("Model_ID") || '').trim()
         search.append("Model_ID", Model_ID)
         search.append('tab', TAB_NAME)
+        search.append('show', 'true')
         history.push({
           pathname: 'model',
           search: `?${search}`,
@@ -103,24 +107,24 @@ const DashboardDrawerTabs = (props: DashboardDrawerTabProps) => {
         </Tabs>
       </AppBar>
       <DashboardDrawerTab value={tabIndex} index={0}>
-        <GeneralInformationList selectedElement={selectedElement} />
+        <GeneralInformationList selectedElement={drawlerCTX.state.selectedElement} />
       </DashboardDrawerTab>
       <DashboardDrawerTab value={tabIndex} index={1}>
-        <ClinicalInformationList selectedElement={selectedElement} />
+        <ClinicalInformationList selectedElement={drawlerCTX.state.selectedElement} />
       </DashboardDrawerTab>
       <DashboardDrawerTab value={tabIndex} index={2}>
-        <PatientTreatmentHistoryList selectedElement={selectedElement} />
+        <PatientTreatmentHistoryList selectedElement={drawlerCTX.state.selectedElement} />
       </DashboardDrawerTab>
       <DashboardDrawerTab value={tabIndex} index={3}>
         <PDCModelTreatmentResponsesList
-          selectedElement={selectedElement}
-          filters={filters.tumourType}
+          selectedElement={drawlerCTX.state.selectedElement}
+          filters={drawlerCTX.state.filters.tumourType}
         />
       </DashboardDrawerTab>
       {isGeneFilterUsed && <DashboardDrawerTab value={tabIndex} index={4}>
         <NgsList
-          selectedElement={selectedElement}
-          filters={filters.geneType}
+          selectedElement={drawlerCTX.state.selectedElement}
+          filters={drawlerCTX.state.filters.geneType}
         />
       </DashboardDrawerTab>}
     </>

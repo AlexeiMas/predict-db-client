@@ -6,6 +6,7 @@ import { ClinicalGeneralInformationModel } from "../../../shared/models/clinical
 
 import dataTransformer from "../../../services/data-transformer.service";
 import InfoIcon from '../../../shared/components/Icons/InfoIcon';
+import { useQuery } from '../pages/Dashboard';
 
 interface GeneralInformationListProps {
   selectedElement: ClinicalSampleModel;
@@ -19,6 +20,8 @@ const GeneralInformationList = ({
     null as unknown as ClinicalGeneralInformationModel
   );
 
+  const query = useQuery()
+
   const UNMOUNTED = 'unmounted'
   const logReason = (reason: any) => {
     if (reason === UNMOUNTED) return;
@@ -29,16 +32,18 @@ const GeneralInformationList = ({
     let canceled = false;
     const cancel = ((reason: any) => { canceled = true; logReason(reason) })
 
-    const setState = (success: any) => {
+    const setState = (data: any) => {
       const transformedData =
-        dataTransformer.transformGeneralInformationToFrontEndFormat(success.data);
+        dataTransformer.transformGeneralInformationToFrontEndFormat(data);
 
       return canceled || setGeneralInfo(transformedData);
     }
 
     if (!canceled) {
-      getGeneralDetails(selectedElement.pdcModel)
-        .then(success => canceled || setState(success))
+      const ModelID = selectedElement.pdcModel || query.get("Model_ID") as string;
+      getGeneralDetails(ModelID)
+        .then(success =>  canceled || success.data)
+        .then(success => canceled || !success ||  setState(success))
         .catch(cancel)
         .finally(() => canceled || togglePreloader(false))
     }

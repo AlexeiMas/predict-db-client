@@ -8,6 +8,7 @@ import Preloader from "../../../shared/components/Preloader";
 import { TreatmentResponseModel } from "../../../shared/models/treatment-response.model";
 import { TumourFilterModel } from "shared/models/filters.model";
 import InfoIcon from "../../../shared/components/Icons/InfoIcon";
+import { useQuery } from '../pages/Dashboard';
 
 interface PDCModelTreatmentResponsesListProps {
   selectedElement: ClinicalSampleModel;
@@ -22,6 +23,7 @@ const PDCModelTreatmentResponsesList = ({
   const [responses, setResponses] = useState(
     null as unknown as TreatmentResponseModel[]
   );
+  const query = useQuery()
 
   const UNMOUNTED = 'unmounted'
   const logReason = (reason: any) => {
@@ -33,16 +35,18 @@ const PDCModelTreatmentResponsesList = ({
     let canceled = false;
     const cancel = ((reason: any) => { canceled = true; logReason(reason) })
 
-    const setState = (success: any) => {
+    const setState = (data: any) => {
       const transformedData =
-        dataTransformer.transformTreatmentResponsesToFrontEndFormat(success.data);
+        dataTransformer.transformTreatmentResponsesToFrontEndFormat(data);
 
       return canceled || setResponses(transformedData);
     }
 
     if (!canceled) {
-      getResponsesDetails(selectedElement.pdcModel, filters)
-        .then(success => canceled || setState(success))
+      const ModelID = selectedElement.pdcModel || query.get("Model_ID") as string;
+      getResponsesDetails(ModelID, filters)
+        .then(success => canceled || success.data)
+        .then(success => canceled || !success || setState(success))
         .catch(cancel)
         .finally(() => canceled || togglePreloader(false))
     }
