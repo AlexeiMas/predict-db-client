@@ -53,34 +53,13 @@ export const AppContextWrapper = (props: AppContextWrapperProps) => {
       isAuthorized,
     },
     contextMethods: {
-      setUserName(data: any) {
-        storage.set("user_name", userName);
-        setUserName(data)
-      },
-      setUserEmail(data: any) {
-        storage.set("user_email", userEmail);
-        setUserEmail(data)
-      },
-      setAccessToken(data: any) {
-        storage.set("access_token", accessToken);
-        setAccessToken(data)
-      },
-      setRefreshToken(data: any) {
-        storage.set("refresh_token", refreshToken);
-        setRefreshToken(data)
-      },
-      setAccessExpMS(data: any) {
-        storage.set("access_token_expires", accessExpMS);
-        setAccessExpMS(data)
-      },
-      setRefreshExpMS(data: any) {
-        storage.set("refresh_token_expires", refreshExpMS);
-        setRefreshExpMS(data)
-      },
-      setIsAuthorized(data: any) {
-        storage.set("is_authorized", isAuthorized);
-        setIsAuthorized(data)
-      },
+      setUserName,
+      setUserEmail,
+      setAccessToken,
+      setRefreshToken,
+      setAccessExpMS,
+      setRefreshExpMS,
+      setIsAuthorized,
     },
   };
 
@@ -116,6 +95,34 @@ export const AppContextWrapper = (props: AppContextWrapperProps) => {
   useEffect(() => {
     checkIfUserAuthorized();
   }, []);
+
+  useEffect(() => {
+    storage.set("is_authorized", isAuthorized);
+  }, [isAuthorized]);
+
+  useEffect(() => {
+    storage.set("user_name", userName);
+  }, [userName]);
+
+  useEffect(() => {
+    storage.set("user_email", userEmail);
+  }, [userEmail]);
+
+  useEffect(() => {
+    storage.set("access_token", accessToken);
+  }, [accessToken]);
+
+  useEffect(() => {
+    storage.set("refresh_token", refreshToken);
+  }, [refreshToken]);
+
+  useEffect(() => {
+    storage.set("access_token_expires", accessExpMS);
+  }, [accessExpMS]);
+
+  useEffect(() => {
+    storage.set("refresh_token_expires", refreshExpMS);
+  }, [refreshExpMS]);
 
   return <AppContext.Provider value={state}>{children}</AppContext.Provider>;
 };
