@@ -7,8 +7,8 @@ const PrivateRoute = ({ component: Component, ...rest }: any) => {
     <Route {...rest} render={(props: any): React.ReactElement => {
       const isAuth = storage.checkBool("is_authorized");
       const accessExp = storage.get("access_token_expires");
-      const isAuthorized = !isAuth || !accessExp || accessExp <= Date.now();
-      if (!isAuthorized) return <Redirect to={{ pathname: routes.signIn }} />
+      const isNotAuthenticated = !isAuth || !accessExp || accessExp <= Date.now();
+      if (isNotAuthenticated) return <Redirect to={{ pathname: routes.signIn }} />
       return <Component {...props} />;
     }} />
   );

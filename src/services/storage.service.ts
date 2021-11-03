@@ -41,6 +41,7 @@ class StorageService {
       "refresh_token_expires",
       "is_authorized",
     ]);
+    this._storage.clear();
   }
 
   public checkBool(key: string): boolean {

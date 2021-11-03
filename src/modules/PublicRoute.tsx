@@ -8,8 +8,8 @@ const PublicRoute = ({ component: Component, ...rest }: any) => {
     <Route {...rest} render={(props: any): React.ReactElement => {
       const isAuth = storage.checkBool("is_authorized");
       const accessExp = storage.get("access_token_expires");
-      const isAuthorized = !isAuth || !accessExp || accessExp <= Date.now();
-      if (isAuthorized) return <Redirect to={{ pathname: routes.dashboard }} />
+      const isAuthenticated = isAuth || (accessExp && accessExp > Date.now());
+      if (isAuthenticated) return <Redirect to={{ pathname: routes.dashboard }} />
       return <Component {...props} />;
     }} />
   );

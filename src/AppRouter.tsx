@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Redirect, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
 import { routes } from "./routes";
 
 import PublicRoute from "modules/PublicRoute";
@@ -18,10 +18,9 @@ const AppRouter = (): JSX.Element => {
         <PublicRoute component={SignUp} path={routes.signUp} exact />
         <PublicRoute component={ForgotPassword} path={routes.forgotPassword} exact />
         <PublicRoute component={ResetPassword} path={routes.resetPassword} exact />
-
         <PrivateRoute component={Dashboard} path={routes.dashboard} exact />
-
-        <Redirect to={ routes.notFound} />
+        <Route path={routes.notFound} exact>{'404'}</Route>
+        <Redirect to={routes.notFound} />
       </Switch>
     </Router>
   )
