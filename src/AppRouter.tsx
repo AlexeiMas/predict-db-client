@@ -13,12 +13,12 @@ const AppRouter = (): JSX.Element => {
   return (
     <Router>
       <Switch>
-        <PublicRoute exact path={routes.default} component={SignIn}  />
-        <PublicRoute exact path={routes.signIn} component={SignIn}  />
-        <PublicRoute exact path={routes.signUp} component={SignUp}  />
-        <PublicRoute exact path={routes.forgotPassword} component={ForgotPassword}  />
-        <PublicRoute exact path={routes.resetPassword} component={ResetPassword}  />
-        <PrivateRoute exact path={["/dashboard", "/model/:Modal_ID"]} component={Dashboard} />
+        <PublicRoute exact path={routes.default} component={SignIn} />
+        <PublicRoute exact path={routes.signIn} component={SignIn} />
+        <PublicRoute exact path={routes.signUp} component={SignUp} />
+        <PublicRoute exact path={routes.forgotPassword} component={ForgotPassword} />
+        <PublicRoute exact path={routes.resetPassword} component={ResetPassword} />
+        <PrivateRoute path={routes.dashboard.extended} component={Dashboard} />
         <PublicRoute exact path={routes.notFound} component={() => <>PAGE Not Found</>} />
         <Redirect to={routes.notFound} />
       </Switch>

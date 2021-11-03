@@ -11,6 +11,7 @@ import { ClinicalSampleModel } from "../../../shared/models/clinical-sample.mode
 import PDCModelTreatmentResponsesList from "./PDCModelTreatmentResponsesList";
 import { FilterModel } from 'shared/models/filters.model';
 import NgsList from "./NgsList";
+import { useHistory } from 'react-router-dom';
 
 function DashboardDrawerTab(props: any) {
   const { children, value, index, ...other } = props;
@@ -38,8 +39,10 @@ interface DashboardDrawerTabProps {
 }
 
 const DashboardDrawerTabs = (props: DashboardDrawerTabProps) => {
+  const history = useHistory()
   const { selectedElement, filters } = props;
   const [tabIndex, setTabIndex] = React.useState(0);
+
 
   const handleChange = (event: any, newValue: any) => {
     setTabIndex(newValue);
@@ -48,6 +51,45 @@ const DashboardDrawerTabs = (props: DashboardDrawerTabProps) => {
   const isGeneFilterUsed = filters.geneType.genes.length > 0
     || filters.geneType.aliases.length > 0
     || filters.geneType.proteins.length > 0;
+
+  const wait = (timeout: number): Promise<any> => new Promise(r => setTimeout(r, timeout))
+
+  const makePath = () => {
+    let canceled = false;
+    const cancel = ((args: any) => { canceled = true });
+
+    const changeHistory = (index: number) => {
+      const TABS_INDEXES_MAP: { [key: number]: string } = {
+        0: 'General'.split(/\s+/).join("_"),
+        1: 'Clinical'.split(/\s+/).join("_"),
+        2: 'Patient treatment history'.split(/\s+/).join("_"),
+        3: 'PDC Model Treatment Responses'.split(/\s+/).join("_"),
+        4: 'NGS'.split(/\s+/).join("_"),
+      }
+
+      if (props.selectedElement?.pdcModel.trim()) {
+        const search = new URLSearchParams()
+        const TAB_NAME = TABS_INDEXES_MAP[Number(index)]
+        const Model_ID = props.selectedElement.pdcModel.trim()
+        search.append("Model_ID", Model_ID)
+        search.append('tab', TAB_NAME)
+        history.push({
+          pathname: 'model',
+          search: `?${search}`,
+          state: { isDrawerOpened: true, selectedElement: props.selectedElement }
+        })
+      }
+    }
+
+    wait(10).then(() => canceled || changeHistory(tabIndex))
+    return cancel;
+  }
+
+  React.useEffect(() => {
+    const cancel = makePath()
+    return () => { cancel('unmounted') }
+  }, [tabIndex]) // eslint-disable-line
+
 
   return (
     <>

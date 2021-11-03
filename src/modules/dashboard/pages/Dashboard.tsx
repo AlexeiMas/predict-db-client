@@ -98,12 +98,20 @@ const DashboardPage = ({ ...rest }): JSX.Element => {
   };
 
   const openDrawer = (selectedElement: ClinicalSampleModel): void => {
-    const modelID = selectedElement.pdcModel.trim()
-    history.push({ pathname: '/model/' + modelID, state: { isDrawerOpened: true, selectedElement } })
+    const search = new URLSearchParams()
+    if (selectedElement.pdcModel.trim()) {
+      search.append("Model_ID", selectedElement.pdcModel.trim())
+      history.push({
+        pathname: 'model',
+        search: `?${search}`,
+        state: { isDrawerOpened: true, selectedElement }
+      })
+    }
   };
 
+
   const toggle = (state: boolean) => {
-    history.push({ pathname: routes.dashboard, state: { isDrawerOpened: state } })
+    history.push({ pathname: routes.dashboard.base, state: { isDrawerOpened: state } })
   }
 
   const onToggleFilters = (value: boolean): void => {

@@ -18,31 +18,44 @@ const PDCModelTreatmentResponsesList = ({
   selectedElement,
   filters,
 }: PDCModelTreatmentResponsesListProps): JSX.Element => {
-  const [preloader, togglePreloader] = useState(false);
+  const [preloader, togglePreloader] = useState(true);
   const [responses, setResponses] = useState(
     null as unknown as TreatmentResponseModel[]
   );
 
+  const UNMOUNTED = 'unmounted'
+  const logReason = (reason: any) => {
+    if (reason === UNMOUNTED) return;
+    console.log('[ reason ]', reason);
+  }
+
+  const loadResponsesInfo = () => {
+    let canceled = false;
+    const cancel = ((reason: any) => { canceled = true; logReason(reason) })
+
+    const setState = (success: any) => {
+      const transformedData =
+        dataTransformer.transformTreatmentResponsesToFrontEndFormat(success.data);
+
+      return canceled || setResponses(transformedData);
+    }
+
+    if (!canceled) {
+      getResponsesDetails(selectedElement.pdcModel, filters)
+        .then(success => canceled || setState(success))
+        .catch(cancel)
+        .finally(() => canceled || togglePreloader(false))
+    }
+
+    return cancel;
+  };
+
+
   useEffect(() => {
-    loadResponsesInfo();
+    const cancel = loadResponsesInfo();
+    return () => { cancel(UNMOUNTED) }
   }, []); // eslint-disable-line
 
-  const loadResponsesInfo = async (): Promise<void> => {
-    try {
-      togglePreloader(true);
-      const { data } = await getResponsesDetails(
-        selectedElement.pdcModel,
-        filters
-      );
-      const transformedData =
-        dataTransformer.transformTreatmentResponsesToFrontEndFormat(data);
-      setResponses(transformedData);
-    } catch (e) {
-      console.log(e);
-    } finally {
-      togglePreloader(false);
-    }
-  };
 
   const getClassForPhenotypicResponseType = (value: string): string => {
     if (value === "Positive") {

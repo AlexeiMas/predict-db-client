@@ -2,7 +2,10 @@ export const routes = {
   default: '/',
   signIn: '/sign-in',
   signUp: '/sign-up',
-  dashboard: '/dashboard',
+  dashboard: {
+    base: "/dashboard",
+    extended: ["/dashboard", "/model(\\?Model_ID=.*)?"]
+  },
   forgotPassword: '/forgot-password',
   resetPassword: '/reset-password',
   notFound: '/not-found',

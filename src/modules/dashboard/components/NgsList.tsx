@@ -16,26 +16,40 @@ const MutationsList = ({
   selectedElement,
   filters,
 }: MutationsListProps): JSX.Element => {
-  const [preloader, togglePreloader] = useState(false);
+  const [preloader, togglePreloader] = useState(true);
   const [ngs, setNgs] = useState(
     null as unknown as ApiNgsModel
   );
 
+  const UNMOUNTED = 'unmounted'
+  const logReason = (reason: any) => {
+    if (reason === UNMOUNTED) return;
+    console.log('[ reason ]', reason);
+  }
+
+  const loadNgsData = () => {
+    let canceled = false;
+    const cancel = ((reason: any) => { canceled = true; logReason(reason) });
+
+    const updateState = (success: any) => {
+      return canceled || setNgs(success.data);
+    }
+
+    if (!canceled) {
+      getNgsDetails(selectedElement.pdcModel, filters)
+        .then((success) => canceled || updateState(success))
+        .catch(cancel)
+        .finally(() => canceled || togglePreloader(false))
+    }
+
+    return cancel;
+  }
+
   useEffect(() => {
-    loadNgsData();
+    const cancel = loadNgsData();
+    return () => { cancel(UNMOUNTED) }
   }, []); // eslint-disable-line
 
-  const loadNgsData = async (): Promise<void> => {
-    try {
-      togglePreloader(true);
-      const { data } = await getNgsDetails(selectedElement.pdcModel, filters);
-      setNgs(data);
-    } catch (e) {
-      console.log(e);
-    } finally {
-      togglePreloader(false);
-    }
-  };
 
   return (
     <>

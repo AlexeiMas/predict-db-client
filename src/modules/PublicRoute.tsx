@@ -9,7 +9,7 @@ const PublicRoute = ({ component: Component, ...rest }: any) => {
       const isAuth = storage.checkBool("is_authorized");
       const accessExp = storage.get("access_token_expires");
       const isAuthenticated = isAuth || (accessExp && accessExp > Date.now());
-      if (isAuthenticated) return <Redirect to={{ pathname: routes.dashboard }} />
+      if (isAuthenticated) return <Redirect to={{ pathname: routes.dashboard.base }} />
       return <Component {...props} />;
     }} />
   );

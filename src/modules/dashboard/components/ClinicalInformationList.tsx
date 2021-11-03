@@ -11,28 +11,41 @@ interface ClinicalInformationListProps {
 const ClinicalInformationList = ({
   selectedElement,
 }: ClinicalInformationListProps): JSX.Element => {
-  const [preloader, togglePreloader] = useState(false);
+  const [preloader, togglePreloader] = useState(true);
   const [clinicalInfo, setClinicalInfo] = useState(
     null as unknown as ClinicalSampleModel
   );
 
-  useEffect(() => {
-    loadClinicalInfo();
-  }, []); // eslint-disable-line
+  const UNMOUNTED = 'unmounted'
+  const logReason = (reason: any) => {
+    if (reason === UNMOUNTED) return;
+    console.log('[ reason ]', reason);
+  }
 
-  const loadClinicalInfo = async (): Promise<void> => {
-    try {
-      togglePreloader(true);
-      const { data } = await getClinicalDetails(selectedElement.pdcModel);
+  const loadClinicalInfo = () => {
+    let canceled = false;
+    const cancel = ((reason: any) => { canceled = true; logReason(reason) });
+
+    const updateState = (success: any) => {
       const transformedData =
-        dataTransformer.transformSampleToFrontEndFormat(data);
-      setClinicalInfo(transformedData);
-    } catch (e) {
-      console.log(e);
-    } finally {
-      togglePreloader(false);
+        dataTransformer.transformSampleToFrontEndFormat(success.data);
+      return canceled || setClinicalInfo(transformedData);
     }
-  };
+
+    if (!canceled) {
+      getClinicalDetails(selectedElement.pdcModel)
+        .then((success) => canceled || updateState(success))
+        .catch(cancel)
+        .finally(() => canceled || togglePreloader(false))
+    }
+
+    return cancel;
+  }
+
+  useEffect(() => {
+    const cancel = loadClinicalInfo();
+    return () => { cancel(UNMOUNTED) }
+  }, []); // eslint-disable-line
 
   return (
     <>
@@ -69,7 +82,7 @@ const ClinicalInformationList = ({
           <div className="drawer-tabs-row">
             <div className="drawer-tabs-row__label">Histology</div>
             <div className="drawer-tabs-row__value">
-                {clinicalInfo.histology}
+              {clinicalInfo.histology}
             </div>
           </div>
           <div className="drawer-tabs-row">
@@ -77,7 +90,7 @@ const ClinicalInformationList = ({
               Receptor Status
             </div>
             <div className="drawer-tabs-row__value">
-                {clinicalInfo.ReceptorStatus}
+              {clinicalInfo.ReceptorStatus}
             </div>
           </div>
           <div className="drawer-tabs-row">
