@@ -27,4 +27,9 @@ yarn-error.log*
 .vscode
 .history
 
-package-lock.json
+/package-lock.json
+
+/**/me-**
+/**/z-me-**
+/**/**/me-**
+/**/**/z-me-**
