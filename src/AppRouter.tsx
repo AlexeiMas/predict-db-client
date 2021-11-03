@@ -18,7 +18,7 @@ const AppRouter = (): JSX.Element => {
         <PublicRoute exact path={routes.signUp} component={SignUp}  />
         <PublicRoute exact path={routes.forgotPassword} component={ForgotPassword}  />
         <PublicRoute exact path={routes.resetPassword} component={ResetPassword}  />
-        <PrivateRoute exact path={routes.dashboard} component={Dashboard}  />
+        <PrivateRoute exact path={["/dashboard", "/model/:Modal_ID"]} component={Dashboard} />
         <PublicRoute exact path={routes.notFound} component={() => <>PAGE Not Found</>} />
         <Redirect to={routes.notFound} />
       </Switch>

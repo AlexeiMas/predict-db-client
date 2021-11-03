@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, SetStateAction, Dispatch } from "react";
+import React from "react";
 
 import DashboardHeader from "../components/DashboardHeader";
 import DashboardSearch from "../components/DashboardSearch";
@@ -10,31 +10,28 @@ import DashboardFilters from "../components/DashboardFilters";
 import titleService from "../../../services/title.service";
 import dataTransformer from "../../../services/data-transformer.service";
 
-import { BasePageProps } from "../../../shared/models";
 import { ClinicalSampleModel } from "../../../shared/models/clinical-sample.model";
 import { searchItems } from "../../../api/search.api";
 import { FilterModel } from "../../../shared/models/filters.model";
 import { useHistory } from "react-router-dom";
-import PrivateRoute from "modules/PrivateRoute";
 import { routes } from '../../../routes';
 
-const DashboardPage = (props: BasePageProps): JSX.Element => {
+const DashboardPage = ({ ...rest }): JSX.Element => {
   const history = useHistory()
-  titleService.setTitle(props.title);
+  titleService.setTitle(rest.title);
   const defaultPageSize = 20;
 
-  const [isDrawerOpened, toggleDrawer] = useState(false);
-  const [areFiltersOpened, toggleFilter] = useState(true);
-  const [preloader, togglePreloader] = useState(false);
+  const [areFiltersOpened, toggleFilter] = React.useState(true);
+  const [preloader, togglePreloader] = React.useState(false);
 
-  const [records, setRecords] = useState([] as ClinicalSampleModel[]);
-  const [count, setCount] = useState(0);
-  const [sort, setSort] = useState("");
-  const [order, setOrder] = useState("");
+  const [records, setRecords] = React.useState([] as ClinicalSampleModel[]);
+  const [count, setCount] = React.useState(0);
+  const [sort, setSort] = React.useState("");
+  const [order, setOrder] = React.useState("");
 
-  const [areFiltersCleared, setAreFiltersCleared] = useState(false);
+  const [areFiltersCleared, setAreFiltersCleared] = React.useState(false);
 
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = React.useState({
     tumourType: [
       {
         primary: [],
@@ -63,20 +60,16 @@ const DashboardPage = (props: BasePageProps): JSX.Element => {
     dataAvailable: []
   } as FilterModel);
 
-  const [selectedPageIndex, setSelectedPage] = useState(0);
-  const [selectedElement, setSelectedElement] = useState(
-    {} as ClinicalSampleModel
-  );
+  const [selectedPageIndex, setSelectedPage] = React.useState(0);
+  const filtersRef = React.useRef<FilterModel>();
 
-  const filtersRef = useRef<FilterModel>();
-
-  useEffect(() => {
+  React.useEffect(() => {
     filtersRef.current = filters;
   });
 
   const prevFilters = filtersRef.current;
 
-  useEffect(() => {
+  React.useEffect(() => {
     const selectedPage = filters === prevFilters ? selectedPageIndex : 0;
     setSelectedPage(selectedPage);
     if (!preloader) getRecords(selectedPage, defaultPageSize, filters, sort, order);
@@ -104,18 +97,13 @@ const DashboardPage = (props: BasePageProps): JSX.Element => {
     }
   };
 
-  const openDrawer = (sample: ClinicalSampleModel): void => {
-    history.push('/dashboard?Model_ID=' + sample.pdcModel)
-    const search = new URLSearchParams()
-    if (sample.pdcModel) search.append("Model_ID", sample.pdcModel)
-    history.push({ pathname: routes.dashboard, search: `?${search}`, state: { ...sample } })
-    setSelectedElement(sample);
-    toggleDrawer(true);
+  const openDrawer = (selectedElement: ClinicalSampleModel): void => {
+    const modelID = selectedElement.pdcModel.trim()
+    history.push({ pathname: '/model/' + modelID, state: { isDrawerOpened: true, selectedElement } })
   };
 
   const toggle = (state: boolean) => {
-    history.push('/dashboard')
-    toggleDrawer(state);
+    history.push({ pathname: routes.dashboard, state: { isDrawerOpened: state } })
   }
 
   const onToggleFilters = (value: boolean): void => {
@@ -123,67 +111,58 @@ const DashboardPage = (props: BasePageProps): JSX.Element => {
   };
 
 
-
-
   return (
-    <>
-      <div className="dash-board">
-        {preloader && <Preloader />}
+    <div className="dash-board">
+      {preloader && <Preloader />}
 
-        <DashboardHeader />
+      <DashboardHeader />
 
-        <div className="dash-board__content">
-          <DashboardFilters
-            filters={filters}
-            setFilters={setFilters}
-            opened={areFiltersOpened}
-            areFiltersCleared={areFiltersCleared}
-            setAreFiltersCleared={setAreFiltersCleared}
-          />
+      <div className="dash-board__content">
+        <DashboardFilters
+          filters={filters}
+          setFilters={setFilters}
+          opened={areFiltersOpened}
+          areFiltersCleared={areFiltersCleared}
+          setAreFiltersCleared={setAreFiltersCleared}
+        />
 
-          <DashboardSearch
-            resultsLength={count}
-            areFiltersOpened={areFiltersOpened}
-            toggleFilter={onToggleFilters}
-            filters={filters}
-            setFilters={setFilters}
-            areFiltersCleared={areFiltersCleared}
-            setAreFiltersCleared={setAreFiltersCleared}
-            togglePreloader={togglePreloader}
-          />
+        <DashboardSearch
+          resultsLength={count}
+          areFiltersOpened={areFiltersOpened}
+          toggleFilter={onToggleFilters}
+          filters={filters}
+          setFilters={setFilters}
+          areFiltersCleared={areFiltersCleared}
+          setAreFiltersCleared={setAreFiltersCleared}
+          togglePreloader={togglePreloader}
+        />
 
-          <DashboardTable
-            records={records}
-            count={count}
-            rowClick={openDrawer}
-            selectedPageIndex={selectedPageIndex}
-            changePage={setSelectedPage}
-            pageSize={defaultPageSize}
-            sort={sort}
-            order={order}
-            setSort={setSort}
-            setOrder={setOrder}
-          />
-        </div>
-
-
-
+        <DashboardTable
+          records={records}
+          count={count}
+          rowClick={openDrawer}
+          selectedPageIndex={selectedPageIndex}
+          changePage={setSelectedPage}
+          pageSize={defaultPageSize}
+          sort={sort}
+          order={order}
+          setSort={setSort}
+          setOrder={setOrder}
+        />
       </div>
-      <PrivateRoute path={routes.modelID} component={({...rest}) => {
-        const search =  rest.location.search.slice(1);
-        const [Model_ID] = search.split("=").reverse()
-        console.log('[ Model_ID ]', Model_ID);
-        return !isDrawerOpened ? <></> : (
+
+      {
+        rest.location.state?.isDrawerOpened && (
           <DashboardDrawer
-            opened={isDrawerOpened}
+            opened={rest.location.state.isDrawerOpened}
             toggle={toggle as Dispatch<SetStateAction<boolean>>}
-            selectedElement={selectedElement}
+            selectedElement={rest.location.state.selectedElement}
             filters={filters}
           />
         )
-      }} />
+      }
+    </div>
 
-    </>
   );
 };
 
