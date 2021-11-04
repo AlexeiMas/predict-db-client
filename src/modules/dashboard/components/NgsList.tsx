@@ -7,6 +7,7 @@ import { GenesFilterModel } from "shared/models/filters.model";
 import { GeneAliasIcon, GeneIcon, ProteinIcon } from "shared/components/Icons";
 import InfoIcon from "shared/components/Icons/InfoIcon";
 import { useQuery } from '../pages/Dashboard';
+import { useHistory } from 'react-router-dom';
 
 interface MutationsListProps {
   selectedElement: ClinicalSampleModel;
@@ -17,6 +18,7 @@ const MutationsList = ({
   selectedElement,
   filters,
 }: MutationsListProps): JSX.Element => {
+  const history = useHistory()
   const [preloader, togglePreloader] = useState(true);
   const [ngs, setNgs] = useState(
     null as unknown as ApiNgsModel
@@ -24,6 +26,7 @@ const MutationsList = ({
   const query = useQuery()
 
   const UNMOUNTED = 'unmounted'
+  const NOT_FOUND = 'Not found';
   const logReason = (reason: any) => reason === UNMOUNTED || console.log('[ reason ]', reason);
 
   const loadNgsData = () => {
@@ -31,11 +34,12 @@ const MutationsList = ({
     const cancel = ((reason: any) => { canceled = true; logReason(reason) });
 
     const setState = (data: any) => {
+      if (data === NOT_FOUND) return history.push('/not-found')
       return canceled || setNgs(data);
     }
 
     if (!canceled) {
-      const ModelID = selectedElement.pdcModel || query.get("Model_ID") as string;
+      const ModelID = query.get("Model_ID") as string;
 
       getNgsDetails(ModelID, filters)
         .then(success => canceled || success.data)

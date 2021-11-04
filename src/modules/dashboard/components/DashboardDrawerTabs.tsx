@@ -40,21 +40,39 @@ interface DashboardDrawerTabProps {
   filters: FilterModel;
 }
 
+
+const TABS_INDEXES_MAP: { [key: number]: string } = {
+  0: 'General'.split(/\s+/).join("_"),
+  1: 'Clinical'.split(/\s+/).join("_"),
+  2: 'Patient treatment history'.split(/\s+/).join("_"),
+  3: 'PDC Model Treatment Responses'.split(/\s+/).join("_"),
+  4: 'NGS'.split(/\s+/).join("_"),
+}
+
 const DashboardDrawerTabs = (props: DashboardDrawerTabProps) => {
   const history = useHistory()
   const query = useQuery()
-  const [tabIndex, setTabIndex] = React.useState(0);
-  const drawlerCTX =  useDrawlerCtx();
+  const drawlerCTX = useDrawlerCtx();
 
-
-  const handleChange = (event: any, newValue: any) => {
-    setTabIndex(newValue);
-  };
 
   const isGeneFilterUsed = drawlerCTX.state.filters.geneType.genes.length > 0
     || drawlerCTX.state.filters.geneType.aliases.length > 0
     || drawlerCTX.state.filters.geneType.proteins.length > 0;
 
+  const getInitialTabIndex = () => {
+    const raw_tab = query.get("tab");
+    return Object
+      .entries(TABS_INDEXES_MAP)
+      .reduce(
+        (acc: number, [idx, name]) => {
+          if (!isGeneFilterUsed && /ngs/gi.test(name)) return 0
+          const re = new RegExp(name, "gi");
+          return (raw_tab && re.test(raw_tab)) ? Number(idx) : (acc)
+        }, 0)
+  }
+
+  const [tabIndex, setTabIndex] = React.useState(getInitialTabIndex);
+  const handleChange = (_: any, newValue: any) => { setTabIndex(newValue); };
   const wait = (timeout: number): Promise<any> => new Promise(r => setTimeout(r, timeout))
 
   const makePath = () => {
@@ -62,14 +80,6 @@ const DashboardDrawerTabs = (props: DashboardDrawerTabProps) => {
     const cancel = ((args: any) => { canceled = true });
 
     const changeHistory = (index: number) => {
-      const TABS_INDEXES_MAP: { [key: number]: string } = {
-        0: 'General'.split(/\s+/).join("_"),
-        1: 'Clinical'.split(/\s+/).join("_"),
-        2: 'Patient treatment history'.split(/\s+/).join("_"),
-        3: 'PDC Model Treatment Responses'.split(/\s+/).join("_"),
-        4: 'NGS'.split(/\s+/).join("_"),
-      }
-
       if ((query.get("Model_ID") || '').trim()) {
         const search = new URLSearchParams()
         const TAB_NAME = TABS_INDEXES_MAP[Number(index)]

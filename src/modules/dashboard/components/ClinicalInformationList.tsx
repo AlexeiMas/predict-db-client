@@ -4,6 +4,7 @@ import { getClinicalDetails } from "../../../api/detail.api";
 import dataTransformer from "../../../services/data-transformer.service";
 import Preloader from "../../../shared/components/Preloader";
 import { useQuery } from '../pages/Dashboard';
+import { useHistory } from 'react-router-dom';
 
 interface ClinicalInformationListProps {
   selectedElement: ClinicalSampleModel;
@@ -12,6 +13,7 @@ interface ClinicalInformationListProps {
 const ClinicalInformationList = ({
   selectedElement,
 }: ClinicalInformationListProps): JSX.Element => {
+  const history = useHistory()
   const [preloader, togglePreloader] = useState(true);
   const [clinicalInfo, setClinicalInfo] = useState(
     null as unknown as ClinicalSampleModel
@@ -19,6 +21,7 @@ const ClinicalInformationList = ({
   const query = useQuery()
 
   const UNMOUNTED = 'unmounted'
+  const NOT_FOUND = 'Not found';
   const logReason = (reason: any) => reason === UNMOUNTED || console.log('[ reason ]', reason);
 
   const loadClinicalInfo = () => {
@@ -26,13 +29,14 @@ const ClinicalInformationList = ({
     const cancel = ((reason: any) => { canceled = true; logReason(reason) });
 
     const setState = (data: any) => {
+      if (data === NOT_FOUND) return history.push('/not-found')
       const transformedData =
         dataTransformer.transformSampleToFrontEndFormat(data);
       return canceled || setClinicalInfo(transformedData);
     }
 
     if (!canceled) {
-      const ModelID = selectedElement.pdcModel || query.get("Model_ID") as string;
+      const ModelID = query.get("Model_ID") as string;
       getClinicalDetails(ModelID)
         .then(success => canceled || success.data)
         .then(success => canceled || !success || setState(success))

@@ -91,6 +91,7 @@ const DashboardPage = ({ ...rest }): JSX.Element => {
 
 
   const UNMOUNTED = 'unmounted'
+  const NOT_FOUND = 'Not found';
   const logReason = (reason: any) => reason === UNMOUNTED || console.log('[ reason ]', reason);
 
   const getRecords = (
@@ -104,6 +105,7 @@ const DashboardPage = ({ ...rest }): JSX.Element => {
     const cancel = ((reason: any) => { canceled = true; logReason(reason) })
 
     const setState = (data: any) => {
+      if (data === NOT_FOUND) return history.push('/not-found')
       const transformedData = dataTransformer.transformSamplesToFrontEndFormat(
         data.rows
       );
@@ -199,7 +201,7 @@ const DashboardPage = ({ ...rest }): JSX.Element => {
           <DashboardDrawer
             opened={/true/gi.test(query.get('show') || '')}
             toggle={toggle as React.Dispatch<React.SetStateAction<boolean>>}
-            getRecords={() => getRecords(filters === prevFilters ? selectedPageIndex : 0, defaultPageSize, filters, sort, order)}
+            {...rest}
           />
         )
       }

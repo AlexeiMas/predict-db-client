@@ -7,6 +7,7 @@ import { ClinicalGeneralInformationModel } from "../../../shared/models/clinical
 import dataTransformer from "../../../services/data-transformer.service";
 import InfoIcon from '../../../shared/components/Icons/InfoIcon';
 import { useQuery } from '../pages/Dashboard';
+import { useHistory } from 'react-router-dom';
 
 interface GeneralInformationListProps {
   selectedElement: ClinicalSampleModel;
@@ -15,6 +16,7 @@ interface GeneralInformationListProps {
 const GeneralInformationList = ({
   selectedElement,
 }: GeneralInformationListProps): JSX.Element => {
+  const history = useHistory()
   const [preloader, togglePreloader] = useState(true);
   const [generalInfo, setGeneralInfo] = useState(
     null as unknown as ClinicalGeneralInformationModel
@@ -23,6 +25,7 @@ const GeneralInformationList = ({
   const query = useQuery()
 
   const UNMOUNTED = 'unmounted'
+  const NOT_FOUND = 'Not found';
   const logReason = (reason: any) => reason === UNMOUNTED || console.log('[ reason ]', reason);
 
   const loadGeneralInfo = () => {
@@ -30,17 +33,17 @@ const GeneralInformationList = ({
     const cancel = ((reason: any) => { canceled = true; logReason(reason) })
 
     const setState = (data: any) => {
+      if (data === NOT_FOUND) return history.push('/not-found')
       const transformedData =
         dataTransformer.transformGeneralInformationToFrontEndFormat(data);
-
       return canceled || setGeneralInfo(transformedData);
     }
 
     if (!canceled) {
-      const ModelID = selectedElement.pdcModel || query.get("Model_ID") as string;
+      const ModelID = query.get("Model_ID") as string;
       getGeneralDetails(ModelID)
-        .then(success =>  canceled || success.data)
-        .then(success => canceled || !success ||  setState(success))
+        .then(success => canceled || success.data)
+        .then(success => canceled || !success || setState(success))
         .catch(cancel)
         .finally(() => canceled || togglePreloader(false))
     }

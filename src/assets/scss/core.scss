@@ -52,3 +52,16 @@ body,
   align-items: center;
   cursor: pointer;
 }
+
+
+.not-found-page-updated {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}

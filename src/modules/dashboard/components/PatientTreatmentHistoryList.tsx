@@ -6,6 +6,7 @@ import Preloader from "../../../shared/components/Preloader";
 import { PatientTreatmentHistoryModel } from "../../../shared/models/patient-treatment-history.model";
 import InfoIcon from "shared/components/Icons/InfoIcon";
 import { useQuery } from '../pages/Dashboard';
+import { useHistory } from 'react-router-dom';
 
 interface PatientTreatmentHistoryListProps {
   selectedElement: ClinicalSampleModel;
@@ -14,6 +15,7 @@ interface PatientTreatmentHistoryListProps {
 const PatientTreatmentHistoryList = ({
   selectedElement,
 }: PatientTreatmentHistoryListProps): JSX.Element => {
+  const history = useHistory()
   const [preloader, togglePreloader] = useState(true);
   const [treatmentHistory, setTreatmentHistory] = useState(
     [] as PatientTreatmentHistoryModel[]
@@ -21,6 +23,7 @@ const PatientTreatmentHistoryList = ({
   const query = useQuery()
 
   const UNMOUNTED = 'unmounted'
+  const NOT_FOUND = 'Not found';
   const logReason = (reason: any) => reason === UNMOUNTED || console.log('[ reason ]', reason);
 
   const loadPatientTreatmentHistoryInfo = () => {
@@ -28,12 +31,13 @@ const PatientTreatmentHistoryList = ({
     const cancel = ((reason: any) => { canceled = true; logReason(reason) });
 
     const setState = (data: any) => {
+      if (data === NOT_FOUND) return history.push('/not-found')
       const transformedData = dataTransformer.transformPatientTreatmentHistoryToFrontEndFormat(data.rows);
       return canceled || setTreatmentHistory(transformedData);
     }
 
     if (!canceled) {
-      const ModelID = selectedElement.pdcModel || query.get("Model_ID") as string;
+      const ModelID = query.get("Model_ID") as string;
       getHistoryDetails(ModelID)
         .then(success => canceled || success.data)
         .then(success => canceled || !success || setState(success))

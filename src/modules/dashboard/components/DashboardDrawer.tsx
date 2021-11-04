@@ -17,30 +17,31 @@ import { searchItems } from 'api/search.api';
 import dataTransformer from "../../../services/data-transformer.service";
 import { useQuery } from '../pages/Dashboard';
 import Preloader from '../../../shared/components/Preloader';
+import { useHistory } from 'react-router-dom';
 
 interface DashboardDrawerProps {
   opened: boolean;
   toggle: Dispatch<SetStateAction<boolean>>;
-  getRecords: () => void;
 }
 
 const DashboardDrawer = (props: DashboardDrawerProps): JSX.Element => {
+  const history = useHistory()
   const drawlerCTX = useDrawlerCtx();
-  const isEmpty = (obj: any) => obj.constructor === Object && Object.keys(obj).length === 0;
   const query = useQuery();
   const Model_ID = query.get("Model_ID")
   const [selfOpened, setOpened] = React.useState(false);
 
   const UNMOUNTED = 'unmounted'
+  const NOT_FOUND = 'Not found';
   const logReason = (reason: any) => reason === UNMOUNTED || console.log('[ reason ]', reason);
 
   const loadSelectedItem = () => {
-    let canceled = !isEmpty(drawlerCTX.state.selectedElement);
-    setOpened(canceled)
+    let canceled = false;
     const cancel = ((reason: any) => { canceled = true; logReason(reason) })
 
 
     const setState = (data: any) => {
+      if (data === NOT_FOUND) return history.push('/not-found')
       const transformedData = dataTransformer.transformSamplesToFrontEndFormat(
         data.rows
       );
@@ -60,10 +61,11 @@ const DashboardDrawer = (props: DashboardDrawerProps): JSX.Element => {
     return cancel;
   }
 
+
   React.useEffect(() => {
     const cancel = loadSelectedItem()
     return () => { cancel('unmounted') }
-  })
+  }, [Model_ID]) /* eslint-disable-line */
 
   return (
     <div className="drawer">
