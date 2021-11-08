@@ -17,29 +17,29 @@ import { useAppContext } from 'context';
 import { routes } from "../../routes";
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
-    root: {
-      "& .MuiTextField-root": {
-        width: "100%",
-      },
-      width: "420px",
+  root: {
+    "& .MuiTextField-root": {
+      width: "100%",
     },
-    button: {
+    width: "420px",
+  },
+  button: {
+    backgroundColor: "#0941AC",
+    width: "420px",
+    height: "77px",
+    padding: "20px",
+    fontWeight: "normal",
+    textTransform: "none",
+    fontSize: "16px",
+    "&:hover": {
       backgroundColor: "#0941AC",
-      width: "420px",
-      height: "77px",
-      padding: "20px",
-      fontWeight: "normal",
-      textTransform: "none",
-      fontSize: "16px",
-      "&:hover": {
-        backgroundColor: "#0941AC",
-      },
     },
-    notchedOutline: {
-      borderWidth: "1px",
-      borderColor: "#EEEEF2 !important",
-    },
-  })
+  },
+  notchedOutline: {
+    borderWidth: "1px",
+    borderColor: "#EEEEF2 !important",
+  },
+})
 );
 
 const SignIn = (props: BasePageProps): JSX.Element => {
@@ -72,22 +72,29 @@ const SignIn = (props: BasePageProps): JSX.Element => {
     setError(false);
     setReason('');
 
-    const { email, password } = inputData;
-    const { status, data } = await signIn(email, password);
+    try {
 
-    if (status === 200) {
-      contextMethods.setUserName(`${data.user.firstName} ${data.user.lastName}`);
-      contextMethods.setUserEmail(data.user.email);
-      contextMethods.setAccessToken(data.credentials.accessToken);
-      contextMethods.setRefreshToken(data.credentials.refreshToken);
-      contextMethods.setAccessExpMS(data.credentials.accessExpMS);
-      contextMethods.setRefreshExpMS(data.credentials.refreshExpMS);
-      contextMethods.setIsAuthorized(true);
-      return history.push('/dashboard');
+      const { email, password } = inputData;
+      const success = await signIn(email, password);
+      const { status, data } = success;
+
+      if (status === 200) {
+        contextMethods.setUserName(`${data.user.firstName} ${data.user.lastName}`);
+        contextMethods.setUserEmail(data.user.email);
+        contextMethods.setAccessToken(data.credentials.accessToken);
+        contextMethods.setRefreshToken(data.credentials.refreshToken);
+        contextMethods.setAccessExpMS(data.credentials.accessExpMS);
+        contextMethods.setRefreshExpMS(data.credentials.refreshExpMS);
+        contextMethods.setIsAuthorized(true);
+        return history.push('/dashboard');
+      }
+
+      setError(true);
+      setReason(data as unknown as string);
+    } catch (error) {
+      console.log('[ error ]', error);
     }
 
-    setError(true);
-    setReason(data as unknown as string);
   };
 
   return (
