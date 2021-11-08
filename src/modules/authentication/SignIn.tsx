@@ -1,17 +1,12 @@
-import React, { useState } from "react";
-
+import React from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
 import { TextField, Button } from "@material-ui/core";
-
 import { EMAIL_PATTERN } from "constants/validators";
-
 import logo from "assets/images/logo_white.svg";
-
 import titleService from "../../services/title.service";
 import { BasePageProps } from "../../shared/models";
-
 import { signIn } from "../../api/auth.api";
 import { useAppContext } from 'context';
 import { routes } from "../../routes";
@@ -45,56 +40,57 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 const SignIn = (props: BasePageProps): JSX.Element => {
   titleService.setTitle(props.title);
 
-  const { contextMethods } = useAppContext();
+  const appCTX = useAppContext();
   const history = useHistory();
   const classes = useStyles();
 
-  const [error, setError] = useState(false);
-  const [reason, setReason] = useState('');
+  const [error, setError] = React.useState(false);
+  const [reason, setReason] = React.useState('');
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm();
 
   const form = {
-    email: register("email", {
-      pattern: EMAIL_PATTERN,
-      required: true,
-    }),
-    password: register("password", {
-      required: true,
-    }),
+    email: register("email", { pattern: EMAIL_PATTERN, required: true, }),
+    password: register("password", { required: true, }),
   };
 
-  const onSubmit = async (inputData: any) => {
-    setError(false);
-    setReason('');
+  const UNMOUNTED = 'unmounted'
+  const NOT_FOUND = 'Not found';
+  const logReason = (reason: any) => reason === UNMOUNTED || console.log('[ reason ]', reason);
 
-    try {
+  const onSubmit = (inputData: any) => {
+    let canceled = false;
+    const cancel = ((reason: any) => { canceled = true; logReason(reason) })
 
-      const { email, password } = inputData;
-      const success = await signIn(email, password);
-      const { status, data } = success;
-
-      if (status === 200) {
-        contextMethods.setUserName(`${data.user.firstName} ${data.user.lastName}`);
-        contextMethods.setUserEmail(data.user.email);
-        contextMethods.setAccessToken(data.credentials.accessToken);
-        contextMethods.setRefreshToken(data.credentials.refreshToken);
-        contextMethods.setAccessExpMS(data.credentials.accessExpMS);
-        contextMethods.setRefreshExpMS(data.credentials.refreshExpMS);
-        contextMethods.setIsAuthorized(true);
-        return history.push('/dashboard');
+    const setState = (success: any) => {
+      if (success === NOT_FOUND) return history.push(routes.signIn)
+      if (/200/g.test(success.status) === false || ("data" in success) === false) {
+        setError(true)
+        return setReason(success.data || "Unexpected error")
       }
-
-      setError(true);
-      setReason(data as unknown as string);
-    } catch (error) {
-      console.log('[ error ]', error);
+      const state = {
+        access_token: success.data.credentials.accessToken,
+        user_name: `${success.data.user.firstName} ${success.data.user.lastName}`,
+        user_email: success.data.user.email,
+        refresh_token: success.data.credentials.refreshToken,
+        access_token_expires: success.data.credentials.accessExpMS,
+        refresh_token_expires: success.data.credentials.refreshExpMS,
+        is_authorized: true,
+      }
+      appCTX.controls.updateState(state)
+      return history.push(routes.dashboard.base)
     }
 
+    if (!canceled) {
+      const { email, password } = inputData;
+      signIn(email, password)
+        .then(success => canceled || !success || setState(success))
+        .catch(cancel)
+        .finally(() => canceled)
+    }
+
+
+    return cancel;
   };
 
   return (

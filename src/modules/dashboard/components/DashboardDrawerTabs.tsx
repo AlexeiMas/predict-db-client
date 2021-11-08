@@ -11,6 +11,9 @@ import { ClinicalSampleModel } from "../../../shared/models/clinical-sample.mode
 import PDCModelTreatmentResponsesList from "./PDCModelTreatmentResponsesList";
 import { FilterModel } from 'shared/models/filters.model';
 import NgsList from "./NgsList";
+import { useHistory } from 'react-router-dom';
+import { useQuery } from '../pages/Dashboard';
+import { useDrawlerCtx } from "context/drawler.context";
 
 function DashboardDrawerTab(props: any) {
   const { children, value, index, ...other } = props;
@@ -37,17 +40,70 @@ interface DashboardDrawerTabProps {
   filters: FilterModel;
 }
 
+
+const TABS_INDEXES_MAP: { [key: number]: string } = {
+  0: 'General'.split(/\s+/).join("_"),
+  1: 'Clinical'.split(/\s+/).join("_"),
+  2: 'Patient treatment history'.split(/\s+/).join("_"),
+  3: 'PDC Model Treatment Responses'.split(/\s+/).join("_"),
+  4: 'NGS'.split(/\s+/).join("_"),
+}
+
 const DashboardDrawerTabs = (props: DashboardDrawerTabProps) => {
-  const { selectedElement, filters } = props;
-  const [tabIndex, setTabIndex] = React.useState(0);
+  const history = useHistory()
+  const query = useQuery()
+  const drawlerCTX = useDrawlerCtx();
 
-  const handleChange = (event: any, newValue: any) => {
-    setTabIndex(newValue);
-  };
 
-  const isGeneFilterUsed = filters.geneType.genes.length > 0
-    || filters.geneType.aliases.length > 0
-    || filters.geneType.proteins.length > 0;
+  const isGeneFilterUsed = drawlerCTX.state.filters.geneType.genes.length > 0
+    || drawlerCTX.state.filters.geneType.aliases.length > 0
+    || drawlerCTX.state.filters.geneType.proteins.length > 0;
+
+  const getInitialTabIndex = () => {
+    const raw_tab = query.get("tab");
+    return Object
+      .entries(TABS_INDEXES_MAP)
+      .reduce(
+        (acc: number, [idx, name]) => {
+          if (!isGeneFilterUsed && /ngs/gi.test(name)) return 0
+          const re = new RegExp(name, "gi");
+          return (raw_tab && re.test(raw_tab)) ? Number(idx) : (acc)
+        }, 0)
+  }
+
+  const [tabIndex, setTabIndex] = React.useState(getInitialTabIndex);
+  const handleChange = (_: any, newValue: any) => { setTabIndex(newValue); };
+  const wait = (timeout: number): Promise<any> => new Promise(r => setTimeout(r, timeout))
+
+  const makePath = () => {
+    let canceled = false;
+    const cancel = ((args: any) => { canceled = true });
+
+    const changeHistory = (index: number) => {
+      if ((query.get("Model_ID") || '').trim()) {
+        const search = new URLSearchParams()
+        const TAB_NAME = TABS_INDEXES_MAP[Number(index)]
+        const Model_ID = (query.get("Model_ID") || '').trim()
+        search.append("Model_ID", Model_ID)
+        search.append('tab', TAB_NAME)
+        search.append('show', 'true')
+        history.push({
+          pathname: 'model',
+          search: `?${search}`,
+          state: { isDrawerOpened: true, selectedElement: props.selectedElement }
+        })
+      }
+    }
+
+    wait(10).then(() => canceled || changeHistory(tabIndex))
+    return cancel;
+  }
+
+  React.useEffect(() => {
+    const cancel = makePath()
+    return () => { cancel('unmounted') }
+  }, [tabIndex]) // eslint-disable-line
+
 
   return (
     <>
@@ -61,24 +117,24 @@ const DashboardDrawerTabs = (props: DashboardDrawerTabProps) => {
         </Tabs>
       </AppBar>
       <DashboardDrawerTab value={tabIndex} index={0}>
-        <GeneralInformationList selectedElement={selectedElement} />
+        <GeneralInformationList selectedElement={drawlerCTX.state.selectedElement} />
       </DashboardDrawerTab>
       <DashboardDrawerTab value={tabIndex} index={1}>
-        <ClinicalInformationList selectedElement={selectedElement} />
+        <ClinicalInformationList selectedElement={drawlerCTX.state.selectedElement} />
       </DashboardDrawerTab>
       <DashboardDrawerTab value={tabIndex} index={2}>
-        <PatientTreatmentHistoryList selectedElement={selectedElement} />
+        <PatientTreatmentHistoryList selectedElement={drawlerCTX.state.selectedElement} />
       </DashboardDrawerTab>
       <DashboardDrawerTab value={tabIndex} index={3}>
         <PDCModelTreatmentResponsesList
-          selectedElement={selectedElement}
-          filters={filters.tumourType}
+          selectedElement={drawlerCTX.state.selectedElement}
+          filters={drawlerCTX.state.filters.tumourType}
         />
       </DashboardDrawerTab>
       {isGeneFilterUsed && <DashboardDrawerTab value={tabIndex} index={4}>
         <NgsList
-          selectedElement={selectedElement}
-          filters={filters.geneType}
+          selectedElement={drawlerCTX.state.selectedElement}
+          filters={drawlerCTX.state.filters.geneType}
         />
       </DashboardDrawerTab>}
     </>

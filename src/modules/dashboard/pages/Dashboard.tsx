@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React from "react";
 
 import DashboardHeader from "../components/DashboardHeader";
 import DashboardSearch from "../components/DashboardSearch";
@@ -10,28 +10,36 @@ import DashboardFilters from "../components/DashboardFilters";
 import titleService from "../../../services/title.service";
 import dataTransformer from "../../../services/data-transformer.service";
 
-import { BasePageProps } from "../../../shared/models";
 import { ClinicalSampleModel } from "../../../shared/models/clinical-sample.model";
 import { searchItems } from "../../../api/search.api";
 import { FilterModel } from "../../../shared/models/filters.model";
+import { useHistory, useLocation } from "react-router-dom";
+import { routes } from '../../../routes';
+import { useDrawlerCtx } from '../../../context/drawler.context';
 
-const DashboardPage = (props: BasePageProps): JSX.Element => {
-  titleService.setTitle(props.title);
+export const useQuery = (): URLSearchParams => {
+  return new URLSearchParams(useLocation().search);
+};
 
+const DashboardPage = ({ ...rest }): JSX.Element => {
+  const history = useHistory()
+  const query = useQuery();
+  titleService.setTitle(rest.title);
   const defaultPageSize = 20;
+  const drawlerCTX = useDrawlerCtx();
 
-  const [isDrawerOpened, toggleDrawer] = useState(false);
-  const [areFiltersOpened, toggleFilter] = useState(true);
-  const [preloader, togglePreloader] = useState(false);
 
-  const [records, setRecords] = useState([] as ClinicalSampleModel[]);
-  const [count, setCount] = useState(0);
-  const [sort, setSort] = useState("");
-  const [order, setOrder] = useState("");
+  const [areFiltersOpened, toggleFilter] = React.useState(true);
+  const [preloader, togglePreloader] = React.useState(true);
 
-  const [areFiltersCleared, setAreFiltersCleared] = useState(false);
+  const [records, setRecords] = React.useState([] as ClinicalSampleModel[]);
+  const [count, setCount] = React.useState(0);
+  const [sort, setSort] = React.useState("");
+  const [order, setOrder] = React.useState("");
 
-  const [filters, setFilters] = useState({
+  const [areFiltersCleared, setAreFiltersCleared] = React.useState(false);
+
+  const [filters, setFilters] = React.useState({
     tumourType: [
       {
         primary: [],
@@ -60,55 +68,93 @@ const DashboardPage = (props: BasePageProps): JSX.Element => {
     dataAvailable: []
   } as FilterModel);
 
-  const [selectedPageIndex, setSelectedPage] = useState(0);
-  const [selectedElement, setSelectedElement] = useState(
-    {} as ClinicalSampleModel
-  );
+  const [selectedPageIndex, setSelectedPage] = React.useState(0);
+  const filtersRef = React.useRef<FilterModel>();
 
-  const filtersRef = useRef<FilterModel>();
+  const updateFilters = (data: FilterModel) => {
+    setFilters(data);
+    drawlerCTX.controls.updateFilters(data)
+  }
 
-  useEffect(() => {
+  React.useEffect(() => {
     filtersRef.current = filters;
   });
 
   const prevFilters = filtersRef.current;
 
-  useEffect(() => {
+  React.useEffect(() => {
     const selectedPage = filters === prevFilters ? selectedPageIndex : 0;
     setSelectedPage(selectedPage);
-    if (!preloader) getRecords(selectedPage, defaultPageSize, filters, sort, order);
+    const cancel = getRecords(selectedPage, defaultPageSize, filters, sort, order);
+    return () => { cancel(UNMOUNTED) }
   }, [filters, selectedPageIndex, sort, order]); // eslint-disable-line
 
-  const getRecords = async (
+
+  const UNMOUNTED = 'unmounted'
+  const NOT_FOUND = 'Not found';
+  const logReason = (reason: any) => reason === UNMOUNTED || console.log('[ reason ]', reason);
+
+  const getRecords = (
     pageIndex: number,
     pageSize: number,
     filters: FilterModel,
     sort: string,
     order: string
-  ): Promise<void> => {
-    try {
-      togglePreloader(true);
-      const { data } = await searchItems(pageSize, pageIndex, filters, sort, order);
+  ) => {
+    let canceled = false;
+    const cancel = ((reason: any) => { canceled = true; logReason(reason) })
+
+    const setState = (data: any) => {
+      if (data === NOT_FOUND) return history.push('/not-found')
       const transformedData = dataTransformer.transformSamplesToFrontEndFormat(
         data.rows
       );
+      drawlerCTX.controls.updateRecords([...transformedData])
       setRecords([...transformedData]);
       setCount(data.count);
-    } catch (e) {
-      console.log(e);
-    } finally {
-      togglePreloader(false);
+    }
+
+    if (!canceled) {
+      if (preloader === false) togglePreloader(true);
+      searchItems(pageSize, pageIndex, filters, sort, order)
+        .then(success => canceled || success.data)
+        .then(success => canceled || !success || setState(success))
+        .catch(cancel)
+        .finally(() => canceled || togglePreloader(false))
+    }
+
+
+    return cancel;
+  }
+
+  const openDrawer = (selected: ClinicalSampleModel): void => {
+    const search = new URLSearchParams()
+    drawlerCTX.controls.updateSelectedElement(selected)
+    if (selected.pdcModel.trim()) {
+      search.append("Model_ID", selected.pdcModel.trim())
+      search.append('show', 'true')
+      history.push({
+        pathname: 'model',
+        search: `?${search}`,
+        state: { show: true, selectedElement: selected }
+      })
     }
   };
 
-  const openDrawer = (sample: ClinicalSampleModel): void => {
-    setSelectedElement(sample);
-    toggleDrawer(true);
-  };
+
+  const toggle = (state: boolean) => {
+    const search = new URLSearchParams()
+    history.push({
+      pathname: routes.dashboard.base,
+      search: `?${search}`,
+      state: { show: state }
+    })
+  }
 
   const onToggleFilters = (value: boolean): void => {
     toggleFilter(value);
   };
+
 
   return (
     <div className="dash-board">
@@ -119,7 +165,7 @@ const DashboardPage = (props: BasePageProps): JSX.Element => {
       <div className="dash-board__content">
         <DashboardFilters
           filters={filters}
-          setFilters={setFilters}
+          setFilters={updateFilters as React.Dispatch<React.SetStateAction<FilterModel>>}
           opened={areFiltersOpened}
           areFiltersCleared={areFiltersCleared}
           setAreFiltersCleared={setAreFiltersCleared}
@@ -130,7 +176,7 @@ const DashboardPage = (props: BasePageProps): JSX.Element => {
           areFiltersOpened={areFiltersOpened}
           toggleFilter={onToggleFilters}
           filters={filters}
-          setFilters={setFilters}
+          setFilters={updateFilters as React.Dispatch<React.SetStateAction<FilterModel>>}
           areFiltersCleared={areFiltersCleared}
           setAreFiltersCleared={setAreFiltersCleared}
           togglePreloader={togglePreloader}
@@ -150,13 +196,17 @@ const DashboardPage = (props: BasePageProps): JSX.Element => {
         />
       </div>
 
-      <DashboardDrawer
-        opened={isDrawerOpened}
-        toggle={toggleDrawer}
-        selectedElement={selectedElement}
-        filters={filters}
-      />
+      {
+        /true/gi.test(query.get('show') || '') && (
+          <DashboardDrawer
+            opened={/true/gi.test(query.get('show') || '')}
+            toggle={toggle as React.Dispatch<React.SetStateAction<boolean>>}
+            {...rest}
+          />
+        )
+      }
     </div>
+
   );
 };
 

@@ -6,6 +6,8 @@ import { ClinicalGeneralInformationModel } from "../../../shared/models/clinical
 
 import dataTransformer from "../../../services/data-transformer.service";
 import InfoIcon from '../../../shared/components/Icons/InfoIcon';
+import { useQuery } from '../pages/Dashboard';
+import { useHistory } from 'react-router-dom';
 
 interface GeneralInformationListProps {
   selectedElement: ClinicalSampleModel;
@@ -14,28 +16,47 @@ interface GeneralInformationListProps {
 const GeneralInformationList = ({
   selectedElement,
 }: GeneralInformationListProps): JSX.Element => {
-  const [preloader, togglePreloader] = useState(false);
+  const history = useHistory()
+  const [preloader, togglePreloader] = useState(true);
   const [generalInfo, setGeneralInfo] = useState(
     null as unknown as ClinicalGeneralInformationModel
   );
 
-  useEffect(() => {
-    loadGeneralInfo();
-  }, []); // eslint-disable-line
+  const query = useQuery()
 
-  const loadGeneralInfo = async (): Promise<void> => {
-    try {
-      togglePreloader(true);
-      const { data } = await getGeneralDetails(selectedElement.pdcModel);
+  const UNMOUNTED = 'unmounted'
+  const NOT_FOUND = 'Not found';
+  const logReason = (reason: any) => reason === UNMOUNTED || console.log('[ reason ]', reason);
+
+  const loadGeneralInfo = () => {
+    let canceled = false;
+    const cancel = ((reason: any) => { canceled = true; logReason(reason) })
+
+    const setState = (data: any) => {
+      if (data === NOT_FOUND) return history.push('/not-found')
       const transformedData =
         dataTransformer.transformGeneralInformationToFrontEndFormat(data);
-      setGeneralInfo(transformedData);
-    } catch (e) {
-      console.log(e);
-    } finally {
-      togglePreloader(false);
+      return canceled || setGeneralInfo(transformedData);
     }
+
+    if (!canceled) {
+      const ModelID = query.get("Model_ID") as string;
+      getGeneralDetails(ModelID)
+        .then(success => canceled || success.data)
+        .then(success => canceled || !success || setState(success))
+        .catch(cancel)
+        .finally(() => canceled || togglePreloader(false))
+    }
+
+    return cancel;
   };
+
+
+  useEffect(() => {
+    const cancel = loadGeneralInfo();
+    return () => { cancel(UNMOUNTED) }
+  }, []); // eslint-disable-line
+
 
   const hlaA =
     generalInfo &&
@@ -65,7 +86,7 @@ const GeneralInformationList = ({
           <div className="drawer-tabs-row">
             <div className="drawer-tabs-row__label">
               Growth Characteristic
-              <InfoIcon title="Growth Characteristic"/>
+              <InfoIcon title="Growth Characteristic" />
             </div>
             <div className="drawer-tabs-row__value">
               {generalInfo.growthCharacteristics}
@@ -74,7 +95,7 @@ const GeneralInformationList = ({
           <div className="drawer-tabs-row">
             <div className="drawer-tabs-row__label">
               3D model status
-              <InfoIcon title="3D model status"/>
+              <InfoIcon title="3D model status" />
             </div>
             <div className="drawer-tabs-row__value">
               {generalInfo.modelStatus3D}
@@ -83,7 +104,7 @@ const GeneralInformationList = ({
           <div className="drawer-tabs-row">
             <div className="drawer-tabs-row__label">
               Patient sequential models
-              <InfoIcon title="Patient sequential models"/>
+              <InfoIcon title="Patient sequential models" />
             </div>
             <div className="drawer-tabs-row__value">
               {generalInfo.patientSequentialModels}
@@ -104,7 +125,7 @@ const GeneralInformationList = ({
           <div className="drawer-tabs-row">
             <div className="drawer-tabs-row__label">
               Microsatelite status
-              <InfoIcon title="Microsatelite status"/>
+              <InfoIcon title="Microsatelite status" />
             </div>
             <div className="drawer-tabs-row__value">
               {generalInfo.microsateliteStatus}
@@ -113,7 +134,7 @@ const GeneralInformationList = ({
           <div className="drawer-tabs-row">
             <div className="drawer-tabs-row__label">
               Tumour mutation burden status
-              <InfoIcon title="Tumour mutation burden status"/>
+              <InfoIcon title="Tumour mutation burden status" />
             </div>
             <div className="drawer-tabs-row__value">
               {generalInfo.tumourMutationBurdenStatus}
@@ -122,7 +143,7 @@ const GeneralInformationList = ({
           <div className="drawer-tabs-row">
             <div className="drawer-tabs-row__label">
               HLA Typing
-              <InfoIcon title="HLA Typing"/>
+              <InfoIcon title="HLA Typing" />
             </div>
             <div className="drawer-tabs-row__set">
               <div className="drawer-tabs-row__value hla">
