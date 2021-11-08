@@ -1,130 +1,101 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import storage from "../services/storage.service";
 
-interface UserState {
-  userName: string;
-  userEmail: string;
-  accessToken: string;
-  refreshToken: string;
-  accessExpMS: number;
-  refreshExpMS: number;
-  isAuthorized: boolean;
+type KEY2 = "access_token_expires" |
+  "access_token" |
+  "user_name" |
+  "user_email" |
+  "refresh_token_expires" |
+  "is_authorized" |
+  "refresh_token"
+interface UserState2 {
+  access_token: string;
+  user_name: string;
+  user_email: string;
+  refresh_token: string;
+  access_token_expires: number;
+  refresh_token_expires: number;
+  is_authorized: boolean;
 }
 
 interface AppContextMethods {
-  setUserName: React.Dispatch<React.SetStateAction<string>>,
-  setUserEmail: React.Dispatch<React.SetStateAction<string>>,
-  setAccessToken: React.Dispatch<React.SetStateAction<string>>,
-  setRefreshToken: React.Dispatch<React.SetStateAction<string>>,
-  setAccessExpMS: React.Dispatch<React.SetStateAction<number>>,
-  setRefreshExpMS: React.Dispatch<React.SetStateAction<number>>,
-  setIsAuthorized: React.Dispatch<React.SetStateAction<boolean>>,
+  updateStateItem: (key: KEY2, value: string | boolean | number) => void;
+  updateState: (state: UserState2) => void;
+  clearState: () => void;
+  isAuthenticated: () => boolean;
 };
-
 interface AppContextState {
-  user: UserState;
-  contextMethods: AppContextMethods;
+  user: UserState2;
+  controls: AppContextMethods;
 }
-
 interface AppContextWrapperProps {
   children: React.ReactElement;
 }
 
 const AppContext = React.createContext({} as AppContextState);
 
+export const useAppContext = () => {
+  const context = React.useContext(AppContext);
+  if (!context) throw new Error("context used outside of provider");
+  return context
+}
+
+const EMPTY_STATE: UserState2 = {
+  access_token: "",
+  user_name: "",
+  user_email: "",
+  refresh_token: "",
+  access_token_expires: 0,
+  refresh_token_expires: 0,
+  is_authorized: false,
+}
+
+const useAppHook = (): AppContextState => {
+  const parsed = storage.getParsed() as UserState2;
+
+  const INITIAL_STATE: UserState2 = {
+    access_token: ("access_token" in parsed && parsed.access_token !== "") ? parsed.access_token : "",
+    user_name: ("user_name" in parsed && parsed.user_name !== "") ? parsed.user_name : "",
+    user_email: ("user_email" in parsed && parsed.user_email !== "") ? parsed.user_email : "",
+    refresh_token: ("refresh_token" in parsed && parsed.refresh_token !== "") ? parsed.refresh_token : "",
+    access_token_expires: ("access_token_expires" in parsed && parsed.access_token_expires !== 0) ? parsed.access_token_expires : 0,
+    refresh_token_expires: ("refresh_token_expires" in parsed && parsed.refresh_token_expires !== 0) ? parsed.refresh_token_expires : 0,
+    is_authorized: ("is_authorized" in parsed && parsed.is_authorized !== false) ? parsed.is_authorized : false,
+  }
+
+  const [state, setState] = React.useState(INITIAL_STATE)
+
+  const updateStateItem = (key: KEY2, value: number | string | boolean) => {
+    storage.set(key, value)
+    const updated = { ...state, [key]: value }
+    setState(updated)
+  }
+
+  const updateState = (incomingState: UserState2) => {
+    Object.entries(incomingState).forEach(([key, value]) => storage.set(key, value))
+    setState(incomingState);
+  }
+
+  const clearState = () => { localStorage.clear(); setState(EMPTY_STATE) }
+
+  const isAuthenticated = () => {
+    const access_token = storage.get("access_token")
+    const access_token_expires = storage.get("access_token_expires");
+    return !!access_token && parseInt(access_token_expires) > Date.now()
+  }
+
+  React.useEffect(() => {
+    Object.entries(state).forEach(([key, value]) => storage.set(key, value))
+  })
+
+  return {
+    user: { ...state },
+    controls: { updateStateItem, updateState, clearState, isAuthenticated }
+  };
+}
+
 export const AppContextWrapper = (props: AppContextWrapperProps) => {
   const { children } = props;
-  const [userName, setUserName] = useState('');
-  const [userEmail, setUserEmail] = useState('');
-  const [accessToken, setAccessToken] = useState('');
-  const [refreshToken, setRefreshToken] = useState('');
-  const [accessExpMS, setAccessExpMS] = useState(0);
-  const [refreshExpMS, setRefreshExpMS] = useState(0);
-  const [isAuthorized, setIsAuthorized] = useState(false);
-
-  const state = {
-    user: {
-      userName,
-      userEmail,
-      accessToken,
-      refreshToken,
-      accessExpMS,
-      refreshExpMS,
-      isAuthorized,
-    },
-    contextMethods: {
-      setUserName,
-      setUserEmail,
-      setAccessToken,
-      setRefreshToken,
-      setAccessExpMS,
-      setRefreshExpMS,
-      setIsAuthorized,
-    },
-  };
-
-  const checkIfUserAuthorized = async () => {
-    try {
-      const isAuth = storage.checkBool("is_authorized");
-      const accessExp = storage.get("access_token_expires");
-
-      if (!isAuth || !accessExp || accessExp <= Date.now()) {
-        setIsAuthorized(false);
-        return;
-      }
-
-      const name = storage.get("user_name");
-      const email = storage.get("user_email");
-      const access = storage.get("access_token");
-      const refresh = storage.get("refresh_token");
-      const refreshExp = storage.get("refresh_token_expires");
-
-      if (name) setUserName(name);
-      if (email) setUserEmail(email);
-      if (access) setAccessToken(access);
-      if (refresh) setRefreshToken(refresh);
-      if (accessExp) setAccessExpMS(accessExp);
-      if (refreshExp) setRefreshExpMS(refreshExp);
-
-      setIsAuthorized(true);
-    } catch (error) {
-      setIsAuthorized(false);
-    }
-  };
-
-  useEffect(() => {
-    checkIfUserAuthorized();
-  }, []);
-
-  useEffect(() => {
-    storage.set("is_authorized", isAuthorized);
-  }, [isAuthorized]);
-
-  useEffect(() => {
-    storage.set("user_name", userName);
-  }, [userName]);
-
-  useEffect(() => {
-    storage.set("user_email", userEmail);
-  }, [userEmail]);
-
-  useEffect(() => {
-    storage.set("access_token", accessToken);
-  }, [accessToken]);
-
-  useEffect(() => {
-    storage.set("refresh_token", refreshToken);
-  }, [refreshToken]);
-
-  useEffect(() => {
-    storage.set("access_token_expires", accessExpMS);
-  }, [accessExpMS]);
-
-  useEffect(() => {
-    storage.set("refresh_token_expires", refreshExpMS);
-  }, [refreshExpMS]);
-
-  return <AppContext.Provider value={state}>{children}</AppContext.Provider>;
+  const value = useAppHook() as AppContextState;
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
-
-export const useAppContext = () => React.useContext(AppContext);

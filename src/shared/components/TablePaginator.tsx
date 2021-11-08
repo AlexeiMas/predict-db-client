@@ -41,21 +41,21 @@ const TablePaginator = (props: TablePaginationProps): JSX.Element => {
   return (
     <div className="data-table__pagination">
       <div className="pagination">
-        { canShowControls() &&
-        <div className="left">
-            <button onClick={ onFirstPage } className="pagination__button">First</button>
-            <button onClick={ onPrevPage } className="pagination__button">Previous</button>
-        </div>
+        {canShowControls() &&
+          <div className="left">
+            <button onClick={onFirstPage.bind(null)} className="pagination__button">First</button>
+            <button onClick={onPrevPage.bind(null)} className="pagination__button">Previous</button>
+          </div>
         }
         <div className="middle">
-          <span>Page { props.currentPage + 1 }</span>
-          <span>&nbsp;of { props.totalPages }</span>
+          <span>Page {props.currentPage + 1}</span>
+          <span>&nbsp;of {props.totalPages}</span>
         </div>
-        { canShowControls() &&
-        <div className="right">
-            <button onClick={ onNextPage } className="pagination__button">Next</button>
-            <button onClick={ onLastPage } className="pagination__button">Last</button>
-        </div>
+        {canShowControls() &&
+          <div className="right">
+            <button onClick={onNextPage.bind(null)} className="pagination__button">Next</button>
+            <button onClick={onLastPage.bind(null)} className="pagination__button">Last</button>
+          </div>
         }
       </div>
     </div>
