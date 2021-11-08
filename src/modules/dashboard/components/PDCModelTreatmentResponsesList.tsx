@@ -8,6 +8,8 @@ import Preloader from "../../../shared/components/Preloader";
 import { TreatmentResponseModel } from "../../../shared/models/treatment-response.model";
 import { TumourFilterModel } from "shared/models/filters.model";
 import InfoIcon from "../../../shared/components/Icons/InfoIcon";
+import { useQuery } from '../pages/Dashboard';
+import { useHistory } from 'react-router-dom';
 
 interface PDCModelTreatmentResponsesListProps {
   selectedElement: ClinicalSampleModel;
@@ -18,31 +20,46 @@ const PDCModelTreatmentResponsesList = ({
   selectedElement,
   filters,
 }: PDCModelTreatmentResponsesListProps): JSX.Element => {
-  const [preloader, togglePreloader] = useState(false);
+  const history = useHistory()
+  const [preloader, togglePreloader] = useState(true);
   const [responses, setResponses] = useState(
     null as unknown as TreatmentResponseModel[]
   );
+  const query = useQuery()
 
-  useEffect(() => {
-    loadResponsesInfo();
-  }, []); // eslint-disable-line
+  const UNMOUNTED = 'unmounted'
+  const NOT_FOUND = 'Not found';
+  const logReason = (reason: any) => reason === UNMOUNTED || console.log('[ reason ]', reason);
 
-  const loadResponsesInfo = async (): Promise<void> => {
-    try {
-      togglePreloader(true);
-      const { data } = await getResponsesDetails(
-        selectedElement.pdcModel,
-        filters
-      );
+  const loadResponsesInfo = () => {
+    let canceled = false;
+    const cancel = ((reason: any) => { canceled = true; logReason(reason) })
+
+    const setState = (data: any) => {
+      if (data === NOT_FOUND) return history.push('/not-found')
       const transformedData =
         dataTransformer.transformTreatmentResponsesToFrontEndFormat(data);
-      setResponses(transformedData);
-    } catch (e) {
-      console.log(e);
-    } finally {
-      togglePreloader(false);
+      return canceled || setResponses(transformedData);
     }
+
+    if (!canceled) {
+      const ModelID = query.get("Model_ID") as string;
+      getResponsesDetails(ModelID, filters)
+        .then(success => canceled || success.data)
+        .then(success => canceled || !success || setState(success))
+        .catch(cancel)
+        .finally(() => canceled || togglePreloader(false))
+    }
+
+    return cancel;
   };
+
+
+  useEffect(() => {
+    const cancel = loadResponsesInfo();
+    return () => { cancel(UNMOUNTED) }
+  }, []); // eslint-disable-line
+
 
   const getClassForPhenotypicResponseType = (value: string): string => {
     if (value === "Positive") {
