@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import Preloader from "../../../../shared/components/Preloader";
 import React from "react";
 import * as MCore from "@material-ui/core";

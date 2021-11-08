@@ -49,7 +49,7 @@ export const getModelFilteredData = (search?: string) => {
   return api.get(`/filters/models/${requestQuery}`);
 };
 
-export const getGeneFilteredData = (search?: string, offset: number = 0) => {
+export const getGeneFilteredData = (search?: string, offset = 0) => {
   const requestQuery = search
     ? `?search=${search}&limit=${process.env.REACT_APP_GENE_PAGE_LIMIT}&offset=${offset}`
     : "";

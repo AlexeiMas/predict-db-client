@@ -32,6 +32,6 @@ function CustomTooltip(props: CustomTooltipProps) {
       </Tooltip>
     </MuiThemeProvider>
   );
-};
+}
 
 export default CustomTooltip;

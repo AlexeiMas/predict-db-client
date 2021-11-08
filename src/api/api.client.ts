@@ -3,7 +3,7 @@ import storage from "../services/storage.service";
 import { routes } from "../routes";
 
 const isLocal = /localhost/gi.test(window.location.hostname);
-const baseURL = isLocal ? "http://localhost:3000/v1/" : process.env.REACT_APP_API_URL;
+const baseURL = isLocal ? "http://localhost:3001/v1/" : process.env.REACT_APP_API_URL;
 const api = axios.create({ baseURL, timeout: 90000 });
 
 api.interceptors.request.use(
@@ -11,7 +11,7 @@ api.interceptors.request.use(
     const token = storage.get("access_token");
 
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      if (config && config.headers) config.headers.Authorization = `Bearer ${token}`;
     }
 
     return config;

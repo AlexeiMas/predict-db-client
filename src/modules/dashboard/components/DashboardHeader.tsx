@@ -7,9 +7,10 @@ import { useAppContext } from "context";
 interface AccountInfo {
   name: string;
   email: string;
-};
+}
 
 export interface DashboardHeaderProps {
+  [key: string]: unknown;
 }
 
 const DashboardHeader = (props: DashboardHeaderProps): JSX.Element => {

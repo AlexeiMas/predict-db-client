@@ -19,7 +19,7 @@ interface AppContextMethods {
   setAccessExpMS: React.Dispatch<React.SetStateAction<number>>,
   setRefreshExpMS: React.Dispatch<React.SetStateAction<number>>,
   setIsAuthorized: React.Dispatch<React.SetStateAction<boolean>>,
-};
+}
 
 interface AppContextState {
   user: UserState;

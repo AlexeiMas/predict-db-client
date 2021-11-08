@@ -42,6 +42,6 @@ function PlasmaIcon(props: PlasmaIconProps): JSX.Element {
       </svg>
     </CustomTooltip>
   );
-};
+}
 
 export default PlasmaIcon;

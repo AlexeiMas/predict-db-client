@@ -28,6 +28,6 @@ function PBMCIcon(props: PBMCIconProps): JSX.Element {
       </svg>
     </CustomTooltip>
   );
-};
+}
 
 export default PBMCIcon;
