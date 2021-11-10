@@ -136,30 +136,6 @@ const PatientTreatmentHistoryList = ({
                 <div className="history-item-col">
                   <div className="history-item-col-info">
                     <div className="history-item__label">
-                      Date started
-                      <InfoIcon title="Date started" />
-                    </div>
-                    <div className="history-item__value">
-                      {history.dateStarted}
-                    </div>
-                  </div>
-
-                  <div className="history-item-col-info">
-                    <div className="history-item__label">
-                      Date of last treatment
-                      <InfoIcon title="Date of last treatment" />
-                    </div>
-                    <div className="history-item__value">
-                      {history.dateOfLastTreatment}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="history-item">
-                <div className="history-item-col">
-                  <div className="history-item-col-info">
-                    <div className="history-item__label">
                       Best Response (RECIST)
                       <InfoIcon title="Best Response (RECIST)" />
                     </div>
