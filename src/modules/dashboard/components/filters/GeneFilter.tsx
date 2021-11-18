@@ -347,7 +347,7 @@ const GeneFilter = ({
                       <br />
                       <br />
                       Search carried out across mutations, expressions, copy
-                      number variations and fusions. Only mutations with a COSMIC entry are shown. Contact us for full NGS dataset. Documentation{" "}
+                      number variations and fusions. Contact us for full NGS dataset. Documentation{" "}
                       <a
                         className="tooltip-link"
                         target="_blank"

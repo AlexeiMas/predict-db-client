@@ -273,7 +273,12 @@ const SignUp = (props: BasePageProps): JSX.Element => {
                         onChange={() => onAcceptTermsClick()}
                       />
                     }
-                    label="I agree with the Terms of Service"
+                    label={
+                      <div>
+                        <span>I agree with the </span> 
+                        <a href={'https://imagentherapeutics.com/terms-of-use-predictdb'}>Terms of Service</a>
+                      </div>
+                    }
                   />
                   <p className={`acceptTermsError ${showAcceptTermsError ? 'error' : ''}`}>You must accept the Terms of Service</p>
                   <p className={`userExistsError ${showUserExistsError ? 'error' : ''}`}>User with this email already exists</p>
