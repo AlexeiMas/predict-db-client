@@ -3,11 +3,10 @@ import CustomTooltip from '../CustomTooltip';
 interface InfoIconProps {
   title: string | NonNullable<React.ReactNode>;
   color?: string;
-  [key:string]: any;
 }
 
 const InfoIcon = (props: InfoIconProps): JSX.Element => {
-  const { title, color = '#9B9CB7', ...rest } = props;
+  const { title, color = '#9B9CB7' } = props;
   return (
     <CustomTooltip title={title}>
       <svg
@@ -16,7 +15,6 @@ const InfoIcon = (props: InfoIconProps): JSX.Element => {
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        {...rest}
       >
         <path
           fillRule="evenodd"

@@ -31,24 +31,31 @@ export const getResponsesDetails = (
   modelId: string,
   filters: TumourFilterModel[]
 ): Promise<BaseApiResponseModel<ApiTreatmentResponsesModel[]>> => {
-  const urlSearchParams = new URLSearchParams();
+  let query = "";
 
   const primaries = filters.map((i) => i.primary);
   const subs = filters.map((i) => i.sub);
 
   if (primaries.length) {
     primaries.forEach((item) => {
-      if (!item) return;
-      if (Array.isArray(item) === true) item.forEach(value => urlSearchParams.append('tumourType', `${value}`))
-      if (Array.isArray(item) === false) urlSearchParams.append('tumourType', `${item}`);
+      if (item) {
+        const tumours = Array.isArray(item)
+          ? item.map(i => `tumourType=${i}`)
+          : `tumourType=${item}`
+        query += query.length ? `&${tumours}` : `?${tumours}`;
+      }
     });
   }
 
-  if (subs.length) subs.forEach((value) => !value.length || urlSearchParams.append('tumourSubType', `${value}`));
+  if (subs.length) {
+    subs.forEach((item) => {
+      if (item.length)
+        query += query.length
+          ? `&tumourSubType=${item}`
+          : `?tumourSubType=${item}`;
+    });
+  }
 
-
-  const searchString = urlSearchParams.toString();
-  const query = searchString.length ? `?${searchString.toString()}` : "";
   return api.get(`/details/responses/${modelId}${query}`);
 };
 
@@ -56,18 +63,36 @@ export const getNgsDetails = (
   modelId: string,
   filters: GenesFilterModel
 ): Promise<BaseApiResponseModel<ApiNgsModel>> => {
-  const urlSearchParams = new URLSearchParams();
+  let query = "";
 
   const genes = filters.genes;
   const aliases = filters.aliases;
   const proteins = filters.proteins;
+  const includeExpressions = filters.includeExpressions;
 
-  if (genes.length) genes.forEach((value) => urlSearchParams.append('gene', `${value}`));
-  if (aliases.length) aliases.forEach((value) => urlSearchParams.append('alias', `${value}`));
-  if (proteins.length) proteins.forEach((value) => urlSearchParams.append('protein', `${value}`));
-  if ("includeExpressions" in filters) urlSearchParams.append('includeExpressions', `${filters.includeExpressions}`)
+  if (genes.length) {
+    genes.forEach((item) => {
+      query += query.length ? `&gene=${item}` : `?gene=${item}`;
+    });
+  }
 
-  const searchString = urlSearchParams.toString();
-  const query = searchString.length ? `?${searchString.toString()}` : "";
+  if (aliases.length) {
+    aliases.forEach((item) => {
+      query += query.length ? `&alias=${item}` : `?alias=${item}`;
+    });
+  }
+
+  if (proteins.length) {
+    proteins.forEach((item) => {
+      query += query.length ? `&protein=${item}` : `?protein=${item}`;
+    });
+  }
+
+  if (includeExpressions) {
+    query += query.length
+      ? `&includeExpressions=${includeExpressions}`
+      : `?includeExpressions=${includeExpressions}`;
+  }
+
   return api.get(`/details/ngs/${modelId}${query}`, { timeout: 30000 });
 };

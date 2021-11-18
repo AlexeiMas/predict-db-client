@@ -14,29 +14,29 @@ import { checkRecoveryToken, resetPassword } from "../../api/auth.api";
 import { routes } from "../../routes";
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
-  root: {
-    "& .MuiTextField-root": {
-      width: "100%",
+    root: {
+      "& .MuiTextField-root": {
+        width: "100%",
+      },
+      width: "420px",
     },
-    width: "420px",
-  },
-  button: {
-    backgroundColor: "#0941AC",
-    width: "420px",
-    height: "77px",
-    padding: "20px",
-    fontWeight: "normal",
-    textTransform: "none",
-    fontSize: "16px",
-    "&:hover": {
+    button: {
       backgroundColor: "#0941AC",
+      width: "420px",
+      height: "77px",
+      padding: "20px",
+      fontWeight: "normal",
+      textTransform: "none",
+      fontSize: "16px",
+      "&:hover": {
+        backgroundColor: "#0941AC",
+      },
     },
-  },
-  notchedOutline: {
-    borderWidth: "1px",
-    borderColor: "#EEEEF2 !important",
-  },
-})
+    notchedOutline: {
+      borderWidth: "1px",
+      borderColor: "#EEEEF2 !important",
+    },
+  })
 );
 
 const useQuery = () => new URLSearchParams(useLocation().search);
@@ -130,7 +130,6 @@ const ResetPassword = (props: BasePageProps): JSX.Element => {
               <div className="form__row">
                 <TextField
                   type="password"
-                  autoComplete="current-password"
                   label="Password"
                   variant="outlined"
                   error={Boolean(errors?.password)}
@@ -149,7 +148,6 @@ const ResetPassword = (props: BasePageProps): JSX.Element => {
               <div className="form__row">
                 <TextField
                   type="password"
-                  autoComplete="current-password"
                   label="Confirm password"
                   variant="outlined"
                   error={Boolean(errors?.confirmPassword)}

@@ -4,15 +4,15 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import { AppContextWrapper } from "context";
 import './assets/scss/core.scss';
-import { AdvancedFiltersProvider } from "context/advanced-filters.context";
+import { DrawlerContextProvider } from "context/drawler.context";
 
 const AppProvider = () => {
   return (
-    <AppContextWrapper>
-      <AdvancedFiltersProvider>
+    <DrawlerContextProvider>
+      <AppContextWrapper>
         <App />
-      </AdvancedFiltersProvider>
-    </AppContextWrapper>
+      </AppContextWrapper>
+    </DrawlerContextProvider>
   )
 };
 
