@@ -1,12 +1,11 @@
 export interface PatientTreatmentHistoryModel {
   bestResponseRecist: string;
-  dateStarted: string;
-  dateOfLastTreatment: string;
   prePostCollection: string;
   predictRxCaseId: string;
   regime: string;
   treatment: string;
-  treatmentDurationMonths: number;
+  treatmentDurationMonths: string;
+  responseDurationMonths: string;
   dose: string;
   id: string;
 }

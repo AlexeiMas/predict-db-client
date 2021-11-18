@@ -105,14 +105,13 @@ class DataTransformerService {
       return {
         id: history["_id"],
         bestResponseRecist: history["Best Response (RECIST)"],
-        dateStarted: history["Date Started"],
-        dateOfLastTreatment: history["Date of Last Treatment"],
         prePostCollection: history["Pre/Post Collection"],
         predictRxCaseId: history["PredictRx Case ID"],
         regime: history["Regime"],
         treatment: history["Treatment"],
         treatmentDurationMonths: history["Treatment Duration (Months)"],
         dose: history["Dose  (mg/day or mg/kg)"],
+        responseDurationMonths: history["Response Duration (Months)"]
       };
     });
   }
