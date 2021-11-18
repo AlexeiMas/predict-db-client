@@ -213,6 +213,7 @@ const SignUp = (props: BasePageProps): JSX.Element => {
                   <TextField
                     label="Email address (business)"
                     type="email"
+                    autoComplete="email"
                     variant="outlined"
                     error={ Boolean(errors?.email) }
                     { ...form.email }
@@ -230,6 +231,7 @@ const SignUp = (props: BasePageProps): JSX.Element => {
                 <div className="form__row">
                   <TextField
                     type="password"
+                    autoComplete="current-password"
                     label="Password"
                     variant="outlined"
                     error={ Boolean(errors?.password) }
@@ -248,6 +250,7 @@ const SignUp = (props: BasePageProps): JSX.Element => {
                 <div className="form__row">
                   <TextField
                     type="password"
+                    autoComplete="current-password"
                     label="Confirm password"
                     variant="outlined"
                     error={ Boolean(errors?.confirmPassword) }

@@ -191,7 +191,7 @@ const GeneFilter = ({
       (proteinFilter && proteinFilter.length)
     );
   };
-  
+
   const clearSearchInput = (): void => {
     const searchInput = document.querySelector<HTMLInputElement>(
       ".genes-filter input"

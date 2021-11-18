@@ -12,6 +12,8 @@ import HistoryTypeFilter from "./filters/HistoryFilter";
 import { Button, createStyles, makeStyles } from "@material-ui/core";
 import CloseIcon from "shared/components/Icons/CloseIcon";
 import DataAvailableFilter from './filters/DataAvailableFilter'
+import AdvancedFilters from './advanced-filters-popup'
+import { useAdvancedFiltersContext } from '../../../context/advanced-filters.context';
 
 interface DashboardFiltersProps {
   filters: FilterModel;
@@ -43,6 +45,7 @@ const DashboardFilters = ({
   setAreFiltersCleared,
 }: DashboardFiltersProps): JSX.Element => {
   const classes = useStyles();
+  const context = useAdvancedFiltersContext();
 
   const clearAllFilters = (): void => {
     setFilters({
@@ -71,10 +74,13 @@ const DashboardFilters = ({
         proteins: [],
         includeExpressions: false,
       },
-      dataAvailable: []
-    });
+      dataAvailable: [],
+    } as FilterModel);
     setAreFiltersCleared(true);
+    context.clearAdvancedFilters()
   };
+
+  const callbackToUpdateFilters = (callbackFilters: any) => setFilters(callbackFilters)
 
   return (
     <div className={"dashboard-filters " + (opened ? "opened" : "")}>
@@ -91,6 +97,15 @@ const DashboardFilters = ({
           >
             Clear all filters
           </Button>
+          <AdvancedFilters
+            setFilters={setFilters}
+            filters={filters}
+            isClearFilter={areFiltersCleared}
+            setIsClearFilter={setAreFiltersCleared}
+
+            callbackToUpdateFilters={callbackToUpdateFilters}
+            target={document.getElementById('MANUAL_FILTERS_TARGET_ELEMENT')}
+          />
         </div>
       </div>
 
