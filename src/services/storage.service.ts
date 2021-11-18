@@ -31,6 +31,24 @@ class StorageService {
     keys.forEach((key) => this._storage.removeItem(this.storagePrefix + key));
   }
 
+  public getParsed = () => {
+    return Object.entries(localStorage)
+      .reduce(
+        (acc, [raw_key, raw_value]) => {
+          const collector = { ...acc }
+          const key = raw_key.replace(this.storagePrefix, '');
+          const num_re = /^\d+$/;
+          const bool_re = /^(true|false)$/i
+          let value = raw_value.trim();
+          if (num_re.test(value)) value = Number(value);
+          if (bool_re.test(value)) value = /true/gi.test(value)
+          collector[key] = value
+          return collector;
+        },
+        {} as any
+      )
+  }
+
   public clear(): void {
     this.removeMany([
       "user_name",
