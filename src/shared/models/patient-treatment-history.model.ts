@@ -6,7 +6,8 @@ export interface PatientTreatmentHistoryModel {
   predictRxCaseId: string;
   regime: string;
   treatment: string;
-  treatmentDurationMonths: number;
+  treatmentDurationMonths: string;
+  responseDurationMonths: string;
   dose: string;
   id: string;
 }

@@ -7,6 +7,7 @@ export interface ApiPatientTreatmentHistoryModel {
   "PredictRx Case ID": string;
   Regime: string;
   Treatment: string;
-  "Treatment Duration (Months)": number;
+  "Treatment Duration (Months)": string;
+  "Response Duration (Months)": string;
   "Dose  (mg/day or mg/kg)": string;
 }

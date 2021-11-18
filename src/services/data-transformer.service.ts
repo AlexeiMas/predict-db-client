@@ -113,6 +113,7 @@ class DataTransformerService {
         treatment: history["Treatment"],
         treatmentDurationMonths: history["Treatment Duration (Months)"],
         dose: history["Dose  (mg/day or mg/kg)"],
+        responseDurationMonths: history["Response Duration (Months)"]
       };
     });
   }

@@ -158,7 +158,7 @@ const PatientTreatmentHistoryList = ({
                       <InfoIcon title="Response Duration"/>
                     </div>
                     <div className="history-item__value">
-                      {history.treatmentDurationMonths}
+                      {history.responseDurationMonths}
                     </div>
                   </div>
                 </div>
