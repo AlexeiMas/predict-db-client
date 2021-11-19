@@ -6,7 +6,7 @@ import CloseIcon from "../../../../shared/components/Icons/CloseIcon";
 import Icons from "../../../../shared/components/Icons"
 
 import { FilterModel } from "../../../../shared/models/filters.model";
-
+import * as analytics from '../../../../analytics'
 interface DataAvailableFilterProps {
   setFilters: React.Dispatch<React.SetStateAction<FilterModel>>;
   filters: FilterModel;
@@ -19,7 +19,8 @@ const VALUES = ['NGS', 'Patient Treatment History', 'Growth Characteristics', 'P
 const SEARCH_DEBOUNCE = 300;
 const CLEAR_AND_FOCUS_DEBOUNCE = 100;
 
-const DataAvailableFilter = (({ ...rest }: DataAvailableFilterProps) => {
+const DISPLAY_NAME = 'DATA_AVAILABLE_FILTER'
+const DataAvailableFilter = ({ ...rest }: DataAvailableFilterProps): JSX.Element => {
   const setFilters = rest.setFilters;
   const filters = rest.filters;
   const isClearFilter = rest.isClearFilter;
@@ -133,7 +134,7 @@ const DataAvailableFilter = (({ ...rest }: DataAvailableFilterProps) => {
   const selectedFilterOptions = (): JSX.Element => {
     return (<div className="filter-tags">
       {dataAvailableFilter.map((item: string, index: number) => (
-        <div className="filter__tag" key={index}>
+        <div className="filter__tag" data-filter={analytics.GTM_ENV.FILTERS.FILTERS_DATA_AVAILABLE.name} key={index}>
           <span>{item}</span>
           <div className="close-icon">
             <CloseIcon close={() => removeOption(index)} />
@@ -165,7 +166,7 @@ const DataAvailableFilter = (({ ...rest }: DataAvailableFilterProps) => {
   return (
     <>
       <div className={"filter__backdrop " + (dpdIsOpened ? "active" : "")} onClick={dropdownBgClick} />
-      <div className="filter">
+      <div className="filter" id={DISPLAY_NAME}>
         <div className="filter__label">
           <span className="filter__label-text">
             Data Available
@@ -217,6 +218,7 @@ const DataAvailableFilter = (({ ...rest }: DataAvailableFilterProps) => {
       </div>
     </>
   )
-})
+}
 
+DataAvailableFilter.displayName = DISPLAY_NAME
 export default DataAvailableFilter

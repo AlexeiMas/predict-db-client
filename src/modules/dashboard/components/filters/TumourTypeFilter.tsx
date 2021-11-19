@@ -5,6 +5,7 @@ import * as models from "../../../../shared/models";
 import * as filterApi from "../../../../api/filter.api";
 import DropdownTumoursMenu from "../DropdownTumoursMenu";
 import Icons from "../../../../shared/components/Icons"
+import * as analytics from '../../../../analytics'
 
 
 interface Selected { mark?: 'P' | 'S'; type: 'primary' | 'sub'; value: string; }
@@ -19,6 +20,8 @@ interface TumourTypeFilterProps {
 /* TODO: Need to refactor this component to use universal functions instead of one-to-one binding each filter mechanic.
  *        Design makes this difficult to implement at the beginning according to not consistent logic of filters behavior.
  * */
+
+const DISPLAY_NAME = 'TUMOUR_TYPE_FILTER'
 
 const TumourTypeFilter = ({
   filters,
@@ -138,14 +141,19 @@ const TumourTypeFilter = ({
   const renderSelectedFilterOptions = (): JSX.Element => {
     return (<div className="filter-tags">
       {
-        selectedOptions.map((item: Selected, index: number) => (
-          <div className="filter__tag" key={index}>
-            <span><Icons.TumourMark mark={item.type === 'primary' ? 'P' : 'S'} />&nbsp;&nbsp;{item.value}</span>
-            <div className="close-icon">
-              <Icons.CloseIcon close={() => removeOption(index)} />
+        selectedOptions.map((item: Selected, index: number) => {
+          const dataFilterName = item.type === 'primary'
+            ? analytics.GTM_ENV.FILTERS.FILTERS_TUMOUR_TYPE.PRIMARY.name
+            : analytics.GTM_ENV.FILTERS.FILTERS_TUMOUR_TYPE.SUB.name
+          return (
+            <div className="filter__tag" key={index}>
+              <span><Icons.TumourMark mark={item.type === 'primary' ? 'P' : 'S'} />&nbsp;&nbsp;<span data-filter={dataFilterName} >{item.value}</span></span>
+              <div className="close-icon">
+                <Icons.CloseIcon close={() => removeOption(index)} />
+              </div>
             </div>
-          </div>
-        ))
+          )
+        })
       }
       <div className="filter-tags__new-btn" onClick={() => setDpdIsOpened(true)}>
         <Icons.GreenPlusIcon />
@@ -163,7 +171,7 @@ const TumourTypeFilter = ({
   return (
     <>
       <div className={"filter__backdrop " + (dpdIsOpened ? "active" : "")} onClick={dropdownBgClick} />
-      <div className="filter">
+      <div className="filter" id={DISPLAY_NAME}>
         <div className="filter__label">
           <span className="filter__label-text">
             Tumour Type <Icons.InfoIcon title="Selects a tumour type for models. You must select a valid tumour type to get treatment response data (only treatments with existing indications for the type of cancer chosen shown, please contact us for full panel of response data)." />
@@ -216,4 +224,5 @@ const TumourTypeFilter = ({
   );
 };
 
+TumourTypeFilter.displayName = DISPLAY_NAME;
 export default TumourTypeFilter;

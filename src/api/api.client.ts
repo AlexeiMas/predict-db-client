@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import storage from "../services/storage.service";
+import { storageService } from "../services";
 import { routes } from "../routes";
 
 const isLocal = /localhost/gi.test(window.location.hostname);
@@ -8,7 +8,7 @@ const api = axios.create({ baseURL, timeout: 90000 });
 
 api.interceptors.request.use(
   async (config: AxiosRequestConfig) => {
-    const token = storage.get("access_token");
+    const token = storageService.get("access_token");
 
     if (token) {
       if (config && config.headers) config.headers.Authorization = `Bearer ${token}`;
@@ -29,7 +29,7 @@ api.interceptors.response.use(
       error.response.status === 401 &&
       !originalRequest._retry
     ) {
-      const token = storage.get("refresh_token");
+      const token = storageService.get("refresh_token");
 
       try {
         const response = await api.post(`${baseURL}auth/refresh`, { token });
@@ -41,14 +41,14 @@ api.interceptors.response.use(
           refreshExpMS: response.data.credentials.refreshExpMS,
         };
 
-        storage.set("access_token", credentials.accessToken);
-        storage.set("refresh_token", credentials.refreshToken);
-        storage.set("access_token_expires", credentials.accessExpMS);
-        storage.set("refresh_token_expires", credentials.refreshExpMS);
+        storageService.set("access_token", credentials.accessToken);
+        storageService.set("refresh_token", credentials.refreshToken);
+        storageService.set("access_token_expires", credentials.accessExpMS);
+        storageService.set("refresh_token_expires", credentials.refreshExpMS);
 
         return api.request(originalRequest);
       } catch (e) {
-        storage.clear();
+        storageService.clear();
         window.location.href = routes.signIn;
       }
     }

@@ -1,5 +1,6 @@
 import api from "./api.client";
 import { TumourFilterSubTypes } from "../shared/types/filter-types";
+import * as analytics from '../analytics';
 
 export const getFilteredData = (
   filterType: TumourFilterSubTypes,
@@ -24,9 +25,9 @@ export const getFilteredData = (
     primaryQuery = primaryQuery.trim();
   }
 
-  return api.get(
-    `/filters/${filterType}/${filterSubtype}${requestQuery}${primaryQuery}`.trim()
-  );
+  const path = `/filters/${filterType}/${filterSubtype}${requestQuery}${primaryQuery}`.trim();
+  analytics.GTM_SRV.sendEvent({ event: analytics.GTM_SRV.events.SEARCH, SEARCH: path })
+  return api.get(path);
 };
 
 interface GetFilteredTumoursPSMixedParams {
@@ -41,17 +42,22 @@ export const getFilteredTumoursPSMixed = (params: GetFilteredTumoursPSMixedParam
   if (searchString) search.append('search', searchString)
   if (params.limit && Number.isFinite(params.limit)) search.append('limit', params.limit.toString())
   if (params.offset && Number.isFinite(params.offset)) search.append('offset', params.offset.toString())
-  return api.get(`/filters/tumours/mixed-primary-sub?${search.toString()}`)
+  const path = `/filters/tumours/mixed-primary-sub?${search.toString()}`
+  analytics.GTM_SRV.sendEvent({ event: analytics.GTM_SRV.events.SEARCH, SEARCH: path })
+  return api.get(path)
 }
 
 export const getModelFilteredData = (search?: string) => {
   const requestQuery = search ? `?search=${search}` : "";
-  return api.get(`/filters/models/${requestQuery}`);
+  const path = `/filters/models/${requestQuery}`;
+  return api.get(path);
 };
 
 export const getGeneFilteredData = (search?: string, offset = 0) => {
   const requestQuery = search
     ? `?search=${search}&limit=${process.env.REACT_APP_GENE_PAGE_LIMIT}&offset=${offset}`
     : "";
-  return api.get(`/filters/genes/${requestQuery}`);
+  const path = `/filters/genes/${requestQuery}`;
+  analytics.GTM_SRV.sendEvent({ event: analytics.GTM_SRV.events.SEARCH, SEARCH: path })
+  return api.get(path);
 };

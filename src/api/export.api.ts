@@ -1,6 +1,7 @@
 import fileDownload from "js-file-download";
 import { FilterModel } from "shared/models/filters.model";
 import api from "./api.client";
+import * as analytics from '../analytics';
 
 const getApiQuery = (filters?: FilterModel): string => {
   const urlSearchParams = new URLSearchParams();
@@ -44,8 +45,9 @@ const getApiQuery = (filters?: FilterModel): string => {
 };
 
 export const exportData = (filters?: FilterModel) => {
-  return api
-    .get("/export" + getApiQuery(filters), { responseType: "blob", timeout: 90000 })
+  const path = "/export" + getApiQuery(filters);
+  analytics.GTM_SRV.sendEvent({ event: analytics.GTM_SRV.events.SEARCH, SEARCH: path })
+  return api.get(path, { responseType: "blob", timeout: 90000 })
     .then((response) => {
       if (response && "data" in response) fileDownload(response.data, `PTX_Data_Export_${new Date().toLocaleDateString()}.xlsx`);
       return true;

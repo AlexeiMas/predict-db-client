@@ -47,6 +47,9 @@ const TumourTypeFilter = ({
   isClearFilter,
   setIsClearFilter,
 }: TumourTypeFilterProps): JSX.Element => {
+  console.log('\n***************************************************');
+  console.log('[ TumourTypeFilter ]');
+  console.log('***************************************************\n');
   const [showPrimaryDropdown, setShowPrimaryTypesDropdown] = useState(false);
   const [showSubTypesDropdown, setShowSubDropdown] = useState(false);
 
@@ -179,12 +182,18 @@ const TumourTypeFilter = ({
     loadDefaultOptions(filterType, query);
   };
 
+  console.log('[ 567890- ]');
+
   const selectedSubOptions = (): JSX.Element => {
+    console.log('\n***************************************************');
+    console.log('[ selectedSubOptions.name ]', selectedSubOptions.name );
+    console.log('***************************************************\n');
     if (canShowSubOptions()) {
       return (
         <div className="filter-tags">
           {subFilter.map((item: string, index: number) => (
             <div className="filter__tag" key={index}>
+              {console.log(JSON.stringify({ item }, null, 2))}
               <span>{item}</span>
               <div className="close-icon">
                 <CloseIcon close={() => removeSelectedSubOption(index)} />
@@ -320,6 +329,7 @@ const TumourTypeFilter = ({
                   primaryFilter ? "selected" : ""
                 }`}
               >
+                {console.log('[ primaryFilter ]', primaryFilter)}
                 {primaryFilter ? primaryFilter : "Add Tumour Type"}
               </span>
               <div className="filter-button__chevron">

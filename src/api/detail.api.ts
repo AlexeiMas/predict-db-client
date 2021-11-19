@@ -10,6 +10,7 @@ import {
   TumourFilterModel,
 } from "shared/models/filters.model";
 import { ApiNgsModel } from "../shared/models/api/api-ngs.model";
+import * as analytics from '../analytics';
 
 export const getGeneralDetails = (
   modelId: string
@@ -55,7 +56,7 @@ export const getResponsesDetails = (
           : `?tumourSubType=${item}`;
     });
   }
-
+  analytics.GTM_SRV.sendEvent({ event: analytics.GTM_SRV.events.SEARCH, SEARCH: `/details/responses/${modelId}${query}` })
   return api.get(`/details/responses/${modelId}${query}`);
 };
 
@@ -94,5 +95,6 @@ export const getNgsDetails = (
       : `?includeExpressions=${includeExpressions}`;
   }
 
+  analytics.GTM_SRV.sendEvent({ event: analytics.GTM_SRV.events.SEARCH, SEARCH: `/details/ngs/${modelId}${query}` })
   return api.get(`/details/ngs/${modelId}${query}`, { timeout: 30000 });
 };

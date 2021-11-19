@@ -3,6 +3,7 @@ import { BaseApiResponseModel } from "../shared/models/api/base-api-response.mod
 import { BaseSetApiResponse } from "../shared/models/api/search-samples-api-response.model";
 import { ApiClinicalSampleModel } from "../shared/models/api/api-clinical-sample.model";
 import { FilterModel } from "../shared/models/filters.model";
+import * as  analytics from '../analytics';
 
 const getApiQuery = (
   limit: number,
@@ -11,7 +12,7 @@ const getApiQuery = (
   sort?: string,
   order?: string
 ): string => {
-  let searchQuery = "?";
+  let searchQuery = "";
 
   searchQuery += `limit=${limit}`;
   searchQuery += `&offset=${offset * limit}`;
@@ -92,7 +93,7 @@ const getApiQuery = (
   if (sort) searchQuery += `&sort=${sort}`;
   if (order) searchQuery += `&order=${order}`;
 
-  return searchQuery;
+  return `?${searchQuery}`;
 };
 
 export const searchItems = (
@@ -101,5 +102,9 @@ export const searchItems = (
   filters?: FilterModel,
   sort?: string,
   order?: string
-): Promise<BaseApiResponseModel<BaseSetApiResponse<ApiClinicalSampleModel>>> =>
-  api.get("/search" + getApiQuery(limit, offset, filters, sort, order));
+): Promise<BaseApiResponseModel<BaseSetApiResponse<ApiClinicalSampleModel>>> => {
+  const SEARCH = "/search" + getApiQuery(limit, offset, filters, sort, order);
+  analytics.GTM_SRV.sendEvent({ event: analytics.GTM_SRV.events.SEARCH, SEARCH })
+  return api.get(SEARCH);
+}
+

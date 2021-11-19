@@ -14,7 +14,7 @@ import {
 } from "../../../shared/components/Icons";
 import { useDrawlerCtx } from '../../../context/drawler.context';
 import { searchItems } from 'api/search.api';
-import dataTransformer from "../../../services/data-transformer.service";
+import { dataTransformer } from "../../../services";
 import { useQuery } from '../pages/Dashboard';
 import Preloader from '../../../shared/components/Preloader';
 import { useHistory } from 'react-router-dom';
@@ -69,7 +69,7 @@ const DashboardDrawer = (props: DashboardDrawerProps): JSX.Element => {
 
   return (
     <div className="drawer">
-      <Drawer open={props.opened}
+      <Drawer id="MODEL_DETAILS_VIEW" open={props.opened}
         anchor="right"
         onClose={() => props.toggle(false)}>
         <div className="drawer-content">

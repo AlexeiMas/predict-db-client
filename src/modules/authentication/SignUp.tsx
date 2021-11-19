@@ -10,7 +10,7 @@ import { EMAIL_PATTERN } from "constants/validators";
 
 import logo from "assets/images/logo_white.svg";
 
-import titleService from '../../services/title.service';
+import { titleService } from '../../services';
 import { BasePageProps } from "../../shared/models";
 
 import CustomCheckbox from "shared/components/CustomCheckbox";
@@ -19,29 +19,29 @@ import { signUp } from "../../api/auth.api";
 import { routes } from "../../routes";
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
-    root: {
-      "& .MuiTextField-root": {
-        width: "100%",
-      },
-      width: "80%",
+  root: {
+    "& .MuiTextField-root": {
+      width: "100%",
     },
-    button: {
+    width: "80%",
+  },
+  button: {
+    backgroundColor: "#0941AC",
+    width: "420px",
+    height: "77px",
+    padding: "20px",
+    fontWeight: "normal",
+    textTransform: "none",
+    fontSize: "16px",
+    "&:hover": {
       backgroundColor: "#0941AC",
-      width: "420px",
-      height: "77px",
-      padding: "20px",
-      fontWeight: "normal",
-      textTransform: "none",
-      fontSize: "16px",
-      "&:hover": {
-        backgroundColor: "#0941AC",
-      },
     },
-    notchedOutline: {
-      borderWidth: "1px",
-      borderColor: "#EEEEF2 !important",
-    },
-  })
+  },
+  notchedOutline: {
+    borderWidth: "1px",
+    borderColor: "#EEEEF2 !important",
+  },
+})
 );
 
 const SignUp = (props: BasePageProps): JSX.Element => {
@@ -127,12 +127,12 @@ const SignUp = (props: BasePageProps): JSX.Element => {
   return (
     <div className="auth-container">
       <div className="auth-container__aside">
-        <img src={ logo } className="auth-container__logo" alt="aside"/>
+        <img src={logo} className="auth-container__logo" alt="aside" />
       </div>
 
       <div className="auth-container__form">
         <div className="form-wrapper sign-up">
-          <form className={ classes.root } onSubmit={ handleSubmit(onSubmit) }>
+          <form className={classes.root} onSubmit={handleSubmit(onSubmit)}>
             <h1>Sign Up to PredictDb</h1>
             <div className="auth-container__title">
               Welcome to PredictDb, please sign up to start browsing our PDC Models.
@@ -143,68 +143,68 @@ const SignUp = (props: BasePageProps): JSX.Element => {
                   <TextField
                     label="First name"
                     variant="outlined"
-                    error={ Boolean(errors?.firstName) }
-                    { ...form.firstName }
-                    InputProps={ {
+                    error={Boolean(errors?.firstName)}
+                    {...form.firstName}
+                    InputProps={{
                       classes: {
                         notchedOutline: classes.notchedOutline,
                       },
-                    } }
-                    InputLabelProps={ {
+                    }}
+                    InputLabelProps={{
                       className: "form__input",
-                    } }
-                    helperText={ Boolean(errors?.firstName) && "First name is required" }
+                    }}
+                    helperText={Boolean(errors?.firstName) && "First name is required"}
                   />
                 </div>
                 <div className="form__row">
                   <TextField
                     label="Last name"
                     variant="outlined"
-                    error={ Boolean(errors?.lastName) }
-                    { ...form.lastName }
-                    InputProps={ {
+                    error={Boolean(errors?.lastName)}
+                    {...form.lastName}
+                    InputProps={{
                       classes: {
                         notchedOutline: classes.notchedOutline,
                       },
-                    } }
-                    InputLabelProps={ {
+                    }}
+                    InputLabelProps={{
                       className: "form__input",
-                    } }
-                    helperText={ Boolean(errors?.lastName) && "Last name is required" }
+                    }}
+                    helperText={Boolean(errors?.lastName) && "Last name is required"}
                   />
                 </div>
                 <div className="form__row">
                   <TextField
                     label="Company name"
                     variant="outlined"
-                    error={ Boolean(errors?.companyName) }
-                    { ...form.companyName }
-                    InputProps={ {
+                    error={Boolean(errors?.companyName)}
+                    {...form.companyName}
+                    InputProps={{
                       classes: {
                         notchedOutline: classes.notchedOutline,
                       },
-                    } }
-                    InputLabelProps={ {
+                    }}
+                    InputLabelProps={{
                       className: "form__input",
-                    } }
-                    helperText={ Boolean(errors?.companyName) && "Company name is required" }
+                    }}
+                    helperText={Boolean(errors?.companyName) && "Company name is required"}
                   />
                 </div>
                 <div className="form__row">
                   <TextField
                     label="Job title"
                     variant="outlined"
-                    error={ Boolean(errors?.jobTitle) }
-                    { ...form.jobTitle }
-                    InputProps={ {
+                    error={Boolean(errors?.jobTitle)}
+                    {...form.jobTitle}
+                    InputProps={{
                       classes: {
                         notchedOutline: classes.notchedOutline,
                       },
-                    } }
-                    InputLabelProps={ {
+                    }}
+                    InputLabelProps={{
                       className: "form__input",
-                    } }
-                    helperText={ Boolean(errors?.jobTitle) && "Job title is required" }
+                    }}
+                    helperText={Boolean(errors?.jobTitle) && "Job title is required"}
                   />
                 </div>
               </div>
@@ -214,17 +214,17 @@ const SignUp = (props: BasePageProps): JSX.Element => {
                     label="Email address (business)"
                     type="email"
                     variant="outlined"
-                    error={ Boolean(errors?.email) }
-                    { ...form.email }
-                    InputProps={ {
+                    error={Boolean(errors?.email)}
+                    {...form.email}
+                    InputProps={{
                       classes: {
                         notchedOutline: classes.notchedOutline,
                       },
-                    } }
-                    InputLabelProps={ {
+                    }}
+                    InputLabelProps={{
                       className: "form__input",
-                    } }
-                    helperText={ Boolean(errors?.email) && "Incorrect email" }
+                    }}
+                    helperText={Boolean(errors?.email) && "Incorrect email"}
                   />
                 </div>
                 <div className="form__row">
@@ -232,17 +232,17 @@ const SignUp = (props: BasePageProps): JSX.Element => {
                     type="password"
                     label="Password"
                     variant="outlined"
-                    error={ Boolean(errors?.password) }
-                    { ...form.password }
-                    InputProps={ {
+                    error={Boolean(errors?.password)}
+                    {...form.password}
+                    InputProps={{
                       classes: {
                         notchedOutline: classes.notchedOutline,
                       },
-                    } }
-                    InputLabelProps={ {
+                    }}
+                    InputLabelProps={{
                       className: "form__input",
-                    } }
-                    helperText={ Boolean(errors?.password) && "Password is required" }
+                    }}
+                    helperText={Boolean(errors?.password) && "Password is required"}
                   />
                 </div>
                 <div className="form__row">
@@ -250,16 +250,16 @@ const SignUp = (props: BasePageProps): JSX.Element => {
                     type="password"
                     label="Confirm password"
                     variant="outlined"
-                    error={ Boolean(errors?.confirmPassword) }
-                    { ...form.confirmPassword }
-                    InputProps={ {
+                    error={Boolean(errors?.confirmPassword)}
+                    {...form.confirmPassword}
+                    InputProps={{
                       classes: {
                         notchedOutline: classes.notchedOutline,
                       },
-                    } }
-                    InputLabelProps={ {
+                    }}
+                    InputLabelProps={{
                       className: "form__input",
-                    } }
+                    }}
                     helperText={
                       Boolean(errors?.confirmPassword) && "Passwords mismatch"
                     }
@@ -282,7 +282,7 @@ const SignUp = (props: BasePageProps): JSX.Element => {
             </div>
             <div className="form__row center">
               <Button
-                className={ classes.button }
+                className={classes.button}
                 variant="contained"
                 color="primary"
                 type="submit"
@@ -293,7 +293,7 @@ const SignUp = (props: BasePageProps): JSX.Element => {
             <div className="form__row">
               <div className="form__link form__link_text-center form__link_switcher">
                 Already have an account?&nbsp;
-                <Link to={ routes.signIn }>Sign In</Link>
+                <Link to={routes.signIn}>Sign In</Link>
               </div>
             </div>
           </form>

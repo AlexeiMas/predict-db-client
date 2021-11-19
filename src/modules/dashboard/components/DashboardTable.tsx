@@ -22,6 +22,8 @@ import React, { Dispatch, SetStateAction } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { createStyles } from "@material-ui/core";
 import TableCell from "@material-ui/core/TableCell";
+import { useDrawlerCtx } from '../../../context/drawler.context';
+import { useHistory } from 'react-router-dom';
 
 interface DashboardTableProps {
   records: ClinicalSampleModel[];
@@ -44,6 +46,9 @@ const DashboardTable = (props: DashboardTableProps): JSX.Element => {
   const { records, count, rowClick, selectedPageIndex, changePage, pageSize, sort, order, setSort, setOrder } =
     props;
 
+  const drawlerCTX = useDrawlerCtx()
+  const history = useHistory()
+
   const tableHeaders: TableHeaderModel[] = [
     { label: "Model ID", field: 'PDC Model', withSort: true },
     { label: "Primary tumour type", field: 'Primary Tumour Type', withSort: true },
@@ -60,6 +65,22 @@ const DashboardTable = (props: DashboardTableProps): JSX.Element => {
     setSort(field);
     setOrder(sort === field ? (order === 'asc' ? 'desc' : 'asc') : 'asc');
   };
+
+  const rowClick2 = (selected: ClinicalSampleModel) => {
+    const search = new URLSearchParams()
+    const zeroTab = 'General';
+    drawlerCTX.controls.updateSelectedElement(selected)
+    if (selected.pdcModel.trim()) {
+      search.append("Model_ID", selected.pdcModel.trim())
+      search.append('tab', zeroTab)
+      search.append('show', 'true')
+      history.push({
+        pathname: 'model',
+        search: `?${search}`,
+        state: { show: true, selectedElement: selected }
+      })
+    }
+  }
 
   return (
     <>
@@ -84,7 +105,7 @@ const DashboardTable = (props: DashboardTableProps): JSX.Element => {
                           <div className="table__cell">
                             <div>{header.label}</div>
                             {header.withSort && (
-                              <div className="table__button" onClick={ () => sortHandler(header.field) }>
+                              <div className="table__button" onClick={() => sortHandler(header.field)}>
                                 <SortIcon />
                               </div>
                             )}
@@ -98,7 +119,7 @@ const DashboardTable = (props: DashboardTableProps): JSX.Element => {
                 <TableBody>
                   {records &&
                     records.map((row: ClinicalSampleModel, index: number) => (
-                      <TableRow key={index} onClick={() => rowClick(row)}>
+                      <TableRow key={index} data-marker-row="click-row" onClick={rowClick2.bind(null, row)}>
                         <StyledTableCell component="th" scope="row">
                           {row && row.pdcModel}
                         </StyledTableCell>

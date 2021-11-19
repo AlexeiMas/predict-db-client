@@ -26,6 +26,7 @@ import InfoIcon from "../../../../shared/components/Icons/InfoIcon";
 import { createStyles, InputBase, makeStyles } from "@material-ui/core";
 import { GeneAliasIcon, GeneIcon, ProteinIcon } from "shared/components/Icons";
 import CustomCheckbox from "shared/components/CustomCheckbox";
+import * as analytics from '../../../../analytics';
 
 interface GeneFilterProps {
   setFilters: Dispatch<SetStateAction<FilterModel>>;
@@ -59,6 +60,7 @@ const useStyles = makeStyles(() =>
 /* TODO: Need to refactor this component to use universal functions instead of one-to-one binding each filter mechanic.
  *        Design makes this difficult to implement at the beginning according to not consistent logic of filters behaviour.
  * */
+const DISPLAY_NAME = 'GENES_FILTER'
 const GeneFilter = ({
   filters,
   setFilters,
@@ -154,7 +156,7 @@ const GeneFilter = ({
     return (
       <div className="filter-tags">
         {geneFilter.map((item: string, index: number) => (
-          <div className="filter__tag" key={index}>
+          <div className="filter__tag" data-filter={analytics.GTM_ENV.FILTERS.FILTERS_GENES.GENES.name} key={index}>
             <GeneIcon />
             <span>{item}</span>
             <div className="close-icon">
@@ -163,7 +165,7 @@ const GeneFilter = ({
           </div>
         ))}
         {aliasFilter.map((item: string, index: number) => (
-          <div className="filter__tag" key={index}>
+          <div className="filter__tag" data-filter={analytics.GTM_ENV.FILTERS.FILTERS_GENES.ALIASES.name} key={index}>
             <GeneAliasIcon />
             <span>{item}</span>
             <div className="close-icon">
@@ -172,7 +174,7 @@ const GeneFilter = ({
           </div>
         ))}
         {proteinFilter.map((item: string, index: number) => (
-          <div className="filter__tag" key={index}>
+          <div className="filter__tag" data-filter={analytics.GTM_ENV.FILTERS.FILTERS_GENES.PROTEINS.name} key={index}>
             <ProteinIcon />
             <span>{item}</span>
             <div className="close-icon">
@@ -191,7 +193,7 @@ const GeneFilter = ({
       (proteinFilter && proteinFilter.length)
     );
   };
-  
+
   const clearSearchInput = (): void => {
     const searchInput = document.querySelector<HTMLInputElement>(
       ".genes-filter input"
@@ -306,7 +308,7 @@ const GeneFilter = ({
         className={"filter__backdrop " + (showGeneDropdown ? "active" : "")}
         onClick={() => dropdownBgClick()}
       />
-      <div className="filter">
+      <div className="filter" id={DISPLAY_NAME}>
         <div className="filter__label">
           <span className="filter__label-text"></span>
           <span className="filter__label-clear" onClick={() => clearFilters()}>
@@ -318,6 +320,7 @@ const GeneFilter = ({
             <div className="filter-button-row">
               <SearchIcon />
               <InputBase
+                name="GENES_SEARCH_INPUT"
                 className={`${classes.input} genes-search-query`}
                 placeholder="Search by gene or protein name"
                 inputProps={{ "aria-label": "gene name" }}
@@ -376,9 +379,9 @@ const GeneFilter = ({
                     filterOptions.aliases.length > 0 ||
                     filterOptions.proteins.length > 0) &&
                   filters.geneType.genes.length +
-                    filters.geneType.aliases.length +
-                    filters.geneType.proteins.length <
-                    MAX_GENE_LIMIT && (
+                  filters.geneType.aliases.length +
+                  filters.geneType.proteins.length <
+                  MAX_GENE_LIMIT && (
                     <>
                       <DropdownGenesMenu
                         items={filterOptions}
@@ -416,15 +419,15 @@ const GeneFilter = ({
                   filters.geneType.aliases.length +
                   filters.geneType.proteins.length >=
                   MAX_GENE_LIMIT && (
-                  <div className="filter-no-data">
-                    <span className="filter-no-data__title">
-                      Gene limit is exceeded
-                    </span>
-                    <span className="filter-no-data__label">
-                      You can't search for greater than {MAX_GENE_LIMIT} genes.
-                    </span>
-                  </div>
-                )}
+                    <div className="filter-no-data">
+                      <span className="filter-no-data__title">
+                        Gene limit is exceeded
+                      </span>
+                      <span className="filter-no-data__label">
+                        You can't search for greater than {MAX_GENE_LIMIT} genes.
+                      </span>
+                    </div>
+                  )}
               </div>
             </div>
           }
@@ -454,5 +457,5 @@ const GeneFilter = ({
     </>
   );
 };
-
+GeneFilter.displayName = DISPLAY_NAME;
 export default GeneFilter;
