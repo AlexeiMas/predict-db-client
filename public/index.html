@@ -36,14 +36,17 @@
         j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
         f.parentNode.insertBefore(j, f);
 
-      })(window, document, 'script', 'dataLayer', 'GTM-PKVQH2D');
+      })(window, document, 'script', 'dataLayer', '%REACT_APP_GTM_CONTAINER_ID%');
+
+      console.log('GTM_CONTAINER_ID', '%REACT_APP_GTM_CONTAINER_ID%')
     </script>
+    <!-- End Google Tag Manager -->
   </head>
 
   <body>
     <!-- Google Tag Manager (noscript) -->
     <noscript>
-      <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PKVQH2D" height="0" width="0" style="display:none;visibility:hidden">
+      <iframe src="https://www.googletagmanager.com/ns.html?id=%REACT_APP_GTM_CONTAINER_ID%" height="0" width="0" style="display:none;visibility:hidden">
       </iframe>
     </noscript>
     <!-- End Google Tag Manager (noscript) -->
