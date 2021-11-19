@@ -72,7 +72,6 @@ const useAppHook = (): AppContextState => {
   }
 
   const updateState = (incomingState: UserState2) => {
-    console.log(JSON.stringify({ incomingState }, null, 2));
     Object.entries(incomingState).forEach(([key, value]) => storageService.set(key, value))
     setState(incomingState);
   }
