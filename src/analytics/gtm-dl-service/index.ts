@@ -9,12 +9,12 @@ const SIGNIN: GTM_KEY_TYPE = 'SIGNIN'
 const SEARCH: GTM_KEY_TYPE = 'SEARCH';
 const CHANGE: GTM_KEY_TYPE = 'CHANGE';
 const SELECT: GTM_KEY_TYPE = 'SELECT';
+const EXPORT: GTM_KEY_TYPE = 'EXPORT';
 const USER_ID: GTM_KEY_TYPE = 'USER_ID';
 const SIGNOUT: GTM_KEY_TYPE = 'SIGNOUT'
 const REQUEST: GTM_KEY_TYPE = 'REQUEST'
-const RESPONSE: GTM_KEY_TYPE = 'RESPONSE';
-const EXPORT: GTM_KEY_TYPE = 'EXPORT';
 const RECORDS: GTM_KEY_TYPE = 'RECORDS';
+const RESPONSE: GTM_KEY_TYPE = 'RESPONSE';
 
 const noEmpty = (o: any) => o.constructor === Object && Object.keys(o).length !== 0;
 
@@ -81,7 +81,7 @@ const sendEvent = ({ event, ...rest }: GTM_EVENT_TYPE) => {
     case RECORDS:
       (window as any).dataLayer.push(data)
       if (lsUserID) (window as any).dataLayer.push(user)
-      console.log(JSON.stringify([data, user], null, 2)); break;
+      break;
     default:
       throw new Error("Unexpected event(gtm): #" + event);
   }
