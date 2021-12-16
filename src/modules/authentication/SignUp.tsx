@@ -135,7 +135,10 @@ const SignUp = (props: BasePageProps): JSX.Element => {
           <form className={ classes.root } onSubmit={ handleSubmit(onSubmit) }>
             <h1>Sign Up to PredictDb</h1>
             <div className="auth-container__title">
-              Welcome to PredictDb, please sign up to start browsing our PDC Models.
+              Welcome to PredictDb, please sign up to start browsing our PDC Models.<br/><br/>
+              <div className="auth-container__body">
+                Imagen Therapeutics needs the information you provide to us to contact you about our products and services. You may unsubscribe from these communications at any time. For information on how to unsubscribe, as well as our privacy practices and commitment to protecting your privacy, please review our <a href='https://imagentherapeutics.com/privacy-policy/'>Privacy Policy</a>. By clicking 'Sign Up' below, you consent to allow Imagen Therapeutics to store and process the personal information submitted in this form to provide you such communications.
+              </div>
             </div>
             <div className="form__grid">
               <div className="form__column">
