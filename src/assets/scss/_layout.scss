@@ -1,4 +1,4 @@
-@import './variables';
+@import "./variables";
 
 .auth-container {
   height: 100%;
@@ -17,8 +17,13 @@
   }
 
   & .sign-up {
-    h1, .auth-container__title {
+    h1,
+    .auth-container__title {
       text-align: center;
+    }
+
+    .auth-container__body {
+      font-size: 10px;
     }
   }
 
@@ -36,10 +41,11 @@
       padding: 20vh 0;
 
       &.sign-up {
-        padding: 15vh 0;
+        padding: 1vh 0;
       }
 
-      &.forgot-password, &.reset-password {
+      &.forgot-password,
+      &.reset-password {
         padding: 27vh 0;
 
         &-message {
