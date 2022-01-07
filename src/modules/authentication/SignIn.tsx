@@ -102,9 +102,9 @@ const SignIn = (props: BasePageProps): JSX.Element => {
       <div className="auth-container__form">
         <div className="form-wrapper">
           <form className={classes.root} onSubmit={handleSubmit(onSubmit)}>
-            <h1>Sign in to predictDb</h1>
+            <h1>Sign in to predict<em>D</em>b</h1>
             <div className="auth-container__title">
-              Welcome back, please sign in or sign up to browse our PDC Models.
+              Welcome back, please sign in or sign up to browse our PDC models.
             </div>
             <div className="form__row">
               <TextField
