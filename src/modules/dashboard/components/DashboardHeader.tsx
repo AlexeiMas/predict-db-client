@@ -7,7 +7,7 @@ const DashboardHeader = (({ ...rest }): JSX.Element => {
   return (
     <div className="dash-board__header">
       <div className="dash-board__logo">
-        <a href="https://imagentherapeutics.com/predicttx"><img src={logo} alt="PredictDb" /></a>
+        <a href="https://imagentherapeutics.com/predicttx"><img src={logo} alt="predictDb" /></a>
       </div>
       <div className="dash-board__right">
         <div className="dash-board__docs">
