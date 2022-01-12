@@ -62,7 +62,7 @@ const setUserID = ({ USER_ID }: GTM_USER_ID_TYPE) => {
 }
 
 const sendEvent = ({ event, ...rest }: GTM_EVENT_TYPE) => {
-  const lsUserID = localStorage.getItem('imagen_therapeutics_user_id');
+  const lsUserID = localStorage.getItem('imagen_therapeutics_user_email');
   const data = { event: event, [event]: rest[event] };
   const user = { event: USER_ID, [USER_ID]: lsUserID }
   switch (event) {

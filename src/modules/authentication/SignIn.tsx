@@ -78,7 +78,7 @@ const SignIn = (props: BasePageProps): JSX.Element => {
         is_authorized: true,
       }
 
-      analytics.GTM_SRV.setUserID({ USER_ID: success.data.user.id })
+      analytics.GTM_SRV.setUserID({ USER_ID: success.data.user.email })
       appCTX.controls.updateState(state)
       return history.push(routes.dashboard.base)
     }
