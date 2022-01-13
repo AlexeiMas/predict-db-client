@@ -80,7 +80,7 @@ const DashboardSearch = ({
   };
 
   return (
-    <form className="search">
+    <div className="search">
       <h1 className="search__title results">Results: {resultsLength}</h1>
       <div className="search__input">
         <GeneFilter
@@ -118,7 +118,7 @@ const DashboardSearch = ({
           </Button>
         </div>
       </CustomTooltip>
-    </form>
+    </div>
   );
 };
 
