@@ -5,7 +5,7 @@
 
 ### Setup
 
-`npm i` - Install dependencies
+`yarn` - Install dependencies
 
-`npm run start` - Start development 
+`yarn start` - Start development
 

@@ -5,11 +5,12 @@ import { Link, useHistory } from "react-router-dom";
 import { TextField, Button } from "@material-ui/core";
 import { EMAIL_PATTERN } from "constants/validators";
 import logo from "assets/images/logo_white.svg";
-import titleService from "../../services/title.service";
+import { titleService } from "../../services";
 import { BasePageProps } from "../../shared/models";
 import { signIn } from "../../api/auth.api";
 import { useAppContext } from 'context';
 import { routes } from "../../routes";
+import * as analytics from '../../analytics';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -34,12 +35,10 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     borderWidth: "1px",
     borderColor: "#EEEEF2 !important",
   },
-})
-);
+}));
 
 const SignIn = (props: BasePageProps): JSX.Element => {
   titleService.setTitle(props.title);
-
   const appCTX = useAppContext();
   const history = useHistory();
   const classes = useStyles();
@@ -69,6 +68,7 @@ const SignIn = (props: BasePageProps): JSX.Element => {
         return setReason(success.data || "Unexpected error")
       }
       const state = {
+        user_id: success.data.user.id,
         access_token: success.data.credentials.accessToken,
         user_name: `${success.data.user.firstName} ${success.data.user.lastName}`,
         user_email: success.data.user.email,
@@ -77,6 +77,8 @@ const SignIn = (props: BasePageProps): JSX.Element => {
         refresh_token_expires: success.data.credentials.refreshExpMS,
         is_authorized: true,
       }
+
+      analytics.GTM_SRV.setUserID({ USER_ID: success.data.user.email })
       appCTX.controls.updateState(state)
       return history.push(routes.dashboard.base)
     }

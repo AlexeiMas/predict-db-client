@@ -10,6 +10,7 @@ import GreenPlusIcon from "../../../../shared/components/Icons/GreenPlusIcon";
 import PlusIcon from "../../../../shared/components/Icons/PlusIcon";
 import ArrowDownIcon from '../../../../shared/components/Icons/ArrowDownIcon';
 import ArrowUpIcon from '../../../../shared/components/Icons/ArrowUpIcon';
+import * as analytics from '../../../../analytics'
 
 interface ModelFilterProps {
   setFilters: Dispatch<SetStateAction<FilterModel>>;
@@ -21,6 +22,8 @@ interface ModelFilterProps {
 /* TODO: Need to refactor this component to use universal functions instead of one-to-one binding each filter mechanic.
 *        Design makes this difficult to implement at the beginning according to not consistent logic of filters behavior.
 * */
+const DISPLAY_NAME = 'MODEL_ID_FILTER'
+
 const ModelFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter }: ModelFilterProps): JSX.Element => {
   const [showModelDropdown, setShowModelDropdown] = useState(false);
 
@@ -83,7 +86,7 @@ const ModelFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter }: M
   const selectedFilterOptions = (): JSX.Element => {
     return (<div className="filter-tags">
       {modelFilter.map((item: string, index: number) => (
-        <div className="filter__tag" key={index}>
+        <div className="filter__tag" data-filter={analytics.GTM_ENV.FILTERS.FILTERS_MODEL_ID.name} key={index}>
           <span>{item}</span>
           <div className="close-icon">
             <CloseIcon close={() => removeOption(index)} />
@@ -152,7 +155,7 @@ const ModelFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter }: M
         className={"filter__backdrop " + ((showModelDropdown) ? 'active' : '')}
         onClick={() => dropdownBgClick()} />
 
-      <div className="filter">
+      <div className="filter" id={DISPLAY_NAME}>
         <div className="filter__label">
           <span className="filter__label-text">
             Model ID
@@ -205,5 +208,7 @@ const ModelFilter = ({ filters, setFilters, isClearFilter, setIsClearFilter }: M
     </>
   )
 }
+
+ModelFilter.displayName = DISPLAY_NAME;
 
 export default ModelFilter;

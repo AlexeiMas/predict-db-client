@@ -11,6 +11,7 @@ import { ArrowUpIcon } from "../../../../shared/components/Icons";
 import Preloader from "../../../../shared/components/Preloader";
 import DropdownMenu from "../DropdownMenu";
 import { HistoryFilterSubTypes } from "../../../../shared/types/filter-types";
+import * as analytics from '../../../../analytics'
 
 interface HistoryFilterProps {
   setFilters: Dispatch<SetStateAction<FilterModel>>;
@@ -23,6 +24,7 @@ interface HistoryFilterProps {
 /* TODO: Need to refactor this component to use universal functions instead of one-to-one binding each filter mechanic.
 *        Design makes this difficult to implement at the beginning according to not consistent logic of filters behaviour.
 * */
+const DISPLAY_NAME = 'PATIENT_TREATMENT_HISTORY_FILTER'
 const HistoryFilter = ({ filters, setFilters, index, isClearFilter, setIsClearFilter }: HistoryFilterProps): JSX.Element => {
   const [showTreatmentDropdown, setShowTreatmentDropdown] = useState(false);
   const [showResponseDropdown, setShowResponseDropdown] = useState(false);
@@ -112,18 +114,18 @@ const HistoryFilter = ({ filters, setFilters, index, isClearFilter, setIsClearFi
   const selectedTreatmentOptions = (): JSX.Element => {
     if (treatmentFilter && treatmentFilter.length) {
       return (<div className="filter-tags">
-        { treatmentFilter.map((item: string, index: number) => (
-          <div className="filter__tag" key={ index }>
-            <span>{ item }</span>
+        {treatmentFilter.map((item: string, index: number) => (
+          <div className="filter__tag" data-filter={analytics.GTM_ENV.FILTERS.FILTERS_PTX.name} key={index}>
+            <span>{item}</span>
             <div className="close-icon">
-              <CloseIcon close={ () => removeTreatmentOption(index) }/>
+              <CloseIcon close={() => removeTreatmentOption(index)} />
             </div>
           </div>
         ))
         }
 
-        <div className="filter-tags__new-btn" onClick={ () => setShowTreatmentDropdown(true) }>
-          <GreenPlusIcon/>
+        <div className="filter-tags__new-btn" onClick={() => setShowTreatmentDropdown(true)}>
+          <GreenPlusIcon />
         </div>
       </div>)
     }
@@ -134,18 +136,18 @@ const HistoryFilter = ({ filters, setFilters, index, isClearFilter, setIsClearFi
   const selectedResponseOptions = (): JSX.Element => {
     if (responseFilter && responseFilter.length) {
       return (<div className="filter-tags">
-        { responseFilter.map((item: string, index: number) => (
-          <div className={"filter__tag " + responseBoxClass(item)} key={ index }>
-            <span>{ item }</span>
+        {responseFilter.map((item: string, index: number) => (
+          <div className={"filter__tag " + responseBoxClass(item)} data-filter={analytics.GTM_ENV.FILTERS.FILTERS_PTX_RESPONSE_TYPE.name} key={index}>
+            <span>{item}</span>
             <div className="close-icon">
-              <CloseIcon close={ () => removeResponseOption(index) }/>
+              <CloseIcon close={() => removeResponseOption(index)} />
             </div>
           </div>
         ))
         }
 
-        <div className="filter-tags__new-btn" onClick={ () => setShowResponseDropdown(true) }>
-          <GreenPlusIcon/>
+        <div className="filter-tags__new-btn" onClick={() => setShowResponseDropdown(true)}>
+          <GreenPlusIcon />
         </div>
       </div>)
     }
@@ -166,7 +168,7 @@ const HistoryFilter = ({ filters, setFilters, index, isClearFilter, setIsClearFi
       case 'CR':
         return 'positive-box';
       case 'SD':
-        case 'PD':
+      case 'PD':
         return 'negative-box';
       case 'PR':
         return 'intermediate-box';
@@ -258,16 +260,16 @@ const HistoryFilter = ({ filters, setFilters, index, isClearFilter, setIsClearFi
   return (
     <>
       <div
-        className={ "filter__backdrop " + ((showTreatmentDropdown || showResponseDropdown) ? 'active' : '') }
-        onClick={ () => dropdownBgClick() }/>
+        className={"filter__backdrop " + ((showTreatmentDropdown || showResponseDropdown) ? 'active' : '')}
+        onClick={() => dropdownBgClick()} />
 
-      <div className="filter">
+      <div className="filter" id={DISPLAY_NAME}>
         <div className="filter__label">
           <span className="filter__label-text">
             Patient Treatment History
-            <InfoIcon title="Finds models that have patient treatment history for the selected therapies, prior to in-vitro testing. Treatment effectiveness is ranked according to RECIST (CR = Complete Response; PR = Partial Response; SD = Stable Disease; PD = Progressive Disease)."/>
+            <InfoIcon title="Finds models that have patient treatment history for the selected therapies, prior to in-vitro testing. Treatment effectiveness is ranked according to RECIST (CR = Complete Response; PR = Partial Response; SD = Stable Disease; PD = Progressive Disease)." />
           </span>
-          { index === 0 && <span className="filter__label-clear" onClick={ () => clearFilters() }>Clear</span> }
+          {index === 0 && <span className="filter__label-clear" onClick={() => clearFilters()}>Clear</span>}
         </div>
 
         <div className="filter-button">
@@ -311,14 +313,14 @@ const HistoryFilter = ({ filters, setFilters, index, isClearFilter, setIsClearFi
             </div>
           </div> */}
 
-          { /* Treatment Control */ }
-          <div className={ `filter-button-row ${ treatmentFilter.length ? 'no-hover' : '' }` }>
+          { /* Treatment Control */}
+          <div className={`filter-button-row ${treatmentFilter.length ? 'no-hover' : ''}`}>
             <div className="filter-button-toggle filter-button-treatment" onClick={() => onFilterButtonClick('treatment')}>
-              { !canShowTreatmentFilter() && <PlusIcon /> }
-              
+              {!canShowTreatmentFilter() && <PlusIcon />}
+
               <span className={`filter-button__label ${canShowTreatmentFilter() ? 'selected' : ''}`}>
-                { !canShowTreatmentFilter() && 'Add Patient Treatment History' }
-                { selectedTreatmentOptions() }
+                {!canShowTreatmentFilter() && 'Add Patient Treatment History'}
+                {selectedTreatmentOptions()}
               </span>
               <div className='filter-button__chevron'>
                 {showTreatmentDropdown ? <ArrowDownIcon /> : <ArrowUpIcon />}
@@ -347,17 +349,17 @@ const HistoryFilter = ({ filters, setFilters, index, isClearFilter, setIsClearFi
                 <span className="filter-no-data__title">No results found</span>
                 <span className="filter-no-data__label">
                   No results were found for your search, so try changing the search or filtering parameters and try again.
-                  </span>
+                </span>
               </div>}
             </div>
           </div>
 
-          { /* Responses Control */ }
-          { canShowTreatmentFilter() && <div className={`filter-button-row ${canShowResponseFilter() ? 'no-hover' : ''}`}>
+          { /* Responses Control */}
+          {canShowTreatmentFilter() && <div className={`filter-button-row ${canShowResponseFilter() ? 'no-hover' : ''}`}>
             <div className="filter-button-toggle filter-button-response" onClick={() => onFilterButtonClick('response')}>
               <span className={`filter-button__label ${!canShowResponseFilter() ? 'selected-gray' : ''}`}>
-                { !canShowResponseFilter() && 'Response Type' }
-                { selectedResponseOptions() }
+                {!canShowResponseFilter() && 'Response Type'}
+                {selectedResponseOptions()}
               </span>
               <div className='filter-button__chevron'>
                 {showResponseDropdown ? <ArrowDownIcon /> : <ArrowUpIcon />}
@@ -386,12 +388,12 @@ const HistoryFilter = ({ filters, setFilters, index, isClearFilter, setIsClearFi
                 <span className="filter-no-data__title">No results found</span>
                 <span className="filter-no-data__label">
                   No results were found for your search, so try changing the search or filtering parameters and try again.
-                  </span>
+                </span>
               </div>}
             </div>
-          </div> }
+          </div>}
 
-          { /* Responses Control */ }
+          { /* Responses Control */}
           {/* { canShowTreatmentFilter() && <div className={ `filter-button-row ${ responseFilter ? 'no-hover' : '' }` }>
               <div className="filter-button-toggle" onClick={ () => onFilterButtonClick('response') }>
                   <span className={ `filter-button__label ${ !responseFilter ? 'selected-gray' : '' }` }>
@@ -435,4 +437,5 @@ const HistoryFilter = ({ filters, setFilters, index, isClearFilter, setIsClearFi
   )
 }
 
+HistoryFilter.displayName = DISPLAY_NAME;
 export default HistoryFilter;

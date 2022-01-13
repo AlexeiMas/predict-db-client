@@ -1,7 +1,7 @@
 import { ClinicalSampleModel } from "../../../shared/models/clinical-sample.model";
 import React, { useEffect, useState } from "react";
 import { getHistoryDetails } from "../../../api/detail.api";
-import dataTransformer from "../../../services/data-transformer.service";
+import { dataTransformer } from "../../../services";
 import Preloader from "../../../shared/components/Preloader";
 import { PatientTreatmentHistoryModel } from "../../../shared/models/patient-treatment-history.model";
 import InfoIcon from "shared/components/Icons/InfoIcon";

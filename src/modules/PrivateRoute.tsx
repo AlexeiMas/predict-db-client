@@ -17,7 +17,9 @@ const PrivateRoute = ({ component: Component, ...rest }: any): React.ReactElemen
         const pathname = location.pathname.trim()
         if (Model_ID !== null && /true/gi.test(show) === false) {
           const urlSearchParams = new URLSearchParams()
+          const zeroTab = 'General';
           urlSearchParams.append('Model_ID', Model_ID)
+          urlSearchParams.append('tab', zeroTab)
           urlSearchParams.append('show', 'true')
 
           const params = {}

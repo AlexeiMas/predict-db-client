@@ -1,5 +1,5 @@
 import React from "react";
-import storage from "../services/storage.service";
+import { storageService } from "../services";
 
 type KEY2 = "access_token_expires" |
   "access_token" |
@@ -23,7 +23,7 @@ interface AppContextMethods {
   updateState: (state: UserState2) => void;
   clearState: () => void;
   isAuthenticated: () => boolean;
-};
+}
 interface AppContextState {
   user: UserState2;
   controls: AppContextMethods;
@@ -51,7 +51,7 @@ const EMPTY_STATE: UserState2 = {
 }
 
 const useAppHook = (): AppContextState => {
-  const parsed = storage.getParsed() as UserState2;
+  const parsed = storageService.getParsed() as UserState2;
 
   const INITIAL_STATE: UserState2 = {
     access_token: ("access_token" in parsed && parsed.access_token !== "") ? parsed.access_token : "",
@@ -66,26 +66,26 @@ const useAppHook = (): AppContextState => {
   const [state, setState] = React.useState(INITIAL_STATE)
 
   const updateStateItem = (key: KEY2, value: number | string | boolean) => {
-    storage.set(key, value)
+    storageService.set(key, value)
     const updated = { ...state, [key]: value }
     setState(updated)
   }
 
   const updateState = (incomingState: UserState2) => {
-    Object.entries(incomingState).forEach(([key, value]) => storage.set(key, value))
+    Object.entries(incomingState).forEach(([key, value]) => storageService.set(key, value))
     setState(incomingState);
   }
 
   const clearState = () => { localStorage.clear(); setState(EMPTY_STATE) }
 
   const isAuthenticated = () => {
-    const access_token = storage.get("access_token")
-    const access_token_expires = storage.get("access_token_expires");
+    const access_token = storageService.get("access_token")
+    const access_token_expires = storageService.get("access_token_expires");
     return !!access_token && parseInt(access_token_expires) > Date.now()
   }
 
   React.useEffect(() => {
-    Object.entries(state).forEach(([key, value]) => storage.set(key, value))
+    Object.entries(state).forEach(([key, value]) => storageService.set(key, value))
   })
 
   return {
@@ -94,7 +94,7 @@ const useAppHook = (): AppContextState => {
   };
 }
 
-export const AppContextWrapper = (props: AppContextWrapperProps) => {
+export const Provider = (props: AppContextWrapperProps) => {
   const { children } = props;
   const value = useAppHook() as AppContextState;
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

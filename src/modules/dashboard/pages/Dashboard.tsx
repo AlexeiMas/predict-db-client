@@ -7,8 +7,7 @@ import Preloader from "../../../shared/components/Preloader";
 import DashboardTable from "../components/DashboardTable";
 import DashboardFilters from "../components/DashboardFilters";
 
-import titleService from "../../../services/title.service";
-import dataTransformer from "../../../services/data-transformer.service";
+import { titleService, dataTransformer } from "../../../services";
 
 import { ClinicalSampleModel } from "../../../shared/models/clinical-sample.model";
 import { searchItems } from "../../../api/search.api";
@@ -129,9 +128,11 @@ const DashboardPage = ({ ...rest }): JSX.Element => {
 
   const openDrawer = (selected: ClinicalSampleModel): void => {
     const search = new URLSearchParams()
+    const zeroTab = 'General';
     drawlerCTX.controls.updateSelectedElement(selected)
     if (selected.pdcModel.trim()) {
       search.append("Model_ID", selected.pdcModel.trim())
+      search.append('tab', zeroTab)
       search.append('show', 'true')
       history.push({
         pathname: 'model',
@@ -185,7 +186,7 @@ const DashboardPage = ({ ...rest }): JSX.Element => {
         <DashboardTable
           records={records}
           count={count}
-          rowClick={openDrawer}
+          rowClick={(selected: any) => null}
           selectedPageIndex={selectedPageIndex}
           changePage={setSelectedPage}
           pageSize={defaultPageSize}
