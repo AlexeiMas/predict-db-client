@@ -28,6 +28,10 @@ export function ProfilePopover(props: ProfilePopoverProps): JSX.Element {
   };
 
   const logout = () => {
+    // gaCTX.sendEvent({
+    //   action: "ACTION_USER_LOGOUT",
+    //   category: "TRACK_USER"
+    // })
     appCTX.controls.clearState()
     return history.push(routes.default)
   }

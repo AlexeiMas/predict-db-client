@@ -44,6 +44,8 @@ const DashboardFilters = ({
 }: DashboardFiltersProps): JSX.Element => {
   const classes = useStyles();
 
+  const noop = () => { if (process.env.SOME) return };
+
   const clearAllFilters = (): void => {
     setFilters({
       tumourType: [
@@ -85,7 +87,7 @@ const DashboardFilters = ({
           <Button
             variant="text"
             color="primary"
-            startIcon={<CloseIcon close={() => { }} />}
+            startIcon={<CloseIcon close={noop} />}
             className={classes.button}
             onClick={() => clearAllFilters()}
           >

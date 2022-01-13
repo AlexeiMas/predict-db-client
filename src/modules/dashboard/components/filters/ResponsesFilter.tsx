@@ -11,6 +11,7 @@ import { ArrowUpIcon } from "../../../../shared/components/Icons";
 import Preloader from "../../../../shared/components/Preloader";
 import DropdownMenu from "../DropdownMenu";
 import { ResponsesFilterSubTypes } from "../../../../shared/types/filter-types";
+import * as analytics from '../../../../analytics'
 
 interface ResponsesFilterProps {
   setFilters: Dispatch<SetStateAction<FilterModel>>;
@@ -114,7 +115,7 @@ const ResponsesFilter = ({ filters, setFilters, index, isClearFilter, setIsClear
     if (treatmentFilter && treatmentFilter.length) {
       return (<div className="filter-tags">
         { treatmentFilter.map((item: string, index: number) => (
-          <div className="filter__tag" key={ index }>
+          <div className="filter__tag" data-filter={analytics.GTM_ENV.FILTERS.FILTERS_PDC.name} key={ index }>
             <span>{ item }</span>
             <div className="close-icon">
               <CloseIcon close={ () => removeTreatmentOption(index) }/>
@@ -136,7 +137,7 @@ const ResponsesFilter = ({ filters, setFilters, index, isClearFilter, setIsClear
     if (responseFilter && responseFilter.length) {
       return (<div className="filter-tags">
         { responseFilter.map((item: string, index: number) => (
-          <div className={"filter__tag " + responseBoxClass(item)} key={ index }>
+          <div className={"filter__tag " + responseBoxClass(item)} data-filter={analytics.GTM_ENV.FILTERS.FILTERS_PDC_RESPONSE_TYPE.name} key={ index }>
             <span>{ item }</span>
             <div className="close-icon">
               <CloseIcon close={ () => removeResponseOption(index) }/>

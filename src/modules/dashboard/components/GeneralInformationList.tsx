@@ -4,7 +4,7 @@ import { getGeneralDetails } from "../../../api/detail.api";
 import Preloader from "../../../shared/components/Preloader";
 import { ClinicalGeneralInformationModel } from "../../../shared/models/clinical-general-information.model";
 
-import dataTransformer from "../../../services/data-transformer.service";
+import { dataTransformer } from "../../../services";
 import InfoIcon from '../../../shared/components/Icons/InfoIcon';
 import { useQuery } from '../pages/Dashboard';
 import { useHistory } from 'react-router-dom';

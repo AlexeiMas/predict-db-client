@@ -38,9 +38,7 @@ const DashboardFilter = ({ placeholder, filterType, nestedFilters }: DashboardFi
     }
   }
 
-  const search = async (value: string): Promise<void> => {
-    console.log(value);
-  }
+  const search = async (value: string): Promise<void> => undefined;
 
   return (
     <>

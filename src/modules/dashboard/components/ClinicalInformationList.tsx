@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ClinicalSampleModel } from "../../../shared/models/clinical-sample.model";
 import { getClinicalDetails } from "../../../api/detail.api";
-import dataTransformer from "../../../services/data-transformer.service";
+import { dataTransformer } from "../../../services";
 import Preloader from "../../../shared/components/Preloader";
 import { useQuery } from '../pages/Dashboard';
 import { useHistory } from 'react-router-dom';

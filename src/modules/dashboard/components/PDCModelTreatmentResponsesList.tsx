@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { ClinicalSampleModel } from "../../../shared/models/clinical-sample.model";
 import { getResponsesDetails } from "../../../api/detail.api";
 
-import dataTransformer from "../../../services/data-transformer.service";
+import { dataTransformer } from "../../../services";
 import Preloader from "../../../shared/components/Preloader";
 import { TreatmentResponseModel } from "../../../shared/models/treatment-response.model";
 import { TumourFilterModel } from "shared/models/filters.model";

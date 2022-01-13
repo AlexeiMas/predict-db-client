@@ -28,6 +28,7 @@ yarn-error.log*
 .history
 
 /package-lock.json
+/yarn.lock
 
 /**/me-**
 /**/z-me-**

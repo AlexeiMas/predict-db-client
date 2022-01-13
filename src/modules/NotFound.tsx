@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import titleService from "../services/title.service";
+import { titleService } from "../services";
 import { BasePageProps } from "../shared/models";
 import { useHistory } from "react-router-dom";
 import { routes } from "../routes";

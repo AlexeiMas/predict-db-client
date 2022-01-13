@@ -2,26 +2,24 @@ import React from 'react';
 import { FilterModel } from 'shared/models';
 import { ClinicalSampleModel } from 'shared/models/clinical-sample.model';
 
-interface StateInterface {
+type StateInterface = {
   filters: FilterModel;
   selectedElement: ClinicalSampleModel
   records: ClinicalSampleModel[]
 }
 
-interface ControlsInterface {
+type ControlsInterface = {
   updateSelectedElement: (selectedElement: ClinicalSampleModel) => void;
   updateFilters: (filters: FilterModel) => void;
   updateRecords: (records: ClinicalSampleModel[]) => void;
 }
 
-interface DrawlerContextInterface {
-  state: StateInterface
-  controls: ControlsInterface
+type DrawlerContextInterface = {
+  state: StateInterface;
+  controls: ControlsInterface;
 }
 
 const DrawlerContext = React.createContext({} as DrawlerContextInterface)
-
-const { Provider } = DrawlerContext;
 
 export const useDrawlerCtx = () => {
   const context = React.useContext(DrawlerContext);
@@ -29,7 +27,7 @@ export const useDrawlerCtx = () => {
   return context;
 }
 
-const useValueHook = (): DrawlerContextInterface => {
+const useDrawlerHook = (): DrawlerContextInterface => {
   const [filters, setFilters] = React.useState({} as FilterModel)
   const [selectedElement, setSelectedElement] = React.useState({} as ClinicalSampleModel)
   const [records, setRecords] = React.useState([] as ClinicalSampleModel[]);
@@ -44,10 +42,7 @@ const useValueHook = (): DrawlerContextInterface => {
   }
 }
 
-export const DrawlerContextProvider = (({ ...rest }) => {
-  return (
-    <Provider value={useValueHook()}>
-      {rest.children}
-    </Provider>
-  )
+export const Provider = (({ ...rest }) => {
+  const { Provider } = DrawlerContext;
+  return (<Provider value={useDrawlerHook()}>{rest.children}</Provider>)
 })
