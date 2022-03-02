@@ -3,7 +3,7 @@ import { storageService } from "../services";
 import { routes } from "../routes";
 
 const isLocal = /localhost/gi.test(window.location.hostname);
-const baseURL = isLocal ? "http://localhost:3000/v1/" : process.env.REACT_APP_API_URL;
+const baseURL = isLocal ? "http://localhost:3001/v1/" : process.env.REACT_APP_API_URL;
 const api = axios.create({ baseURL, timeout: 90000 });
 
 api.interceptors.request.use(

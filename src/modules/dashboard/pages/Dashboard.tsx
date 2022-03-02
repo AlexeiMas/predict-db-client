@@ -161,8 +161,6 @@ const DashboardPage = ({ ...rest }): JSX.Element => {
     <div className="dash-board">
       {preloader && <Preloader />}
 
-      <DashboardHeader />
-
       <div className="dash-board__content">
         <DashboardFilters
           filters={filters}

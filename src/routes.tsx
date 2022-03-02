@@ -9,5 +9,6 @@ export const routes = {
   forgotPassword: '/forgot-password',
   resetPassword: '/reset-password',
   notFound: '/not-found',
-  modelID: "/dashboard(\\?Model_ID=.*)?"
+  modelID: "/dashboard(\\?Model_ID=.*)?",
+  analytics: '/analytics'
 }
