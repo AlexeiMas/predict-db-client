@@ -1,7 +1,7 @@
 import React from 'react';
 import { ResizableBox as ReactResizableBox } from "react-resizable";
 
-import "main.style.css"
+import "../../../main.style.css"
 import "react-resizable/css/styles.css";
 
 const ResizebleBox = ({

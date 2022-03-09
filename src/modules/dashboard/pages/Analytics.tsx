@@ -4,7 +4,7 @@ import OncoChart from "../components/oncoPrint";
 import {Stack, Button} from "@mui/material";
 import ModalWindow from "../components/modalWindow/ModalWindow";
 import Draggable from 'react-draggable';
-import ResizebleBox from "./ResizebleBox";
+import ResizebleBox from "../components/ResizebleBox";
 
 const Analytics: FC = () => {
 
