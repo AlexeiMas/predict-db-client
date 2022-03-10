@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { ProfilePopover } from "./Profile";
+import React, {useEffect} from "react";
+import {ProfilePopover} from "./Profile";
 import logo from "../../../assets/images/logo.svg";
 import NavigationTabs from "./NavigationTabs";
 import {useLocation} from "react-router-dom";
@@ -21,21 +21,23 @@ const DashboardHeader = (({...rest}): JSX.Element => {
     <>
       <div className="dash-board__header">
         <div className="dash-board__logo">
-          <a href="https://imagentherapeutics.com/predicttx"><img src={logo} alt="predictDb" /></a>
+          <a href="https://imagentherapeutics.com/predicttx"><img src={logo} alt="predictDb"/></a>
         </div>
         <div className="dash-board__right">
           <div className="dash-board__docs">
             <a href="https://docs.imagentherapeutics.com">Documentation</a>
           </div>
           <div className="dash-board__profile">
-            <ProfilePopover />
+            <ProfilePopover/>
           </div>
         </div>
       </div>
       {
-        isAuth && <div>
-             <NavigationTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-         </div>
+        isAuth
+        &&
+        <div>
+          <NavigationTabs activeTab={activeTab} setActiveTab={setActiveTab}/>
+        </div>
       }
     </>
   )

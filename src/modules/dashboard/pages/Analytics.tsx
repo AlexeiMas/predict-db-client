@@ -12,6 +12,7 @@ const Analytics: FC = () => {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
+  // const handleClose = () => setOpen(false);
 
   setTimeout(() => {
     togglePreloader(false)

@@ -1,23 +1,24 @@
-import React, {useCallback} from 'react';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
-import ChildModalWindow from "./ChildModalWindow";
+import React, {FC, useCallback} from 'react';
+import {styled} from '@mui/material/styles';
+import Dialog from "@mui/material/Dialog";
+import ModalHeader from "./ModalHeader"
+import ModalBody from "./ModalBody"
 
-const  ModalWindow = ({open, handleOpen}) => {
+const ModalDialog = styled(Dialog)(({theme}) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2)
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
 
-  const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    pt: 2,
-    px: 4,
-    pb: 3,
-  };
+export type TModalWindow = {
+  open: boolean,
+  handleOpen: React.Dispatch<boolean>
+}
+
+const ModalWindow: FC<TModalWindow> = ({open, handleOpen}) => {
 
   const handleClose = useCallback(() => {
       handleOpen(false)
@@ -25,14 +26,19 @@ const  ModalWindow = ({open, handleOpen}) => {
   );
 
   return (
-      <Modal open={open}
-             onClose={handleClose}
-      >
-        <Box sx={{...style, width: 400 }}>
-          <h2>Simple parent modal text</h2>
-          <ChildModalWindow style={style} />
-        </Box>
-      </Modal>
+    <ModalDialog
+      open={open}
+      onClose={handleClose}
+      fullScreen={(window.innerWidth <= 520)}
+      maxWidth={"md"}
+      fullWidth={true}
+      aria-labelledby="add-plot"
+    >
+      <ModalHeader id="add-plot" onClose={handleClose}>
+        Add Plot
+      </ModalHeader>
+      <ModalBody/>
+    </ModalDialog>
   );
 };
 
